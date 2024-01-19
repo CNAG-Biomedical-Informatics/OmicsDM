@@ -1,0 +1,7 @@
+*.env
+*.pem
+*.crt
+logs
+ceph
+ceph_mountpoint
+mockS3/node_modules/
