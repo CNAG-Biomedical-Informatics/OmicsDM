@@ -68,7 +68,7 @@ s3_files:
 	$(AWS) --endpoint-url=${aws_http} s3 ls s3://${aws_bucket} --recursive
 
 cert:
-	/usr/local/bin/mkcert -cert-file ./nginx_mountpoint/certs/scdm.cnag.dev.pem -key-file ./nginx_mountpoint/certs/scdm.cnag.dev-key.pem scdm.cnag.dev
+	/usr/local/bin/mkcert -cert-file ./nginx_mountpoint/certs/omicsdma.cnag.dev.pem -key-file ./nginx_mountpoint/certs/omicsdma.cnag.dev-key.pem omicsdma.cnag.dev
 
 
 cxg-k8-suis:
