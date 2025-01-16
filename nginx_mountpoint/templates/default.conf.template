@@ -1,9 +1,14 @@
 server {
-    listen 80;
-	access_log  /var/log/nginx/http.access.log;
-    server_name omicsdm.cnag.crg.dev;
+    listen 443 ssl; # For IPv4 addresses
+    listen [::]:443 ssl; # For IPv6 addresses
+    ssl_certificate       /etc/nginx/omicsdm.cnag.dev.pem;
+    ssl_certificate_key   /etc/nginx/omicsdm.cnag.dev-key.pem;
 
-    location / {   
+    listen 80;
+    access_log  /var/log/nginx/http.access.log;
+    server_name omicsdm.cnag.dev;
+
+    location /portal {   
         access_log  /var/log/nginx/http.access.log;
         error_log  /var/log/nginx/http.error.log;
 
@@ -113,4 +118,112 @@ server {
         proxy_pass http://172.16.10.100:9095/bucketdevel3tropal/;
         #proxy_pass http://localstack:4566/bucketdevelomicsdmcellxgene/;
     }
+    
+    location / {
+    	access_log /var/log/nginx/shinyproxy.access.log;
+   	error_log /var/log/nginx/shinyproxy.error.log;
+
+    	proxy_pass http://shinyproxy:8080/;
+
+    	proxy_http_version 1.1;
+    	proxy_set_header Upgrade $http_upgrade;
+    	proxy_set_header Connection "upgrade";
+    	proxy_read_timeout 600s;
+
+    	proxy_redirect    off;
+    	proxy_set_header  Host              $http_host;
+    	proxy_set_header  X-Real-IP         $remote_addr;
+    	proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+    	proxy_set_header  X-Forwarded-Proto $scheme;
+  }
+
+  location /login {
+    	access_log /var/log/nginx/shinyproxy-login.access.log;
+    	error_log /var/log/nginx/shinyproxy-login.error.log;
+
+    	proxy_pass http://shinyproxy:8080/login;
+
+    	proxy_http_version 1.1;
+    	proxy_set_header Upgrade $http_upgrade;
+    	proxy_set_header Connection "upgrade";
+    	proxy_read_timeout 600s;
+
+    	proxy_redirect    off;
+    	proxy_set_header  Host              $http_host;
+    	proxy_set_header  X-Real-IP         $remote_addr;
+    	proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+    	proxy_set_header  X-Forwarded-Proto $scheme;
+  }
+
+  location /oauth2/authorization/shinyproxy {
+    access_log /var/log/nginx/shinyproxy-oauth2.access.log;
+    error_log /var/log/nginx/shinyproxy-oauth2.error.log;
+
+    proxy_pass http://shinyproxy:8080/oauth2/authorization/shinyproxy;
+
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 600s;
+
+    proxy_redirect    off;
+    proxy_set_header  Host              $http_host;
+    proxy_set_header  X-Real-IP         $remote_addr;
+    proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header  X-Forwarded-Proto $scheme;
+  }
+
+  location /auth-error {
+    access_log /var/log/nginx/shinyproxy-auth-error.access.log;
+    error_log /var/log/nginx/shinyproxy-auth-error.error.log;
+
+    proxy_pass http://shinyproxy:8080/auth-error;
+
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 600s;
+
+    proxy_redirect    off;
+    proxy_set_header  Host              $http_host;
+    proxy_set_header  X-Real-IP         $remote_addr;
+    proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header  X-Forwarded-Proto $scheme;
+  }
+
+  location /auth-success {
+    access_log /var/log/nginx/shinyproxy-auth-success.access.log;
+    error_log /var/log/nginx/shinyproxy-auth-success.error.log;
+
+    proxy_pass http://shinyproxy:8080/auth-success;
+
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 600s;
+
+    proxy_redirect    off;
+    proxy_set_header  Host              $http_host;
+    proxy_set_header  X-Real-IP         $remote_addr;
+    proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header  X-Forwarded-Proto $scheme;
+  }
+ 
+  location /app {
+    access_log /var/log/nginx/shinyproxy-app.access.log;
+    error_log /var/log/nginx/shinyproxy-app.error.log;
+
+    proxy_pass http://shinyproxy:8080/app;
+
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 600s;
+
+    proxy_redirect    off;
+    proxy_set_header  Host              $http_host;
+    proxy_set_header  X-Real-IP         $remote_addr;
+    proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header  X-Forwarded-Proto $scheme;
+  }
 }
