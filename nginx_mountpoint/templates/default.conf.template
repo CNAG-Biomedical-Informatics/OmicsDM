@@ -8,13 +8,26 @@ server {
     access_log  /var/log/nginx/http.access.log;
     server_name omicsdm.cnag.dev;
 
-    location /portal {   
+    location / {   
         access_log  /var/log/nginx/http.access.log;
         error_log  /var/log/nginx/http.error.log;
 
         root /usr/share/nginx/html;
         index index.html index.htm;
         try_files $uri $uri/ /index.html =404;
+
+	# Handle JavaScript files
+        location ~* \.js$ {
+          root /usr/share/nginx/html;
+          default_type application/javascript;
+          try_files $uri =404;
+       }
+
+       # Handle other static assets (e.g., CSS, images)
+       location ~* \.(css|png|jpg|svg|ico)$ {
+        expires max;
+        log_not_found off;
+      }
     }
 
     location /api/ {
@@ -25,28 +38,28 @@ server {
 
         access_log /var/log/nginx/api.access.log;
         error_log /var/log/nginx/api.error.log;
-        proxy_pass http://api-omicsdm:8083/api/;
+        proxy_pass http://api-omicsdm:5000/api/;
         include includes/proxy-set-header.conf;
     }
 
     location /doc/ {
         access_log /var/log/nginx/doc.access.log;
         error_log /var/log/nginx/doc.error.log;
-        proxy_pass http://api-omicsdm:8083/doc/;
+        proxy_pass http://api-omicsdm:5000/doc/;
         include includes/proxy-set-header.conf;
     }
 
     location /swaggerui/ {
         access_log /var/log/nginx/swaggerui.access.log;
         error_log /var/log/nginx/swaggerui.error.log;
-        proxy_pass http://api-omicsdm:8083/swaggerui/;
+        proxy_pass http://api-omicsdm:5000/swaggerui/;
         include includes/proxy-set-header.conf;
     }
     
     location /swagger.json {
         access_log /var/log/nginx/swaggerjson.access.log;
         error_log /var/log/nginx/swaggerjson.error.log;
-        proxy_pass http://api-omicsdm:8083/swagger.json;
+        proxy_pass http://api-omicsdm:5000/swagger.json;
         include includes/proxy-set-header.conf;
     }
 
@@ -103,27 +116,24 @@ server {
         include includes/proxy-set-header.conf;
     }
 
-    location /bucketdevel3tropal/{
-        access_log /var/log/nginx/bucketdevel3tropal.access.log;
-        error_log /var/log/nginx/bucketdevel3tropal.error.log;
+    location /bucketdevelomicsdm/{
+        access_log /var/log/nginx/bucketdevelomicsdm.access.log;
+        error_log /var/log/nginx/bucketdevelomicsdm.error.log;
 
         # This is the maximum size of the file that can be uploaded
         # todo throw an error on the client side if the file is too big
         client_max_body_size 1G;
  
-        # the URL has to be hardcoded if ceph:8000 is used
-        # CEPH mistakenly assumes that the bucket name ceph
         # proxy_pass_request_headers off;
         # include includes/proxy-set-header.conf;
-        proxy_pass http://172.16.10.100:9095/bucketdevel3tropal/;
-        #proxy_pass http://localstack:4566/bucketdevelomicsdmcellxgene/;
+        proxy_pass http://s3bucket:9000/bucketdevelomicsdm/;
     }
     
-    location / {
+    location /shinyproxy {
     	access_log /var/log/nginx/shinyproxy.access.log;
    	error_log /var/log/nginx/shinyproxy.error.log;
 
-    	proxy_pass http://shinyproxy:8080/;
+    	proxy_pass http://shinyproxy:8080/shinyproxy;
 
     	proxy_http_version 1.1;
     	proxy_set_header Upgrade $http_upgrade;
@@ -135,6 +145,21 @@ server {
     	proxy_set_header  X-Real-IP         $remote_addr;
     	proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
     	proxy_set_header  X-Forwarded-Proto $scheme;
+        
+	# Handle static file types with caching
+        #location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$ {
+        #  expires 1y;
+        #  access_log off;
+        #  log_not_found off;
+
+        # Optionally serve these files locally if they exist
+        # try_files $uri $uri/ @shinyproxy;
+        #}
+
+        #location @shinyproxy {
+        #  proxy_pass http://shinyproxy:8080/;
+        #}
+	
   }
 
   location /login {
@@ -226,4 +251,26 @@ server {
     proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
     proxy_set_header  X-Forwarded-Proto $scheme;
   }
+
+  # Serve other files, but exclude /auth/resources/ to prevent the breakage of Keycloak
+  #location ~* ^(?!/auth/resources/).+\.js$ {
+  #  root /usr/share/nginx/html;
+  #  try_files $uri =404;
+  #}
+  
+  #location ~* ^(?!/auth/resources/).+\.(css|png|jpg|svg|icon)$ {
+  #    expires max;
+  #    log_not_found off;
+  #}
+
+#  location /minio/ui {
+#    rewrite ^/minio/ui/(.*) /$1 break;
+#    access_log /var/log/nginx/s3.access.log; 
+#    error_log /var/log/nginx/s3.error.log;
+    
+ #   proxy_pass http://s3bucket:9001;
+ #   include includes/proxy-set-header.conf;
+ # }
+
+
 }
