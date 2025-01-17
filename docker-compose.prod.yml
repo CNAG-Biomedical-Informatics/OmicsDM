@@ -7,14 +7,17 @@ services:
         - IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}
     depends_on:
       - api-omicsdm-db
-    # ports:
-    #   - 8083:8083
+    ports:
+      - 5000:5000
     env_file:
       - .env
     tty: true
     volumes:
       - ./omicsdm-server/server/config/config.py:/usr/src/app/server/config/config.py
+      - ./omicsdm-server/server/apis/file.py:/usr/src/app/server/apis/file.py
+      - ./omicsdm-server/cxg_mountpoint/launch_scripts:/usr/src/app/cxg_mountpoint/launch_scripts
       - /var/run/docker.sock:/var/run/docker.sock
+
 
     command: ["flask","run","--host=0.0.0.0"]
     #command: ["tail","-f","/dev/null"]
@@ -38,7 +41,7 @@ services:
     depends_on:
       - api-omicsdm
     volumes:
-      - ./omicsdm_client/config.js:/usr/share/nginx/html/config.js:ro
+      - ./omicsdm-client/config.js:/usr/share/nginx/html/config.js:ro
       - ./nginx_mountpoint/logs:/var/log/nginx
       - ./nginx_mountpoint/templates:/etc/nginx/templates:ro
       - ./nginx_mountpoint/includes:/etc/nginx/includes:ro
@@ -73,7 +76,7 @@ services:
     environment:
       - MINIO_ROOT_USER=admin
       - MINIO_ROOT_PASSWORD=12345678
-      - MINIO_DEFAULT_BUCKETS=bucketdevel3tropal
+      - MINIO_DEFAULT_BUCKETS=bucketdevelomicsdm
       - MINIO_REGION_NAME=us-east-1
     restart: unless-stopped
     networks:
