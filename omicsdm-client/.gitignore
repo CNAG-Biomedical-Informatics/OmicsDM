@@ -58,3 +58,4 @@ config.js
 config_test.js
 
 .github
+*storybook.log

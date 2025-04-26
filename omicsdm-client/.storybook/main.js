@@ -1,13 +1,20 @@
-export default {
-  framework: '@storybook/react-webpack5',
-  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
-  core: {
-    builder: {
-      name: '@storybook/builder-webpack5',
-      options: {
-        fsCache: true,
-        lazyCompilation: true,
-      },
-    },
+
+
+/** @type { import('@storybook/react-webpack5').StorybookConfig } */
+const config = {
+  "stories": [
+    "../src/**/*.mdx",
+    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+  ],
+  "addons": [
+    "@storybook/addon-webpack5-compiler-swc",
+    "@storybook/addon-essentials",
+    "@storybook/addon-onboarding",
+    "@storybook/addon-interactions"
+  ],
+  "framework": {
+    "name": "@storybook/react-webpack5",
+    "options": {}
   }
 };
+export default config;
