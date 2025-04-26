@@ -1,0 +1,128 @@
+
+/*
+vscode extension:
+httpBook - Rest Client
+https://httpyac.github.io
+
+run it on the command line with
+httpyac download.http --all
+*/
+
+GET {{host}}/tokentest
+# GET http://localhost:8082/api/tokentest
+# GET https://3tr.cnag.crg.dev/omics_datamanagement_service/api/tokentest
+{{
+  test.status(200)
+  const schema = {
+    type: 'object',
+    required: ['user', 'groups', 'project'],
+    properties: {
+      user: {
+        type: 'string',
+      },
+      groups: {
+        type: 'array',
+        items:{
+          type: 'string',
+          enum: kcgroups,
+        },
+      },
+      project: {
+        type: 'array',
+        items:{
+          type: 'string',
+          enum:['no_project']
+        },
+      }
+    }
+  };
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'));
+  console.log(response.parsedBody);
+  console.log(schema);
+  console.log(kcgroups);
+  chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+}}
+
+HTTP/1.0 200  - OK
+content-type: application/json
+content-length: 143
+access-control-allow-origin: *
+server: Werkzeug/2.0.1 Python/3.8.10
+date: Mon, 31 Jan 2022 09:21:39 GMT
+
+
+###
+#files found
+POST {{host}}/presignedUrl?arg=download
+Content-Type: application/json
+[{"file_id": 144},{"file_id": 77}]
+{{
+  test.status(200)
+  const schema = {
+    type: 'object',
+    required: ['message','presignedUrls'],
+    additionalProperties: false,
+    properties: {
+      message: {
+	      type: 'string',
+        enums: ['returned presigned urls']
+      },
+      presignedUrls: {
+        type: 'object',
+        minProperties: 1,
+        additionalProperties: false,
+        patternProperties: {
+          "^[0-9]*$": {
+            type: 'string',
+            pattern: "^https?://.*/bucketdevel3tropal/.*/[a-z]+/[^/]+(-Amz)"
+          }
+        },
+      },
+    }
+  }
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'));
+  console.log(response.parsedBody);
+  chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+}}
+
+HTTP/1.0 200  - OK
+content-type: application/json
+content-length: 809
+access-control-allow-origin: *
+server: Werkzeug/2.0.1 Python/3.8.10
+date: Mon, 31 Jan 2022 09:27:51 GMT
+
+
+###
+#file not found
+POST {{host}}/presignedUrl?arg=download
+Content-Type: application/json
+[{"file_id": 79}]
+{{
+  test.status(404)
+  const schema = {
+    type: 'object',
+    required: ['message'],
+    additionalProperties: false,
+    properties: {
+      message: {
+	      type: 'string',
+        enums: ['file not found']
+      },
+    }
+  }
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'));
+  console.log(response.parsedBody);
+  chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+}}
+
+HTTP/1.1 200  - OK
+server: nginx
+date: Sun, 30 Jan 2022 15:51:53 GMT
+content-type: application/json
+content-length: 245
+connection: close
+access-control-allow-origin: *

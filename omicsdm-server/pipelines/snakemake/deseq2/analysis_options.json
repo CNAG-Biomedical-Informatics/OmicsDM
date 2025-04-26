@@ -1,0 +1,22 @@
+{
+  "bases_on": null,
+  "contrast": {
+    "TEST_135_100_vs_TEST_134_500": "group,TEST_135_100,TEST_134_500",
+    "TEST_135_100_vs_TEST_135_500": "group,TEST_135_100,TEST_135_500",
+    "TEST_135_500_vs_TEST_134_500": "group,TEST_135_500,TEST_134_500"
+  },
+  "control": "TEST_134_500",
+  "covariants": {},
+  "group": "GROUP",
+  "mod": "~group",
+  "onlypca": "FALSE",
+  "plot": "TRUE",
+  "plot_atr": { "de_genes_n": 50, "heatmap_ann": "group", "pca": "group" },
+  "profiling": "TRUE",
+  "project": "TEST_134_135",
+  "file_paths": [
+    "3tr/test/COUNTS_genes_TEST_134_135_summed.csv_uploadedVersion_1.csv",
+    "3tr/test/info_TEST_134_135.csv_uploadedVersion_1.csv"
+  ],
+  "analysis_id": "3tr_etg23g3g3333"
+}

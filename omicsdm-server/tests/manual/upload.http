@@ -1,0 +1,55 @@
+
+/*
+vscode extension:
+httpBook - Rest Client
+https://httpyac.github.io
+
+run it on the command line with
+httpyac download.http --all
+
+Idea use httpyac to prepopulate the data warehouse
+for manual testing
+*/
+
+GET {{host}}/tokentest
+# GET http://localhost:8082/api/tokentest
+# GET https://3tr.cnag.crg.dev/omics_datamanagement_service/api/tokentest
+Authorization: openid password
+{{
+  test.status(200)
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'))
+  let schema = require('./jsonschemas/tokentest.json').tokentest;
+
+  schema.properties.groups.items.enum = kcgroups
+  chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+}}
+
+
+###
+POST {{host}}/files?arg=startUpload
+Authorization: openid password
+Content-Type: application/json
+{"DatasetID":"test","fileName": "testfile1.csv","Platform":"Pyrosequencing"}
+{{
+  async function wait(){
+    await sleep(10000);
+    console.log("waited 10 seconds");
+    console.log("parsedBody:",response.parsedBody);
+    console.log("schema",schema);
+    return chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+  }
+  test.status(200)
+  test.hasResponseBody()
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'))
+  let schema = require('./schemas.json').startUpload;
+  exports.wait = wait();
+}}
+
+
+
+
+
+
+###

@@ -1,0 +1,96 @@
+---
+title: "getgo"
+description: |
+  Analysis report created using the Bookdown format.
+author:
+  - name: Anna
+    affiliation: CNAG
+date: "`r Sys.Date()`"
+editor_options:
+  chunk_output_type: console
+output:
+  bookdown::html_document2:
+    theme: simplex
+    toc: true
+    toc_float: true
+    code_download: yes
+---
+
+```{r global-options, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, error = FALSE, warning = TRUE, message = TRUE, include = FALSE)
+```
+
+```{r custom_hooks, include=FALSE}
+# time a chunk
+knitr::knit_hooks$set(time_it = local({
+  now <- NULL
+  function(before, options) {
+    if (before) {
+      now <<- Sys.time() #time before chunk
+    } else {
+      res <- round(difftime(Sys.time(), now), digits = 3)
+      glue("Time for the chunk {options$label} to run: {res} seconds")
+    }
+  }
+}))
+
+# style cells
+knitr::knit_hooks$set(
+   error = function(x, options) {
+     paste('\n\n<div class="alert alert-danger">',
+           gsub('##', '\n', gsub('^##\ Error', '**Error**', x)),
+           '</div>', sep = '\n')
+   },
+   warning = function(x, options) {
+     paste('\n\n<div class="alert alert-warning">',
+           gsub('##', '\n', gsub('^##\ Warning:', '**Warning**', x)),
+           '</div>', sep = '\n')
+   },
+   message = function(x, options) {
+     paste('\n\n<div class="alert alert-info">',
+           gsub('##', '\n', x),
+           '</div>', sep = '\n')
+   }
+)
+```
+
+```{r libs, include=FALSE}
+libs <- c("knitr", "kableExtra", "dplyr", "glue", "purrr")
+lapply(libs, library, character.only = TRUE)
+remove(libs)
+```
+
+# generated files
+```{r show_files, include=TRUE}
+print(list.files("results"))
+```
+
+# generated PDFs
+```{r show_pdfs, include=TRUE, out.width="100%",out.height="600px"}
+
+if (length(list.files("results", pattern = ".pdf")) > 0) {
+  include_graphics(list.files("results", pattern = ".pdf", full.names = TRUE))
+}else{
+  print("None")
+}
+```
+# Appendix
+```{r sessionInfo, results="asis", include=TRUE}
+
+#https://bookdown.org/yihui/rmarkdown-cookbook/embed-file.html
+xfun::pkg_load2(c("htmltools", "mime"))
+xfun::embed_file('results/sessionInfo/sessionInfo.txt')
+
+platform_df <- readRDS('results/sessionInfo/platform.rds')
+packages_df <- readRDS('results/sessionInfo/packages.rds')
+
+for(e in list(
+  list(platform_df,c("Platform Information", "Value"),"float_left"),
+  list(packages_df,c("Package", "Version", "Date", "Source"),"left"))){
+    print(kable(e[[1]],col.names = e[[2]]) %>%
+      #have to install kableExtra on Opal Rserver first
+      kable_styling(full_width = FALSE, position = e[[3]]))
+    cat('\n\n<!-- -->\n\n')
+}
+```

@@ -1,0 +1,107 @@
+PROJ_NAME = "fgsea"
+
+# --- Variable Declarations ---- #
+runR = "Rscript --no-save --no-restore --verbose"
+logAll = "2>&1"
+
+
+rule all:
+    input:
+        report_html=f"out/_main.html",
+
+
+rule report:
+    input:
+        rmd="src/report/index.Rmd",
+        in1="out/results/sessionInfo/sessionInfo.txt",
+        in2="out/results/sessionInfo/platform.rds",
+        in3="out/results/sessionInfo/packages.rds",
+    output:
+        html="out/_main.html",
+        book=directory("out/_book"),
+    log:
+        "log/report.log",
+    shell:
+        """
+                cp {input.rmd} out/.
+                {runR} src/lib/build_report.R | tee {log}
+                """
+
+
+rule analysis:
+    input:
+        # in1=f"out/tmp/reactome_gmt.tsv",
+        # in1=f"out/tmp/c2.cp.kegg_medicus.v2023.2.Hs.symbols.gmt",
+        in1="out/tmp/c6.all.v2023.2.Hs.symbols.gmt",
+        in2="in/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt",
+        in3="in/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt",
+        in4="in/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt",
+        config=f"config/{PROJ_NAME}.json",
+    output:
+        out1="out/results/TEST_134_135_TEST_135_100_vs_TEST_134_500_results_fgsea.pdf",
+        out2="out/results/TEST_134_135_TEST_135_100_vs_TEST_134_500_results_fgsea.tsv",
+        out3="out/results/TEST_134_135_TEST_135_100_vs_TEST_135_500_results_fgsea.pdf",
+        out4="out/results/TEST_134_135_TEST_135_100_vs_TEST_135_500_results_fgsea.tsv",
+        out5="out/results/TEST_134_135_TEST_135_500_vs_TEST_134_500_results_fgsea.pdf",
+        out6="out/results/TEST_134_135_TEST_135_500_vs_TEST_134_500_results_fgsea.tsv",
+        out7="out/results/sessionInfo/sessionInfo.txt",
+        out8="out/results/sessionInfo/platform.rds",
+        out9="out/results/sessionInfo/packages.rds",
+    log:
+        "log/analysis.log",
+    shell:
+        """
+        {runR} src/fgsea.R | tee {log}
+        """
+
+
+# rule preprocess:
+#     input:
+#         config=f"config/{PROJ_NAME}.json",
+#         in1=f"out/tmp/Ensembl2Reactome_All_Levels.txt",
+#         in2="in/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt",
+#         in3="in/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt",
+#         in4="in/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt",
+#     output:
+#         out1=f"out/tmp/reactome_gmt.tsv",
+#     log:
+#         "log/preprocess.log",
+#     shell:
+#         """
+#         {runR} src/reactome2gmt.R {input.config} | tee {log}
+#         """
+
+
+# rule get_reactome_data:
+#     input:
+#         config=f"config/{PROJ_NAME}.json",
+#     output:
+#         out1=f"out/tmp/Ensembl2Reactome_All_Levels.txt",
+#     log:
+#         "log/get_data.log",
+#     shell:
+#         """
+#                 curl https://reactome.org/download/current/Ensembl2Reactome_All_Levels.txt > {output.out1}
+#                 """
+
+
+rule get_data:
+    input:
+        config=f"config/{PROJ_NAME}.json",
+    output:
+        out1="in/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt",
+        out2="in/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt",
+        out3="in/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt",
+        # out4="out/tmp/c2.cp.kegg_medicus.v2023.2.Hs.symbols.gmt",
+        out4="out/tmp/c6.all.v2023.2.Hs.symbols.gmt",
+        # out4="out/tmp/reactome_gmt.tsv",
+    log:
+        "log/get_data.log",
+    shell:
+        """
+        {runR} src/get_data.R {input.config} | tee {log}
+        """
+
+
+# 2. Other rules
+include: "rules/renv.smk"

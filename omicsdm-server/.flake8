@@ -1,0 +1,14 @@
+# based on https://ljvmiranda921.github.io/notebook/2018/06/21/precommits-using-black-and-flake8/
+[flake8]
+ignore =
+	#Black adds whitespace before a colon
+	E203
+max-line-length = 79
+max-complexity = 18
+select = B,C,E,F,W,T4,B9
+
+per-file-ignores =
+	# Module level import not at top of file
+	server/run.py:E402
+	# imported but unused
+	server/test_init.py:F401

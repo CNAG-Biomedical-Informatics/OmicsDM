@@ -1,0 +1,14 @@
+{
+  "files": [
+    "3tr/test/COUNTS_genes_TEST_134_135_summed.csv_uploadedVersion_1.csv",
+    "3tr/test/info_TEST_134_135.csv_uploadedVersion_1.csv"
+  ],
+  "options": {
+    "profiling": "TRUE",
+    "onlypca": "FALSE",
+    "plot": "TRUE",
+    "project": "TEST_134_135",
+    "control": "TEST_134_500",
+    "bases_on": null
+  }
+}

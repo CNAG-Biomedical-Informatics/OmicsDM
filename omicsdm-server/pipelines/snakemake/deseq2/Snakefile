@@ -1,0 +1,73 @@
+PROJ_NAME = "deseq2"
+
+# --- Variable Declarations ---- #
+runR = "Rscript --no-save --no-restore --verbose"
+logAll = "2>&1"
+
+
+rule all:
+    input:
+        report_html=f"out/_main.html",
+
+
+rule report:
+    input:
+        rmd="src/report/index.Rmd",
+        in1="out/results/TEST_134_135_pc_contribution.txt",
+        in2="out/results/TEST_134_135_pca.pdf",
+        in3="out/results/TEST_134_135_rlogMat.txt",
+        in4="out/results/TEST_134_135_sampletosample_heatmap.pdf",
+    output:
+        html="out/_main.html",
+        book=directory("out/_book"),
+    log:
+        "log/report.log",
+    shell:
+        """
+                cp {input.rmd} out/.
+                {runR} src/lib/build_report.R | tee {log}
+                """
+
+
+rule analysis:
+    input:
+        # TODO
+        # more explicit input name then rds_obj1 and rds_obj2
+        rds_obj1=f"out/rds/{PROJ_NAME}_obj1.rds",
+        rds_obj2=f"out/rds/{PROJ_NAME}_obj2.rds",
+        config=f"config/{PROJ_NAME}.json",
+    output:
+        out1="out/results/TEST_134_135_pc_contribution.txt",
+        out2="out/results/TEST_134_135_pca.pdf",
+        out3="out/results/TEST_134_135_rlogMat.txt",
+        out4="out/results/TEST_134_135_sampletosample_heatmap.pdf",
+        out5="out/results/sessionInfo/sessionInfo.txt",
+        out6="out/results/sessionInfo/platform.rds",
+        out7="out/results/sessionInfo/packages.rds",
+    log:
+        "log/analysis.log",
+    shell:
+        """
+                {runR} src/deseq2.R | tee {log}
+                """
+
+
+rule get_data_and_preprocess:
+    input:
+        config=f"config/{PROJ_NAME}.json",
+    output:
+        # TODO
+        # more explicit output name then rds_obj1 and rds_obj2
+        # one should be the count matrix and the other the metadata
+        rds_obj1=f"out/rds/{PROJ_NAME}_obj1.rds",
+        rds_obj2=f"out/rds/{PROJ_NAME}_obj2.rds",
+    log:
+        "log/get_data_and_preprocess.log",
+    shell:
+        """
+                {runR} src/get_data_and_preprocess.R {input.config} | tee {log}
+                """
+
+
+# 2. Other rules
+include: "rules/renv.smk"

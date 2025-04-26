@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>flake8 violations: server/api/datamgmt_api/dm_file.py</title>
+      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="styles.css">
+<script>
+function bindHandler(link) {
+   var code = link.getAttribute('data-code');
+   var key = location.pathname + '#' + code;
+
+   var ul = link.parentNode.querySelector('.details');
+   if (sessionStorage[key] != 'open') {
+      ul.style.display = 'none';
+   }
+   link.addEventListener('click', function (event) {
+      if (!ul.style.display || ul.style.display == 'none') {
+         ul.style.display = 'block';
+         sessionStorage[key] = 'open';
+      } else {
+         ul.style.display = 'none';
+         sessionStorage[key] = 'closed';
+      }
+   });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+   var links = document.querySelectorAll('#index > li > a');
+   for (var i = 0; i < links.length; i++) {
+      bindHandler(links[i]);
+   }
+});
+</script>
+   </head>
+   <body>
+      <div id="masthead" class="sev-1"></div>
+      <div id="page">
+         <p id="srclink">
+            <a title="View full annotated source"
+               href="server.api.datamgmt_api.dm_file.source.html">
+               <img src="file.svg" alt="&#x2261;">
+            </a></p>
+         <h1>
+            <a href="index.html">
+               <img src="back.svg" alt="&#x2B05;">
+               server/api/datamgmt_api/dm_file.py
+            </a>
+         </h1>
+
+         <ul id="index">
+
+         <li>
+            <a data-code="F401">
+               <span class="count sev-1">
+                  11
+               </span>
+               <strong>F401:</strong> 'sqlalchemy.exc' imported but unused
+
+                  (and 10 similar)
+
+            </a>
+            <ul class="details">
+            <li>
+
+               <p>'sqlalchemy.exc' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l12">
+                  <tt><i>12</i> <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">exc</span></tt>
+               </a>
+            </li><li>
+
+               <p>'werkzeug.formparser.parse_form_data' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l14">
+                  <tt><i>14</i> <span class="kn">from</span> <span class="nn">werkzeug.formparser</span> <span class="kn">import</span> <span class="n">parse_form_data</span></tt>
+               </a>
+            </li><li>
+
+               <p>'werkzeug.utils.secure_filename' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l15">
+                  <tt><i>15</i> <span class="kn">from</span> <span class="nn">werkzeug.utils</span> <span class="kn">import</span> <span class="n">secure_filename</span></tt>
+               </a>
+            </li><li>
+
+               <p>'sqlalchemy.asc' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l16">
+                  <tt><i>16</i> <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">asc</span><span class="p">,</span> <span class="n">desc</span></tt>
+               </a>
+            </li><li>
+
+               <p>'sqlalchemy.desc' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l16">
+                  <tt><i>16</i> <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">asc</span><span class="p">,</span> <span class="n">desc</span></tt>
+               </a>
+            </li><li>
+
+               <p>'server.utils.validators.file_empty' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l26">
+                  <tt><i>26</i> <span class="kn">from</span> <span class="nn">server.utils.validators</span> <span class="kn">import</span> <span class="n">file_empty</span><span class="p">,</span> <span class="n">validate_file</span></tt>
+               </a>
+            </li><li>
+
+               <p>'server.utils.validators.validate_file' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l26">
+                  <tt><i>26</i> <span class="kn">from</span> <span class="nn">server.utils.validators</span> <span class="kn">import</span> <span class="n">file_empty</span><span class="p">,</span> <span class="n">validate_file</span></tt>
+               </a>
+            </li><li>
+
+               <p>'server.utils.error_handler.BadFile' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l27">
+                  <tt><i>27</i> <span class="kn">from</span> <span class="nn">server.utils.error_handler</span> <span class="kn">import</span> <span class="p">(</span></tt>
+               </a>
+            </li><li>
+
+               <p>'server.utils.error_handler.KeyNotFound' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l27">
+                  <tt><i>27</i> <span class="kn">from</span> <span class="nn">server.utils.error_handler</span> <span class="kn">import</span> <span class="p">(</span></tt>
+               </a>
+            </li><li>
+
+               <p>'server.utils.error_handler.WrongKey' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l27">
+                  <tt><i>27</i> <span class="kn">from</span> <span class="nn">server.utils.error_handler</span> <span class="kn">import</span> <span class="p">(</span></tt>
+               </a>
+            </li><li>
+
+               <p>'server.utils.table_methods.get_col_val_for_table_actions' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l35">
+                  <tt><i>35</i> <span class="kn">from</span> <span class="nn">server.utils.table_methods</span> <span class="kn">import</span> <span class="n">get_col_val_for_table_actions</span><span class="p">,</span> <span class="n">db_view_builder</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+
+         <li>
+            <a data-code="E501">
+               <span class="count sev-2">
+                  27
+               </span>
+               <strong>E501:</strong> line too long (85 > 79 characters)
+
+                  (and 13 similar)
+
+            </a>
+            <ul class="details">
+            <li>
+
+               <p>Line too long (85 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l35">
+                  <tt><i>35</i> <span class="kn">from</span> <span class="nn">server.utils.table_methods</span> <span class="kn">import</span> <span class="n">get_col_val_for_table_actions</span><span class="p">,</span> <span class="n">db_view_builder</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (81 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l39">
+                  <tt><i>39</i> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;Authorization&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (152 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l41">
+                  <tt><i>41</i> <span class="c1"># based on https://github.com/bag-cnag/RD-Connect_submission/blob/d5b3c98c7bbf3a7bd57f0c676666f5750e6dbacc/RDconnectSubmission/db_omicsdata/api_react.py</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (85 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l56">
+                  <tt><i>56</i>             <span class="k">raise</span> <span class="n">DatabaseError</span><span class="p">(</span><span class="s2">&quot;save_to_db&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="s2">&quot;database error, please contact:&quot;</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (85 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l63">
+                  <tt><i>63</i>             <span class="k">raise</span> <span class="n">DatabaseError</span><span class="p">(</span><span class="s2">&quot;save_to_db&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="s2">&quot;database error, please contact:&quot;</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (83 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l90">
+                  <tt><i>90</i>             <span class="k">raise</span> <span class="n">EmptyQuery</span><span class="p">(</span><span class="s2">&quot;Group.find_by_name&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;group </span><span class="si">{</span><span class="n">file_owner</span><span class="si">}</span><span class="s2"> not exist&quot;</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (85 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l124">
+                  <tt><i>124</i>     <span class="c1"># def ceph_upload_file(self, config, file_path, file_name, dataset_id, group_id):</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (81 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l160">
+                  <tt><i>160</i>             <span class="n">file_name</span><span class="p">,</span> <span class="n">file_version</span><span class="p">,</span> <span class="n">proj</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_file</span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">group_id</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (85 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l162">
+                  <tt><i>162</i>             <span class="n">bytes_obj</span> <span class="o">=</span> <span class="n">ceph</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">proj</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">file_version</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (83 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l187">
+                  <tt><i>187</i>             <span class="k">return</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;zipping files failed&quot;</span><span class="p">}),</span> <span class="mi">404</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (87 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l247">
+                  <tt><i>247</i>                 <span class="k">return</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;group does not exist&quot;</span><span class="p">}),</span> <span class="mi">404</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (84 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l258">
+                  <tt><i>258</i>         <span class="c1">#         file_name, file_version, proj, file_obj = self.query_file(file_id)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (88 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l267">
+                  <tt><i>267</i>         <span class="c1">#             jsonify({&quot;message&quot;: &quot;file(s) status changed&quot;, &quot;files&quot;: file_ids}),</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (80 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l276">
+                  <tt><i>276</i>         <span class="c1"># the upload Endpoint can receive either one multiple rows (dataset ids)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (83 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l281">
+                  <tt><i>281</i>             <span class="k">return</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;group does not exist&quot;</span><span class="p">}),</span> <span class="mi">404</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (82 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l311">
+                  <tt><i>311</i>                     <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;file </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2"> contains spaces&quot;</span><span class="p">}),</span> <span class="mi">405</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (86 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l314">
+                  <tt><i>314</i>             <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;ALLOWED_FILE_EXTENSIONS&quot;</span><span class="p">]:</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (92 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l318">
+                  <tt><i>318</i>                             <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;file </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2"> contains forbidden file extension&quot;</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (104 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l343">
+                  <tt><i>343</i>                 <span class="c1"># 0:{&#39;DatasetID&#39;: &#39;p&#39;, &#39;File&#39;: [&#39;test.txt&#39;, &#39;test2.txt&#39;], &#39;Platform&#39;: &#39;&#39;, &#39;Comment&#39;: &#39;&#39;}</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (104 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l344">
+                  <tt><i>344</i>                 <span class="c1"># 1:{&#39;DatasetID&#39;: &#39;s&#39;, &#39;File&#39;: [&#39;test.txt&#39;, &#39;test.csv&#39;], &#39;Platform&#39;: &#39;&#39;, &#39;Comment&#39;: &#39;&#39;}]</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (83 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l358">
+                  <tt><i>358</i>                     <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;at least 1 metadata key is missing&quot;</span><span class="p">}),</span> <span class="mi">404</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (83 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l400">
+                  <tt><i>400</i>                 <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">opal_proj_id</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">file_version</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (85 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l403">
+                  <tt><i>403</i>                 <span class="k">return</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;file upload failed&quot;</span><span class="p">}),</span> <span class="mi">405</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (93 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l410">
+                  <tt><i>410</i>             <span class="c1"># need an extra column in  the React view where the user could provide a checksum</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (119 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l431">
+                  <tt><i>431</i>                 <span class="c1"># that the just uploaded was already on the server so it was uploaded again with an incremented version</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (83 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l433">
+                  <tt><i>433</i>                     <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;File metadata inserted in database&quot;</span><span class="p">}),</span> <span class="mi">200</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (80 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l449">
+                  <tt><i>449</i>         <span class="c1"># 2. to remove files from sharing eventhough the whole dataset is shared</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+
+         <li>
+            <a data-code="E265">
+               <span class="count sev-2">
+                  1
+               </span>
+               <strong>E265:</strong> block comment should start with '# '
+
+            </a>
+            <ul class="details">
+            <li>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l6">
+                  <tt><i>6</i> <span class="c1">#!/usr/bin/env python</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+
+         <li>
+            <a data-code="E302">
+               <span class="count sev-2">
+                  1
+               </span>
+               <strong>E302:</strong> expected 2 blank lines, found 1
+
+            </a>
+            <ul class="details">
+            <li>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l42">
+                  <tt><i>42</i> <span class="k">class</span> <span class="nc">FileData</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+
+         <li>
+            <a data-code="E722">
+               <span class="count sev-2">
+                  1
+               </span>
+               <strong>E722:</strong> do not use bare 'except'
+
+            </a>
+            <ul class="details">
+            <li>
+
+               <a href="server.api.datamgmt_api.dm_file.source.html#l356">
+                  <tt><i>356</i>             <span class="k">except</span><span class="p">:</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+
+         </ul>
+      </div>
+   </body>
+</html>

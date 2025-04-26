@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>server/utils/file_handler.py - flake8 annotated source</title>
+      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="styles.css">
+   </head>
+   <body>
+      <div id="masthead" class="sev-1"></div>
+      <div id="page">
+         <h1>
+            <a href="server.utils.file_handler.report.html">
+               <img src="back.svg" alt="&#x2B05;">
+               server/utils/file_handler.py source
+            </a>
+         </h1>
+
+         <div id="doc">
+            <div id="l1"
+               class="code sev- "><tt><i>1</i> <span class="c1"># found on:</span></tt>
+            </div>
+            <div id="l2"
+               class="code sev- "><tt><i>2</i> <span class="c1"># https://medium.com/tictail/python-streaming-request-data-files-streaming-to-a-subprocess-504769c7065f</span></tt>
+            </div>
+            <div id="l3"
+               class="code sev- "><tt><i>3</i> <span class="c1"># https://gist.github.com/tgwizard/95b82c98e17e72a4c3c0d75dda19eef4</span></tt>
+            </div>
+            <div id="l4"
+               class="code sev- "><tt><i>4</i> &nbsp;</tt>
+            </div>
+            <div id="l5"
+               class="code sev- "><tt><i>5</i> <span class="c1"># TODO</span></tt>
+            </div>
+            <div id="l6"
+               class="code sev- "><tt><i>6</i> <span class="c1"># how to modify that so it works with multiple files uploaded</span></tt>
+            </div>
+            <div id="l7"
+               class="code sev- "><tt><i>7</i> <span class="c1"># at the same time</span></tt>
+            </div>
+            <div id="l8"
+               class="code sev- "><tt><i>8</i> &nbsp;</tt>
+            </div>
+            <div id="l9"
+               class="code sev- "><tt><i>9</i> <span class="c1"># it already does:</span></tt>
+            </div>
+            <div id="l10"
+               class="code sev-2  le">
+               <ul class="violations">
+
+                  <li>
+                     <span class="count sev-2">
+                        E501
+                     </span>
+                     Line too long (112 > 79 characters)</li>
+
+               </ul><tt><i>10</i> <span class="c1"># Start writing to stream: total_content_length=1504, content_type=text/csv, filename=test.csv, content_length=0</span></tt>
+            </div>
+            <div id="l11"
+               class="code sev- "><tt><i>11</i> <span class="c1"># reading file parts: size=396</span></tt>
+            </div>
+            <div id="l12"
+               class="code sev-2  le">
+               <ul class="violations">
+
+                  <li>
+                     <span class="count sev-2">
+                        E501
+                     </span>
+                     Line too long (113 > 79 characters)</li>
+
+               </ul><tt><i>12</i> <span class="c1"># Start writing to stream: total_content_length=1504, content_type=text/csv, filename=test2.csv, content_length=0</span></tt>
+            </div>
+            <div id="l13"
+               class="code sev- "><tt><i>13</i> <span class="c1"># reading file parts: size=396</span></tt>
+            </div>
+            <div id="l14"
+               class="code sev- "><tt><i>14</i> &nbsp;</tt>
+            </div>
+            <div id="l15"
+               class="code sev- "><tt><i>15</i> <span class="c1"># but only returns one</span></tt>
+            </div>
+            <div id="l16"
+               class="code sev- "><tt><i>16</i> <span class="c1"># &lt;werkzeug.wsgi.LimitedStream object at 0x7f692d784970&gt;</span></tt>
+            </div>
+            <div id="l17"
+               class="code sev- "><tt><i>17</i> &nbsp;</tt>
+            </div>
+            <div id="l18"
+               class="code sev- "><tt><i>18</i> <span class="c1"># large file uploads eating up memory</span></tt>
+            </div>
+            <div id="l19"
+               class="code sev- "><tt><i>19</i> <span class="c1"># https://gitlab.nsd.no/ire/python-webserver-file-submission-poc/blob/master/flask_app.py</span></tt>
+            </div>
+            <div id="l20"
+               class="code sev- "><tt><i>20</i> <span class="c1"># https://github.com/pallets/flask/issues/2086</span></tt>
+            </div>
+            <div id="l21"
+               class="code sev- "><tt><i>21</i> &nbsp;</tt>
+            </div>
+            <div id="l22"
+               class="code sev- "><tt><i>22</i> <span class="kn">import</span> <span class="nn">json</span></tt>
+            </div>
+            <div id="l23"
+               class="code sev- "><tt><i>23</i> <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span></tt>
+            </div>
+            <div id="l24"
+               class="code sev- "><tt><i>24</i> <span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span></tt>
+            </div>
+            <div id="l25"
+               class="code sev- "><tt><i>25</i> &nbsp;</tt>
+            </div>
+            <div id="l26"
+               class="code sev- "><tt><i>26</i> <span class="kn">from</span> <span class="nn">werkzeug.formparser</span> <span class="kn">import</span> <span class="n">parse_form_data</span></tt>
+            </div>
+            <div id="l27"
+               class="code sev- "><tt><i>27</i> &nbsp;</tt>
+            </div>
+            <div id="l28"
+               class="code sev- "><tt><i>28</i> <span class="kn">from</span> <span class="nn">server.utils.error_handler</span> <span class="kn">import</span> <span class="n">BadFile</span><span class="p">,</span> <span class="n">DataNotFound</span></tt>
+            </div>
+            <div id="l29"
+               class="code sev- "><tt><i>29</i> &nbsp;</tt>
+            </div>
+            <div id="l30"
+               class="code sev- "><tt><i>30</i> &nbsp;</tt>
+            </div>
+            <div id="l31"
+               class="code sev- "><tt><i>31</i> <span class="k">class</span> <span class="nc">DummyWerkzeugFile</span><span class="p">:</span></tt>
+            </div>
+            <div id="l32"
+               class="code sev- "><tt><i>32</i>     <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span></tt>
+            </div>
+            <div id="l33"
+               class="code sev- "><tt><i>33</i>         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;reading file parts: size=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">))</span></tt>
+            </div>
+            <div id="l34"
+               class="code sev- "><tt><i>34</i>         <span class="c1"># validate</span></tt>
+            </div>
+            <div id="l35"
+               class="code sev- "><tt><i>35</i> &nbsp;</tt>
+            </div>
+            <div id="l36"
+               class="code sev- "><tt><i>36</i>     <span class="k">def</span> <span class="nf">seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span></tt>
+            </div>
+            <div id="l37"
+               class="code sev- "><tt><i>37</i>         <span class="c1"># Hack: this is how we know we&#39;ve finished reading the request file.</span></tt>
+            </div>
+            <div id="l38"
+               class="code sev- "><tt><i>38</i>         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FINISHED reading&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l39"
+               class="code sev- "><tt><i>39</i>         <span class="k">return</span> <span class="mi">0</span></tt>
+            </div>
+            <div id="l40"
+               class="code sev- "><tt><i>40</i> &nbsp;</tt>
+            </div>
+            <div id="l41"
+               class="code sev- "><tt><i>41</i> &nbsp;</tt>
+            </div>
+            <div id="l42"
+               class="code sev-2  le">
+               <ul class="violations">
+
+                  <li>
+                     <span class="count sev-2">
+                        E501
+                     </span>
+                     Line too long (86 > 79 characters)</li>
+
+               </ul><tt><i>42</i> <span class="k">def</span> <span class="nf">stream_factory</span><span class="p">(</span><span class="n">total_content_length</span><span class="p">,</span> <span class="n">content_type</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">content_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span></tt>
+            </div>
+            <div id="l43"
+               class="code sev- "><tt><i>43</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l44"
+               class="code sev- "><tt><i>44</i> <span class="sd">    custom stream factory for werkzeug.formparser.parse_form_data</span></tt>
+            </div>
+            <div id="l45"
+               class="code sev- "><tt><i>45</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l46"
+               class="code sev- "><tt><i>46</i>     <span class="nb">print</span><span class="p">(</span></tt>
+            </div>
+            <div id="l47"
+               class="code sev- "><tt><i>47</i>         <span class="s2">&quot;Start writing to stream: &quot;</span></tt>
+            </div>
+            <div id="l48"
+               class="code sev-2  le">
+               <ul class="violations">
+
+                  <li>
+                     <span class="count sev-2">
+                        E501
+                     </span>
+                     Line too long (82 > 79 characters)</li>
+
+               </ul><tt><i>48</i>         <span class="s2">&quot;total_content_length=</span><span class="si">%s</span><span class="s2">, content_type=</span><span class="si">%s</span><span class="s2">, filename=</span><span class="si">%s</span><span class="s2">, content_length=</span><span class="si">%s</span><span class="s2">&quot;</span></tt>
+            </div>
+            <div id="l49"
+               class="code sev- "><tt><i>49</i>         <span class="o">%</span> <span class="p">(</span><span class="n">total_content_length</span><span class="p">,</span> <span class="n">content_type</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">content_length</span><span class="p">)</span></tt>
+            </div>
+            <div id="l50"
+               class="code sev- "><tt><i>50</i>     <span class="p">)</span></tt>
+            </div>
+            <div id="l51"
+               class="code sev-2  le">
+               <ul class="violations">
+
+                  <li>
+                     <span class="count sev-2">
+                        E501
+                     </span>
+                     Line too long (88 > 79 characters)</li>
+
+               </ul><tt><i>51</i>     <span class="c1"># Here we can return anything with a write(b: bytes) and seek() method, like a file.</span></tt>
+            </div>
+            <div id="l52"
+               class="code sev- "><tt><i>52</i>     <span class="k">return</span> <span class="n">DummyWerkzeugFile</span><span class="p">()</span></tt>
+            </div>
+            <div id="l53"
+               class="code sev- "><tt><i>53</i> &nbsp;</tt>
+            </div>
+            <div id="l54"
+               class="code sev- "><tt><i>54</i> &nbsp;</tt>
+            </div>
+            <div id="l55"
+               class="code sev- "><tt><i>55</i> <span class="k">def</span> <span class="nf">custom_stream_factory</span><span class="p">(</span></tt>
+            </div>
+            <div id="l56"
+               class="code sev- "><tt><i>56</i>     <span class="n">total_content_length</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">content_type</span><span class="p">,</span> <span class="n">content_length</span><span class="o">=</span><span class="kc">None</span></tt>
+            </div>
+            <div id="l57"
+               class="code sev- "><tt><i>57</i> <span class="p">):</span></tt>
+            </div>
+            <div id="l58"
+               class="code sev- "><tt><i>58</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l59"
+               class="code sev- "><tt><i>59</i> <span class="sd">    custom stream factory for werkzeug.formparser.parse_form_data</span></tt>
+            </div>
+            <div id="l60"
+               class="code sev- "><tt><i>60</i> <span class="sd">        - tests for allowed filetypes</span></tt>
+            </div>
+            <div id="l61"
+               class="code sev- "><tt><i>61</i> <span class="sd">        - returns a tmpfile with the prefix 3tr-flask</span></tt>
+            </div>
+            <div id="l62"
+               class="code sev- "><tt><i>62</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l63"
+               class="code sev- "><tt><i>63</i>     <span class="nb">print</span><span class="p">(</span></tt>
+            </div>
+            <div id="l64"
+               class="code sev- "><tt><i>64</i>         <span class="s2">&quot;Start writing to tempfile: &quot;</span></tt>
+            </div>
+            <div id="l65"
+               class="code sev- "><tt><i>65</i>         <span class="sa">f</span><span class="s2">&quot;total_content_length=</span><span class="si">{</span><span class="n">total_content_length</span><span class="si">}</span><span class="s2"> &quot;</span></tt>
+            </div>
+            <div id="l66"
+               class="code sev- "><tt><i>66</i>         <span class="sa">f</span><span class="s2">&quot;content_type=</span><span class="si">{</span><span class="n">content_type</span><span class="si">}</span><span class="s2"> &quot;</span></tt>
+            </div>
+            <div id="l67"
+               class="code sev- "><tt><i>67</i>         <span class="sa">f</span><span class="s2">&quot;filename=</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> &quot;</span></tt>
+            </div>
+            <div id="l68"
+               class="code sev- "><tt><i>68</i>         <span class="sa">f</span><span class="s2">&quot;content_length=</span><span class="si">{</span><span class="n">content_length</span><span class="si">}</span><span class="s2">&quot;</span></tt>
+            </div>
+            <div id="l69"
+               class="code sev- "><tt><i>69</i>     <span class="p">)</span></tt>
+            </div>
+            <div id="l70"
+               class="code sev- "><tt><i>70</i> &nbsp;</tt>
+            </div>
+            <div id="l71"
+               class="code sev- "><tt><i>71</i>     <span class="n">allowed_filetypes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tsv&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">,</span> <span class="s2">&quot;xlsx&quot;</span><span class="p">,</span> <span class="s2">&quot;xls&quot;</span><span class="p">,</span> <span class="s2">&quot;rds&quot;</span><span class="p">,</span> <span class="s2">&quot;rda&quot;</span><span class="p">]</span></tt>
+            </div>
+            <div id="l72"
+               class="code sev- "><tt><i>72</i> &nbsp;</tt>
+            </div>
+            <div id="l73"
+               class="code sev- "><tt><i>73</i>     <span class="n">file_extension</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span></tt>
+            </div>
+            <div id="l74"
+               class="code sev- "><tt><i>74</i>     <span class="k">if</span> <span class="n">file_extension</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_filetypes</span><span class="p">:</span></tt>
+            </div>
+            <div id="l75"
+               class="code sev- "><tt><i>75</i>         <span class="k">raise</span> <span class="n">BadFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;forbidden file extension&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l76"
+               class="code sev- "><tt><i>76</i> &nbsp;</tt>
+            </div>
+            <div id="l77"
+               class="code sev- "><tt><i>77</i>     <span class="n">tmpfile</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="s2">&quot;wb+&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;3tr-flask_&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l78"
+               class="code sev- "><tt><i>78</i> &nbsp;</tt>
+            </div>
+            <div id="l79"
+               class="code sev- "><tt><i>79</i>     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tmpfile =&gt; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">tmpfile</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></tt>
+            </div>
+            <div id="l80"
+               class="code sev- "><tt><i>80</i>     <span class="k">return</span> <span class="n">tmpfile</span></tt>
+            </div>
+            <div id="l81"
+               class="code sev- "><tt><i>81</i> &nbsp;</tt>
+            </div>
+            <div id="l82"
+               class="code sev- "><tt><i>82</i> &nbsp;</tt>
+            </div>
+            <div id="l83"
+               class="code sev- "><tt><i>83</i> <span class="k">def</span> <span class="nf">parse_fileupload_form</span><span class="p">(</span></tt>
+            </div>
+            <div id="l84"
+               class="code sev- "><tt><i>84</i>     <span class="n">environ</span><span class="p">,</span> <span class="n">form_key</span><span class="o">=</span><span class="s2">&quot;metaData&quot;</span><span class="p">,</span> <span class="n">stream_factory</span><span class="o">=</span><span class="n">custom_stream_factory</span></tt>
+            </div>
+            <div id="l85"
+               class="code sev- "><tt><i>85</i> <span class="p">):</span></tt>
+            </div>
+            <div id="l86"
+               class="code sev- "><tt><i>86</i> &nbsp;</tt>
+            </div>
+            <div id="l87"
+               class="code sev- "><tt><i>87</i>     <span class="c1"># TODO</span></tt>
+            </div>
+            <div id="l88"
+               class="code sev- "><tt><i>88</i>     <span class="c1"># might be interesting to keep track of the RAM usage?</span></tt>
+            </div>
+            <div id="l89"
+               class="code sev- "><tt><i>89</i> &nbsp;</tt>
+            </div>
+            <div id="l90"
+               class="code sev- "><tt><i>90</i>     <span class="sd">&quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l91"
+               class="code sev- "><tt><i>91</i> <span class="sd">    wrapper around werkzeug.formparser.parse_form_data</span></tt>
+            </div>
+            <div id="l92"
+               class="code sev- "><tt><i>92</i> <span class="sd">        - enables to track time to read a file upload request</span></tt>
+            </div>
+            <div id="l93"
+               class="code sev-2  le">
+               <ul class="violations">
+
+                  <li>
+                     <span class="count sev-2">
+                        E501
+                     </span>
+                     Line too long (82 > 79 characters)</li>
+
+               </ul><tt><i>93</i> <span class="sd">        - uses a custom stream factory which generates a tmpfile per uploaded file</span></tt>
+            </div>
+            <div id="l94"
+               class="code sev- "><tt><i>94</i> <span class="sd">        - returns MultiDict for the uploaded files (file_data)</span></tt>
+            </div>
+            <div id="l95"
+               class="code sev- "><tt><i>95</i> <span class="sd">                            and the files metadata (form_data)</span></tt>
+            </div>
+            <div id="l96"
+               class="code sev- "><tt><i>96</i> <span class="sd">    &quot;&quot;&quot;</span></tt>
+            </div>
+            <div id="l97"
+               class="code sev- "><tt><i>97</i> &nbsp;</tt>
+            </div>
+            <div id="l98"
+               class="code sev- "><tt><i>98</i>     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting to read request&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l99"
+               class="code sev- "><tt><i>99</i>     <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span></tt>
+            </div>
+            <div id="l100"
+               class="code sev- "><tt><i>100</i> &nbsp;</tt>
+            </div>
+            <div id="l101"
+               class="code sev- "><tt><i>101</i>     <span class="n">form_data</span> <span class="o">=</span> <span class="kc">None</span></tt>
+            </div>
+            <div id="l102"
+               class="code sev- "><tt><i>102</i>     <span class="n">file_data</span> <span class="o">=</span> <span class="kc">None</span></tt>
+            </div>
+            <div id="l103"
+               class="code sev- "><tt><i>103</i> &nbsp;</tt>
+            </div>
+            <div id="l104"
+               class="code sev- "><tt><i>104</i>     <span class="n">_</span><span class="p">,</span> <span class="n">form_data</span><span class="p">,</span> <span class="n">file_data</span> <span class="o">=</span> <span class="n">parse_form_data</span><span class="p">(</span></tt>
+            </div>
+            <div id="l105"
+               class="code sev- "><tt><i>105</i>         <span class="n">environ</span><span class="p">,</span> <span class="n">stream_factory</span><span class="o">=</span><span class="n">custom_stream_factory</span></tt>
+            </div>
+            <div id="l106"
+               class="code sev- "><tt><i>106</i>     <span class="p">)</span></tt>
+            </div>
+            <div id="l107"
+               class="code sev- "><tt><i>107</i> &nbsp;</tt>
+            </div>
+            <div id="l108"
+               class="code sev- "><tt><i>108</i>     <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span></tt>
+            </div>
+            <div id="l109"
+               class="code sev- "><tt><i>109</i> &nbsp;</tt>
+            </div>
+            <div id="l110"
+               class="code sev- "><tt><i>110</i>     <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="nb">bool</span><span class="p">(</span><span class="n">file_data</span><span class="p">),</span> <span class="nb">bool</span><span class="p">(</span><span class="n">form_data</span><span class="p">)])</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span></tt>
+            </div>
+            <div id="l111"
+               class="code sev- "><tt><i>111</i>         <span class="k">raise</span> <span class="n">DataNotFound</span><span class="p">(</span><span class="s2">&quot;files or metadata&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l112"
+               class="code sev- "><tt><i>112</i> &nbsp;</tt>
+            </div>
+            <div id="l113"
+               class="code sev- "><tt><i>113</i>     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Finished reading request: time=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span></tt>
+            </div>
+            <div id="l114"
+               class="code sev- "><tt><i>114</i>     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Form:</span><span class="si">{</span><span class="n">form_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l115"
+               class="code sev- "><tt><i>115</i>     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Files:</span><span class="si">{</span><span class="n">file_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l116"
+               class="code sev- "><tt><i>116</i> &nbsp;</tt>
+            </div>
+            <div id="l117"
+               class="code sev- "><tt><i>117</i>     <span class="c1"># is json loads secure enough?</span></tt>
+            </div>
+            <div id="l118"
+               class="code sev- "><tt><i>118</i>     <span class="c1"># opinion form SO: YES</span></tt>
+            </div>
+            <div id="l119"
+               class="code sev- "><tt><i>119</i>     <span class="c1"># https://stackoverflow.com/questions/38813298/is-json-loads-vulnerable-to-arbitrary-code-execution</span></tt>
+            </div>
+            <div id="l120"
+               class="code sev- "><tt><i>120</i>     <span class="k">try</span><span class="p">:</span></tt>
+            </div>
+            <div id="l121"
+               class="code sev- "><tt><i>121</i>         <span class="n">form_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">form_data</span><span class="p">[</span><span class="n">form_key</span><span class="p">])</span></tt>
+            </div>
+            <div id="l122"
+               class="code sev- "><tt><i>122</i>     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span></tt>
+            </div>
+            <div id="l123"
+               class="code sev-1  le">
+               <ul class="violations">
+
+                  <li>
+                     <span class="count sev-1">
+                        F841
+                     </span>
+                     Local variable 'err' is assigned to but never used</li>
+
+               </ul><tt><i>123</i>         <span class="n">err</span> <span class="o">=</span> <span class="n">e</span></tt>
+            </div>
+            <div id="l124"
+               class="code sev- "><tt><i>124</i>         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Key not found&quot;</span><span class="p">)</span></tt>
+            </div>
+            <div id="l125"
+               class="code sev- "><tt><i>125</i> &nbsp;</tt>
+            </div>
+            <div id="l126"
+               class="code sev- "><tt><i>126</i>     <span class="c1"># except ValueError as e:</span></tt>
+            </div>
+            <div id="l127"
+               class="code sev- "><tt><i>127</i>     <span class="c1">#     # raise invalid json</span></tt>
+            </div>
+            <div id="l128"
+               class="code sev- "><tt><i>128</i>     <span class="c1">#     print(&quot;invalid_json&quot;)</span></tt>
+            </div>
+            <div id="l129"
+               class="code sev- "><tt><i>129</i> &nbsp;</tt>
+            </div>
+            <div id="l130"
+               class="code sev- "><tt><i>130</i>     <span class="k">return</span> <span class="n">file_data</span><span class="p">,</span> <span class="n">form_data</span></tt>
+            </div>
+
+         </div>
+      </div>
+   </body>
+</html>

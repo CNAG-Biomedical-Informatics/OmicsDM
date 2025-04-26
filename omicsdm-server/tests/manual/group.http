@@ -1,0 +1,63 @@
+GET {{host}}/tokentest
+# GET http://localhost:8082/api/tokentest
+# GET https://3tr.cnag.crg.dev/omics_datamanagement_service/api/tokentest
+{{
+  test.status(200)
+  const schema = {
+    type: 'object',
+    required: ['user', 'groups', 'project'],
+    properties: {
+      user: {
+        type: 'string',
+      },
+      groups: {
+        type: 'array',
+        items:{
+          type: 'string',
+          enum: kcgroups,
+        },
+      },
+      project: {
+        type: 'array',
+        items:{
+          type: 'string',
+          enum:['no_project']
+        },
+      }
+    }
+  };
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'));
+  console.log(response.parsedBody);
+  console.log(schema);
+  console.log(kcgroups);
+  chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+}}
+
+
+###
+#get groups
+GET {{host}}/grouplist
+{{
+  test.status(200)
+  const schema = {
+    type: 'array',
+    uniqueItems: true,
+    items: {
+	type: "string"
+    }
+  };
+  var jwt_decode = require("jwt-decode")
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'));
+  console.log(response.parsedBody);
+  var res = response.parsedBody
+  chai.expect(res).to.be.jsonSchema(schema);
+
+  var decoded = jwt_decode(response.request.headers['authorization'])
+  var group = decoded.group[0].replace("/","");
+  chai.expect(res).to.not.include(group);
+
+  console.log("group.http response.request.headers.kc_group",response.request.headers.kc_group);
+  console.log("group.http response.meta",response.meta);
+}}

@@ -1,0 +1,9 @@
+.snakemake
+docker-out
+out
+.Rhistory
+.Renviron
+.Renviron_bk
+.Rproj.user
+renv
+log

@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "required": ["message", "awsKey"],
+    "additionalProperties": false,
+    "properties": {
+      "message": {
+        "type": "string",
+        "enums": ["File metadata inserted in database"]
+      },
+      "awsKey": {
+        "type": "string",
+        "pattern": "test/[A-Za-z0-9._]"
+      }
+    }
+}

@@ -1,0 +1,3 @@
+﻿Dataset ID	Dataset Name	Dataset Description	Responsible Partner	Disease	Treatment	Category	Tags	Visibility
+test	our first dataset	Lorem ipsum dolor	CNAG,CRG	ASTHMA	Drug X	Microbiome	ASTHMA,Drug X	private
+test2	our second dataset	Lorem ipsum dolor	CNAG,CRG	COPD	None	Imaging and histology/pathology	COPD	private

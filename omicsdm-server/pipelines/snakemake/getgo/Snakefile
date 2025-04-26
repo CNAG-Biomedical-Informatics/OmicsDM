@@ -1,0 +1,89 @@
+PROJ_NAME = "getGO"
+
+# --- Variable Declarations ---- #
+runR = "Rscript --no-save --no-restore --verbose"
+logAll = "2>&1"
+
+rule all:
+        input:
+                report_html= f"out/_main.html"
+
+rule report:
+        input:
+                rmd="src/report/index.Rmd",
+                in1="out/results/sessionInfo/sessionInfo.txt",
+                in2="out/results/sessionInfo/platform.rds",
+                in3="out/results/sessionInfo/packages.rds"
+
+        output:
+                html = "out/_main.html",
+                book = directory("out/_book")
+        log:
+                "log/report.log"
+        shell:
+                """
+                cp {input.rmd} out/.
+                {runR} src/lib/build_report.R | tee {log}
+                """
+
+rule analysis:
+        input:
+                config = f"config/{PROJ_NAME}.json",
+                in1="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt_genes.txt",
+                in2="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt_genes.txt",
+                in3="out/tmp/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt_genes.txt"
+
+        output:
+                out1="out/results/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt_genes.txt.table",
+                out2="out/results/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt_genes.txt.table",
+                out3="out/results/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt_genes.txt.table",
+
+                out4="out/results/sessionInfo/sessionInfo.txt",
+                out5="out/results/sessionInfo/platform.rds",
+                out6="out/results/sessionInfo/packages.rds"
+
+        log:
+                "log/analysis.log"
+
+        shell:
+                """
+                {runR} src/getGO_gProfiler2.R | tee {log}
+                """
+
+rule preprocess:
+        input:
+                config=f"config/{PROJ_NAME}.json",
+		in1="in/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt",
+                in2="in/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt",
+                in3="in/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt"
+
+        output:
+                out1="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt_genes.txt",
+                out2="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt_genes.txt",
+                out3="out/tmp/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt_genes.txt"
+        log:
+                "log/preprocess.log"
+        shell:
+                """
+                {runR} src/get_genes.R {input.config} | tee {log}
+                """
+
+rule get_data:
+        input:
+                config = f"config/{PROJ_NAME}.json"
+
+        output:
+                out1="in/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt",
+                out2="in/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt",
+		out3="in/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt"
+
+        log:
+                "log/get_data.log"
+
+        shell:
+                """
+                {runR} src/get_data.R {input.config} | tee {log}
+                """
+
+# 2. Other rules
+include: "rules/renv.smk"

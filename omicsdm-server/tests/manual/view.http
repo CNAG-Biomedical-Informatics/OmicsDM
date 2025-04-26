@@ -1,0 +1,114 @@
+
+/*
+vscode extension:
+httpBook - Rest Client
+https://httpyac.github.io
+
+run it on the command line with
+httpyac download.http --all
+*/
+
+GET {{host}}/tokentest
+# GET http://localhost:8082/api/tokentest
+# GET https://3tr.cnag.crg.dev/omics_datamanagement_service/api/tokentest
+Authorization: openid password
+{{
+  test.status(200)
+  test.hasResponseBody()
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'))
+  let schema = require('./jsonschemas/tokentest.json');
+
+  schema.properties.groups.items.enum = kcgroups
+  test('schema is valid',() => {
+    chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+  })
+}}
+
+HTTP/1.0 200  - OK
+content-type: application/json
+content-length: 127
+access-control-allow-origin: *
+server: Werkzeug/2.0.1 Python/3.8.10
+date: Wed, 23 Feb 2022 09:47:38 GMT
+
+
+###
+POST {{host}}/datasets/all
+Authorization: openid password
+Content-Type: application/json
+{"page": 1, "pageSize": 1, "sorted": null, "filtered": null}
+{{
+  test.status(200)
+  test.hasResponseBody()
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'));
+
+  const schema = require('./jsonschemas/viewDatasets.json')
+  console.log(response.parsedBody);
+  test('schema is valid',() => {
+    chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+  })
+}}
+
+HTTP/1.0 200  - OK
+content-type: application/json
+content-length: 2558
+access-control-allow-origin: *
+server: Werkzeug/2.0.1 Python/3.8.10
+date: Wed, 23 Feb 2022 09:51:46 GMT
+
+
+### datasets filtered
+POST {{host}}/datasets/all
+Authorization: openid password
+Content-Type: application/json
+{
+ "page": 1, "pageSize": 1, "sorted": null,
+ "filtered": [{"id": "id", "value": "test2"}]
+}
+{{
+  test.status(200)
+  test.hasResponseBody()
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'));
+
+  const schema = require('./jsonschemas/viewDatasets.json')
+  console.log(response.parsedBody);
+  test('schema is valid',() => {
+    chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+  })
+}}
+
+HTTP/1.0 200  - OK
+content-type: application/json
+content-length: 639
+access-control-allow-origin: *
+server: Werkzeug/2.0.1 Python/3.8.10
+date: Wed, 23 Feb 2022 10:00:56 GMT
+
+
+###
+POST {{host}}/files?arg=view
+Authorization: openid password
+Content-Type: application/json
+{"page": 1, "pageSize": 1, "sorted": null, "filtered": null}
+{{
+  test.status(200)
+  test.hasResponseBody()
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'));
+
+  const schema = require('./jsonschemas/viewFiles.json')
+  console.log(response.parsedBody);
+  test('schema is valid',() => {
+    chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+  })
+}}
+
+HTTP/1.0 200  - OK
+content-type: application/json
+content-length: 2856
+access-control-allow-origin: *
+server: Werkzeug/2.0.1 Python/3.8.10
+date: Wed, 23 Feb 2022 09:53:57 GMT

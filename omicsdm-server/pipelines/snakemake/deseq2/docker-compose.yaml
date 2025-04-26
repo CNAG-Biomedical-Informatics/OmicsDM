@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  # jenkins:
+  #   image: jenkins/jenkins:lts
+  #   privileged: true
+  #   user: root
+  #   ports:
+  #     - 8081:8080
+  #     - 50000:50000
+  #   container_name: jenkins
+  #   volumes:
+  #     - ~/jenkins:/var/jenkins_home
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - /usr/local/bin/docker:/usr/local/bin/docker
+
+  r-docker:
+    # image: deseq2-r-docker:latest
+    build:
+      context: .
+    environment:
+      - CURL_CA_BUNDLE=/home/certs/vm2rootCA.pem
+    #  - RENV_PATHS_CACHE=/home/renv/cache
+    volumes:
+      #- ~/.local/share/renv/docker-cache/v5/R-4.0/x86_64-pc-linux-gnu:/home/renv/cache
+      - ./certs:/home/certs
+      - ./docker-out:/home/out
+      - ./docker-out/log:/home/log
+    tty: true
+    command: bash
+    extra_hosts:
+      - "panoptes.vm2.dev:host-ip"
+    #command: "snakemake -j 1 renv_restore"

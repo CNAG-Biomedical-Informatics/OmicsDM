@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>flake8 violations: server/api/datamgmt_api/dm_dataset.py</title>
+      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="styles.css">
+<script>
+function bindHandler(link) {
+   var code = link.getAttribute('data-code');
+   var key = location.pathname + '#' + code;
+
+   var ul = link.parentNode.querySelector('.details');
+   if (sessionStorage[key] != 'open') {
+      ul.style.display = 'none';
+   }
+   link.addEventListener('click', function (event) {
+      if (!ul.style.display || ul.style.display == 'none') {
+         ul.style.display = 'block';
+         sessionStorage[key] = 'open';
+      } else {
+         ul.style.display = 'none';
+         sessionStorage[key] = 'closed';
+      }
+   });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+   var links = document.querySelectorAll('#index > li > a');
+   for (var i = 0; i < links.length; i++) {
+      bindHandler(links[i]);
+   }
+});
+</script>
+   </head>
+   <body>
+      <div id="masthead" class="sev-1"></div>
+      <div id="page">
+         <p id="srclink">
+            <a title="View full annotated source"
+               href="server.api.datamgmt_api.dm_dataset.source.html">
+               <img src="file.svg" alt="&#x2261;">
+            </a></p>
+         <h1>
+            <a href="index.html">
+               <img src="back.svg" alt="&#x2B05;">
+               server/api/datamgmt_api/dm_dataset.py
+            </a>
+         </h1>
+
+         <ul id="index">
+
+         <li>
+            <a data-code="F401">
+               <span class="count sev-1">
+                  5
+               </span>
+               <strong>F401:</strong> 'sqlalchemy.desc' imported but unused
+
+                  (and 4 similar)
+
+            </a>
+            <ul class="details">
+            <li>
+
+               <p>'sqlalchemy.desc' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l8">
+                  <tt><i>8</i> <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">asc</span><span class="p">,</span> <span class="n">desc</span></tt>
+               </a>
+            </li><li>
+
+               <p>'sqlalchemy.exc' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l9">
+                  <tt><i>9</i> <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">exc</span></tt>
+               </a>
+            </li><li>
+
+               <p>'server.utils.error_handler.EmptyQuery' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l17">
+                  <tt><i>17</i> <span class="kn">from</span> <span class="nn">server.utils.error_handler</span> <span class="kn">import</span> <span class="n">KeyNotFound</span><span class="p">,</span> <span class="n">WrongKey</span><span class="p">,</span> <span class="n">EmptyQuery</span></tt>
+               </a>
+            </li><li>
+
+               <p>'server.utils.error_handler.KeyNotFound' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l17">
+                  <tt><i>17</i> <span class="kn">from</span> <span class="nn">server.utils.error_handler</span> <span class="kn">import</span> <span class="n">KeyNotFound</span><span class="p">,</span> <span class="n">WrongKey</span><span class="p">,</span> <span class="n">EmptyQuery</span></tt>
+               </a>
+            </li><li>
+
+               <p>'server.utils.error_handler.WrongKey' imported but unused:</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l17">
+                  <tt><i>17</i> <span class="kn">from</span> <span class="nn">server.utils.error_handler</span> <span class="kn">import</span> <span class="n">KeyNotFound</span><span class="p">,</span> <span class="n">WrongKey</span><span class="p">,</span> <span class="n">EmptyQuery</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+
+         <li>
+            <a data-code="F841">
+               <span class="count sev-1">
+                  2
+               </span>
+               <strong>F841:</strong> local variable 'err' is assigned to but never used
+
+            </a>
+            <ul class="details">
+            <li>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l54">
+                  <tt><i>54</i>         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span></tt>
+               </a>
+            </li><li>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l197">
+                  <tt><i>197</i>                 <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+
+         <li>
+            <a data-code="E501">
+               <span class="count sev-2">
+                  12
+               </span>
+               <strong>E501:</strong> line too long (81 > 79 characters)
+
+                  (and 6 similar)
+
+            </a>
+            <ul class="details">
+            <li>
+
+               <p>Line too long (81 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l20">
+                  <tt><i>20</i> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;Authorization&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (83 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l112">
+                  <tt><i>112</i>             <span class="n">necessary_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;page&quot;</span><span class="p">,</span> <span class="s2">&quot;pageSize&quot;</span><span class="p">,</span> <span class="s2">&quot;sorted&quot;</span><span class="p">,</span> <span class="s2">&quot;filtered&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">]</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (88 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l123">
+                  <tt><i>123</i>                     <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;at least one necessary field is missing&quot;</span><span class="p">}),</span> <span class="mi">404</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (87 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l128">
+                  <tt><i>128</i>             <span class="n">res</span> <span class="o">=</span> <span class="n">db_view_builder</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">,</span> <span class="s2">&quot;DATASETS&quot;</span><span class="p">,</span> <span class="n">request_data</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (88 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l139">
+                  <tt><i>139</i>                 <span class="k">return</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;field &#39;id&#39; is missing&quot;</span><span class="p">}),</span> <span class="mi">404</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (83 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l143">
+                  <tt><i>143</i>                     <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;duplicated dataset_ids not allowed&quot;</span><span class="p">}),</span> <span class="mi">405</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (86 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l150">
+                  <tt><i>150</i>                 <span class="k">if</span> <span class="nb">len</span><span class="p">((</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DATASETS_ALLOWED_FIELDS&quot;</span><span class="p">]</span> <span class="o">^</span> <span class="n">fields</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (83 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l152">
+                  <tt><i>152</i>                         <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;at least one field not allowed&quot;</span><span class="p">}),</span> <span class="mi">405</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (85 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l163">
+                  <tt><i>163</i>                 <span class="c1"># make sure that the fields with selection boxes (disease / category)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (88 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l200">
+                  <tt><i>200</i>                         <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;at least one necessary field is missing&quot;</span><span class="p">}),</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (83 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l212">
+                  <tt><i>212</i>                 <span class="k">return</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;dataset inserted&quot;</span><span class="p">}),</span> <span class="mi">200</span><span class="p">)</span></tt>
+               </a>
+            </li><li>
+
+               <p>Line too long (80 > 79 characters):</p>
+
+               <a href="server.api.datamgmt_api.dm_dataset.source.html#l253">
+                  <tt><i>253</i>             <span class="k">return</span> <span class="n">make_response</span><span class="p">(</span><span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;dataset not exist&quot;</span><span class="p">}),</span> <span class="mi">404</span><span class="p">)</span></tt>
+               </a>
+            </li>
+            </ul>
+         </li>
+
+         </ul>
+      </div>
+   </body>
+</html>

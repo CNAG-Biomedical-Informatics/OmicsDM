@@ -1,0 +1,28 @@
+
+class Config(object):
+    """
+    config for 3TR
+    """
+
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:1234@localhost:5432/postgres
+    SQLALCHEMY_TRACK_MODIFICATIONS= False
+
+    SECRET_KEY= 'othrt-some-secret-string'
+    JWT_SECRET_KEY = 'jwt-secret-string'
+    JWT_OPTIONS= {'verify_exp': False,'verify_aud':False}
+
+    #KC
+    IDRSA='MIIB...'
+
+    #ceph
+    CEPH_URL="http://localhost:9095"
+    BUCKET="Bucket"
+    ACCESS_KEY="1234"
+    SECRET_KEY="5679"
+
+    #jenkins
+    JENKINS_URL="https://localhost/jenkins/view/3TR/"
+    JENKINS_USERNAME="test"
+    JENKINS_TOKEN="1234"
+
+    JENKINS_JOBS={"create":"opal_create_project"}

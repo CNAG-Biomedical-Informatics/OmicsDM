@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  r-docker:
+    build:
+      context: .
+    #environment:
+    #  - RENV_PATHS_CACHE=/home/renv/cache
+    volumes:
+    #- ~/.local/share/renv/docker-cache/v5/R-4.0/x86_64-pc-linux-gnu:/home/renv/cache
+      - ./docker-out:/home/out
+      - ./docker-out/log:/home/log
+    tty: true
+    command: bash
+    #command: "snakemake -j 1 renv_restore"

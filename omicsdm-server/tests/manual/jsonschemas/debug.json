@@ -1,0 +1,136 @@
+{
+  "testKey": {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "args": {
+        "type": "object"
+      },
+      "data": {
+        "type": "string"
+      },
+      "files": {
+        "type": "object"
+      },
+      "form": {
+        "type": "object"
+      },
+      "headers": {
+        "type": "object",
+        "properties": {
+          "Accept": {
+            "type": "string"
+          },
+          "Accept-Encoding": {
+            "type": "string"
+          },
+          "Host": {
+            "type": "string"
+          },
+          "User-Agent": {
+            "type": "string"
+          },
+          "X-Amzn-Trace-Id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "Accept",
+          "Accept-Encoding",
+          "Host",
+          "User-Agent",
+          "X-Amzn-Trace-Id"
+        ]
+      },
+      "json": {
+        "type": "null"
+      },
+      "method": {
+        "type": "string"
+      },
+      "origin": {
+        "type": "string"
+      },
+      "url": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "args",
+      "data",
+      "files",
+      "form",
+      "headers",
+      "method",
+      "origin",
+      "url"
+    ]
+  },
+  "testKey2": {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "args": {
+        "type": "object"
+      },
+      "data": {
+        "type": "string"
+      },
+      "files": {
+        "type": "object"
+      },
+      "form": {
+        "type": "object"
+      },
+      "headers": {
+        "type": "object",
+        "properties": {
+          "Accept": {
+            "type": "string"
+          },
+          "Accept-Encoding": {
+            "type": "string"
+          },
+          "Host": {
+            "type": "string"
+          },
+          "User-Agent": {
+            "type": "string"
+          },
+          "X-Amzn-Trace-Id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "Accept",
+          "Accept-Encoding",
+          "Host",
+          "User-Agent",
+          "X-Amzn-Trace-Id"
+        ]
+      },
+      "json": {
+        "type": "null"
+      },
+      "method": {
+        "type": "string"
+      },
+      "origin": {
+        "type": "string"
+      },
+      "url": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "args",
+      "data",
+      "files",
+      "form",
+      "headers",
+      "method",
+      "origin",
+      "url"
+    ]
+  }
+}

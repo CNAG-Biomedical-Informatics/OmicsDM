@@ -1,0 +1,54 @@
+GET {{host}}/tokentest
+Authorization: openid password
+{{
+  test.status(200)
+  test.hasResponseBody()
+  var chai = require('chai');
+  chai.use(require('chai-json-schema'))
+  let schema = require('./jsonschemas/tokentest.json');
+
+  console.log(kcgroups)
+  schema.properties.groups.items.enum = kcgroups
+  chai.expect(response.parsedBody).to.be.jsonSchema(schema);
+  // test(chai.expect(response.parsedBody).to.be.jsonSchema(schema))
+
+  //TODO
+  // wrap the chai.expect with test();
+  // look into chai-return-bool
+  // https://github.com/JustinLovinger/chai-return-bool
+}}
+
+HTTP/1.0 200  - OK
+content-type: application/json
+content-length: 127
+access-control-allow-origin: *
+server: Werkzeug/2.0.1 Python/3.8.10
+date: Tue, 22 Feb 2022 20:24:46 GMT
+
+
+###
+GET https://httpbin.org/anything
+Authorization: openid password
+{{
+  const chai = require('chai');
+  chai.use(require('chai-json-schema'))
+  let schema = require('./jsonschemas/debug.json').testKey;
+  let schema2 = require('./jsonschemas/debug.json').testKey2;
+  test.status(200)
+  test.hasResponseBody()
+  test('schema is valid', () => {
+    chai.expect(response.parsedBody).to.be.jsonSchema(schema); //should work
+  });
+  test('schema is valid', () => {
+    chai.expect(response.parsedBody).to.be.jsonSchema(schema2); // should fail
+  });
+}}
+
+HTTP/1.1 200  - OK
+date: Tue, 22 Feb 2022 20:39:40 GMT
+content-type: application/json
+content-length: 1867
+connection: close
+server: gunicorn/19.9.0
+access-control-allow-origin: *
+access-control-allow-credentials: true

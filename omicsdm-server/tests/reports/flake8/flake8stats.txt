@@ -1,0 +1,4 @@
+
+1     E265 block comment should start with '# '
+7     E501 line too long (112 > 79 characters)
+1     W293 blank line contains whitespace

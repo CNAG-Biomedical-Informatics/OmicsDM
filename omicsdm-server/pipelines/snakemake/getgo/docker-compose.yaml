@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  r-docker:
+    # image: getgo-r-docker:latest
+    build:
+      context: .
+    environment:
+     - RENV_PATHS_CACHE=/home/renv/cache
+     - CURL_CA_BUNDLE=/home/certs/vm2rootCA.pem
+    volumes:
+      - ~/.local/share/renv/docker-cache/v5/R-4.2/x86_64-pc-linux-gnu:/home/renv/cache
+      - ./certs:/home/certs
+      - ./docker-out:/home/out
+      - ./docker-out/log:/home/log
+    tty: true
+    command: bash
+    extra_hosts:
+      - "panoptes.vm2.dev:host-ip"
+    #command: "snakemake -j 1 renv_restore"

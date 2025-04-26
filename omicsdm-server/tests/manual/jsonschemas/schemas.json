@@ -1,0 +1,125 @@
+{
+  "tokentest": {
+    "type": "object",
+    "required": ["user", "groups", "project"],
+    "properties": {
+      "user": {
+        "type": "string"
+      },
+      "groups": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["group1", "group2"]
+        }
+      },
+      "project": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["no_project"]
+        }
+      }
+    }
+  },
+  "startUpload": {
+    "type": "object",
+    "required": ["message", "awsKey"],
+    "additionalProperties": false,
+    "properties": {
+      "message": {
+        "type": "string",
+        "enums": ["File metadata inserted in database"]
+      },
+      "awsKey": {
+        "type": "string",
+        "pattern": "test/[A-Za-z0-9._]"
+      }
+    }
+  },
+  "viewDatasets":{
+    "type": "object",
+    "required": ["items","_meta"],
+    "additionalProperties": false,
+    "properties": {
+      "items": {
+	      "type": "array",
+        "items": {
+          "type": "object",
+          "required":[
+            "id","name","desc",
+            "tags","partners","disease","treatment",
+            "cat","visibility","submitter_name",
+            "submit_date",
+            "shared_with",
+            "isUserOwner",
+            "owner"
+          ]
+        }
+      },
+      "_meta": {
+        "type": "object",
+        "required": ["page","page_size","total_pages","total_items"],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "page_size": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "total_pages": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "total_items": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "viewFiles":{
+    "type": "object",
+    "required": ["items","_meta"],
+    "additionalProperties": false,
+    "properties": {
+      "items": {
+	      "type": "array",
+        "items": {
+          "type": "object",
+          "required":[
+            "id","name","version",
+            "dataset_id","submitter_name",
+            "submit_date","platform","comment",
+            "shared_with",
+            "isUserOwner",
+            "owner"
+          ]
+        }
+      },
+      "_meta": {
+        "type": "object",
+        "required": ["page","page_size","total_pages","total_items"],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "page_size": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "total_pages": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "total_items": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

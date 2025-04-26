@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "required": ["items", "_meta"],
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "desc",
+          "tags",
+          "partners",
+          "disease",
+          "treatment",
+          "cat",
+          "visibility",
+          "submitter_name",
+          "submit_date",
+          "shared_with",
+          "isUserOwner",
+          "owner"
+        ]
+      }
+    },
+    "_meta": {
+      "type": "object",
+      "required": ["page", "page_size", "total_pages", "total_items"],
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "total_pages": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "total_items": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

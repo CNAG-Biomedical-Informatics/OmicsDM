@@ -1,0 +1,14 @@
+{
+  "covariants":{},
+  "mod": "~group",
+  "contrast": {
+    "TEST_135_100_vs_TEST_135_500": "group,TEST_135_100,TEST_135_500",
+    "TEST_135_500_vs_TEST_134_500": "group,TEST_135_500,TEST_134_500",
+    "TEST_135_100_vs_TEST_134_500": "group,TEST_135_100,TEST_134_500"
+  },
+  "plot_atr": {
+    "pca": "group",
+    "heatmap_ann": "group",
+    "de_genes_n": 50
+  }
+}

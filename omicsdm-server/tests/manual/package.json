@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "chai": "^4.3.6",
+    "chai-json-schema": "^1.5.1"
+  }
+}
