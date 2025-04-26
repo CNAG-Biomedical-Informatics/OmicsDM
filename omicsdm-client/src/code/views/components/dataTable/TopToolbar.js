@@ -93,7 +93,7 @@ const TopToolbar = ({
       }}
     >
       <Box>
-        <RefreshDataButton refetch={refetch} />
+        {refetch && <RefreshDataButton refetch={refetch} />}
         {Array.isArray(Components)
           ? Components.map((Component) => (
               <Component

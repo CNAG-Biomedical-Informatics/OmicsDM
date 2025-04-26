@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Tooltip, Typography } from "@mui/material";
-import CSVReader from "react-csv-reader";
+import Papa from 'papaparse';
 
 import { OMICSDM_BUTTON_LIGHT } from "../../../../components/buttonCollection/buttons";
 
@@ -9,6 +9,32 @@ import { download_excel } from "../../../../../apis";
 import auth from "../../../../../Auth";
 
 import TableFieldsGenerator from "../tableFields/TableFields";
+
+const CSVReader = ({loadFile}) => {
+
+  // TODO
+  // add a file type check
+  // only tsv, csv or txt files should be allowed
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    Papa.parse(file, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        console.log("Parsed CSV data:", results.data);
+        loadFile(results.data);
+      },
+    });
+  };
+
+  return (
+    <div>
+      <input type="file" accept=".csv" onChange={handleFileChange} />
+    </div>
+  );
+};
 
 const TableTemplates = (props) => {
   const {
@@ -89,11 +115,7 @@ const TableTemplates = (props) => {
         </Typography>
         <Grid container justifyContent="center">
           <Grid item>
-            <CSVReader
-              cssClass="react-csv-input"
-              accept={".csv, .tsv, .txt"}
-              onFileLoaded={loadFile}
-            />
+            <CSVReader loadFile={loadFile} />
           </Grid>
           <Grid item>
             <Tooltip

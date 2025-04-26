@@ -197,7 +197,8 @@ const TableFieldsGenerator = (props) => {
     // Create a mapping from header names to column IDs, if templateData exists
     const headerToIdMap = {};
     if (templateData && templateData.length > 1) {
-      const headers = templateData[0].map((header) => header.trim());
+      console.log("templateData", templateData);
+      const headers = Object.keys(templateData[0]).map((header) => header.trim());
       colsCfg.forEach((col) => {
         const headerIndex = headers.findIndex(
           (h) => h.toLowerCase() === col.title.toLowerCase()
@@ -208,7 +209,7 @@ const TableFieldsGenerator = (props) => {
       });
     }
 
-    for (let i = startIndex; i < endIndex; i++) {
+    for (let i = startIndex; i < endIndex+1; i++) {
       const rowFieldObjects = [];
       const rowFieldInputComponents = {};
 
@@ -217,28 +218,30 @@ const TableFieldsGenerator = (props) => {
       if (
         templateData &&
         templateData.length > 1 &&
-        templateData[i - startIndex + 1]
+        templateData[i - startIndex]
       ) {
-        const row = templateData[i - startIndex + 1];
+        const row = Object.values(templateData[i - startIndex]);
+        console.log("i", i);
+        console.log("startIndex", startIndex);
+        console.log("row", row);
+        console.log("headerToIdMap", headerToIdMap);
         colsCfg.forEach((col) => {
-          const dataIndex = headerToIdMap[col.id];
+          console.log("col", col);
+          const dataIndex = headerToIdMap[col.id];  
+          console.log("dataIndex", dataIndex);
           if (dataIndex !== -1 && dataIndex < row.length) {
             let value = row[dataIndex];
-            // Convert string booleans to actual booleans
-            if (
-              col.inputType === "select" &&
-              col.allowedValues &&
-              (col.allowedValues.includes(true) ||
-                col.allowedValues.includes(false))
-            ) {
-              value = value === "true";
-            }
+            console.log("value", value);
             // Handle specific default values if needed
             if (col.id === "datasetVisibilityDefault" && value) {
               value =
                 value.toLowerCase() === "visible to all"
                   ? "visible to all"
                   : "private";
+            }
+            // convert numbers to string
+            if (typeof value === "number") {
+              value = value.toString();
             }
             prefilledData[col.id] = value;
           } else {

@@ -1,13 +1,10 @@
 import React from "react";
-import { CSVLink } from "react-csv";
 import { useNavigate } from "react-router";
 import { Typography } from "@mui/material";
 import { useLocation } from "react-router";
-import { MaterialReactTable } from "material-react-table";
+import { TableWithCustomTopToolbar } from "../../../components/dataTable/DataTable";
 
 import OMICSDM_BUTTON from "../../../components/buttonCollection/buttons";
-
-import { teal } from "@mui/material/colors";
 
 const RedirectButton = ({ to, children, ...props }) => {
   const navigate = useNavigate();
@@ -43,14 +40,6 @@ const SummaryInserted = () => {
       <Typography variant={"h6"} align={"center"}>
         Summary of your Submission
       </Typography>
-      {/* try to drop csv link */}
-      <CSVLink
-        style={{ color: teal[500], paddingLeft: 10, paddingRight: 10 }}
-        data={state.tableContents}
-        filename={state.filename}
-      >
-        DOWNLOAD AS CSV
-      </CSVLink>
       {state.nextPage === "" ? null : (
         <RedirectButton
           to={{
@@ -63,12 +52,9 @@ const SummaryInserted = () => {
           {state.nextPageLabel}
         </RedirectButton>
       )}
-      <MaterialReactTable
+      <TableWithCustomTopToolbar
         data={state.tableData.data}
-        columns={state.tableData.cols}
-        enableFilters={false}
-        enablePagination={false}
-        enableSorting={false}
+        cols={state.tableData.cols}
       />
     </>
   );

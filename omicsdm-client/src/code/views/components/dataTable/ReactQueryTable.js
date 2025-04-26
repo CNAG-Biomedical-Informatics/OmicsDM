@@ -10,7 +10,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import auth from "../../../Auth";
 import TopToolbar from "./TopToolbar";
-import { CostExplorer } from "aws-sdk";
 
 const { config } = window;
 
