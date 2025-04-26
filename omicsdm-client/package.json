@@ -91,7 +91,6 @@
     "mochawesome-merge": "^4.2.0",
     "npm": "^11.0.0",
     "npm-groovy-lint": "^9.0.0",
-    "react-styleguidist": "^11.1.7",
     "sonarqube-scanner": "^2.8.1",
     "style-loader": "^4.0.0",
     "webpack-cli": "^6.0.1",
@@ -176,5 +175,11 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "overrides": {
+    "react-loader-spinner": {
+      "react": "^18 || ^19",
+      "react-dom": "^18 || ^19"
+    }
+  }
 }
