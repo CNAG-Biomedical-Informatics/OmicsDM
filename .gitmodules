@@ -1,6 +1,0 @@
-[submodule "omicsdm_server"]
-	path = omicsdm_server
-	url = git@github.com:bag-cnag/omicsdm_server.git
-[submodule "omicsdm_client"]
-	path = omicsdm_client
-	url = git@github.com:bag-cnag/omicsdm_client.git
