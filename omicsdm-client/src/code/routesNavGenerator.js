@@ -30,7 +30,6 @@ import Home from "./views/home/Home";
 import Submit from "./views/submission/components/Submit";
 import SelectProject from "./views/submission/submit-datasets/SelectProject";
 import SummaryInserted from "./views/submission/submit-datasets/summary-inserted/SummaryInserted";
-import TableView from "./views/management/components/TableView";
 import TableViewFunctional from "./views/management/components/TableViewFunctional";
 
 // Data analysis
@@ -115,7 +114,6 @@ const navAndComponents = [
     pattern: "analyses/view{/:analysisId}?",
     Component: () => {
       const { analysisId } = useParams();
-      // return analysisId ? <AnalysisResultsView /> : <TableView />;
       return analysisId ? <AnalysisResultsView /> : <TableViewFunctional />;
     },
   },

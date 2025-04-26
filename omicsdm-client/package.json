@@ -45,7 +45,6 @@
     "react-router": "^7.3.0",
     "react-select": "^5.10.1",
     "react-select-async-paginate": "^0.7.9",
-    "react-table": "^6.11.5",
     "reactjs-popup": "^2.0.6",
     "vanilla-jsoneditor": "^3.1.0",
     "webpack": "^5.98.0",

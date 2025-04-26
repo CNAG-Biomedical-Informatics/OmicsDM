@@ -9,10 +9,6 @@ import {
   DialogTitle,
 } from "@mui/material";
 
-import ReactTable from "react-table";
-
-import { MaterialReactTable } from "material-react-table";
-
 import { TableWithDeleteRowButton } from "../../../components/dataTable/DataTable";
 
 import { OMICSDM_BUTTON_LIGHT } from "../../../components/buttonCollection/buttons";
@@ -58,7 +54,6 @@ export default function ShowFileDeletion(props) {
   }, [open]);
 
   const getDataTable = () => {
-    //Build data to render on react-table
     const data = [];
 
     for (const experiment of Object.entries(props.selected)) {
@@ -144,7 +139,12 @@ export default function ShowFileDeletion(props) {
         <DialogContent>
           <TableWithDeleteRowButton
             data={data}
-            accessorKeys={["experiment", "datasetID", "FileName", "FileVersion"]}
+            accessorKeys={[
+              "experiment",
+              "datasetID",
+              "FileName",
+              "FileVersion",
+            ]}
             cols={columns}
             deleteId={"experiment"}
             confirmationQuestion={
