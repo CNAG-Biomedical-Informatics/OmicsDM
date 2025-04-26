@@ -1,0 +1,6 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/ivo/projects/bioinfo/cnag/repos/3TR-client'
+make: Leaving directory '/home/ivo/projects/bioinfo/cnag/repos/3TR-client'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+ 

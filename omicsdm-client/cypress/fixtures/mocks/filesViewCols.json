@@ -1,0 +1,16 @@
+[
+  {
+    "headers": [
+      { "label": "File ID", "key": "id" },
+      { "label": "Project ID", "key": "project_id" },
+      { "label": "Dataset ID", "key": "dataset_id" },
+      { "label": "File Name", "key": "name" },
+      { "label": "File Version", "key": "version" },
+      { "label": "Submitter", "key": "submitter_name" },
+      { "label": "Submission Date", "key": "submit_date" },
+      { "label": "Comment", "key": "comment" },
+      { "label": "Visibility", "key": "visibility" },
+      { "label": "Shared with", "key": "shared_with" }
+    ]
+  }
+]

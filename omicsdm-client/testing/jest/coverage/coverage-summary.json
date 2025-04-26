@@ -1,0 +1,4 @@
+{"total": {"lines":{"total":6,"covered":6,"skipped":0,"pct":100},"statements":{"total":11,"covered":8,"skipped":0,"pct":72.73},"functions":{"total":6,"covered":2,"skipped":0,"pct":33.33},"branches":{"total":0,"covered":0,"skipped":0,"pct":100}}
+,"/home/ivo/projects/bioinfo/cnag/repos/3TR-client/src/code/Management.js": {"lines":{"total":1,"covered":1,"skipped":0,"pct":100},"functions":{"total":1,"covered":1,"skipped":0,"pct":100},"statements":{"total":1,"covered":1,"skipped":0,"pct":100},"branches":{"total":0,"covered":0,"skipped":0,"pct":100}}
+,"/home/ivo/projects/bioinfo/cnag/repos/3TR-client/src/gpap-lib/Button_Collection.js": {"lines":{"total":5,"covered":5,"skipped":0,"pct":100},"functions":{"total":5,"covered":1,"skipped":0,"pct":20},"statements":{"total":10,"covered":7,"skipped":0,"pct":70},"branches":{"total":0,"covered":0,"skipped":0,"pct":100}}
+}

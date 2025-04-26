@@ -1,0 +1,30 @@
+# based on 
+# https://spin.atomicobject.com/2021/10/14/cypress-running-docker-container/
+
+# FROM cypress/included:8.3.0
+FROM cypress/included:9.7.0
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+  curl \
+  libgtk2.0-0 \
+  libgtk-3-0 \
+  libgbm-dev \
+  libnotify-dev \
+  libgconf-2-4 \
+  libnss3 \
+  libxss1 \
+  libasound2 \
+  libxtst6 \
+  xauth \
+  xvfb \
+  x11vnc \
+  fluxbox
+
+# Install Chrome
+# RUN curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /tmp/google-chrome.deb
+# RUN apt-get install -y /tmp/google-chrome.deb
+
+USER 1000:1000
+
+#* npm packages are mounted using Docker-compose
+CMD ["bash"]

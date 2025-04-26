@@ -1,0 +1,50 @@
+// debug source maps:
+// https://microsoft.github.io/vscode-pwa-analyzer/index.html
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "pwa-msedge",
+      "request": "launch",
+      "type": "pwa-msedge",
+      "runtimeExecutable": "/usr/bin/microsoft-edge-stable",
+      "url": "http://172.16.20.203:4000/*",
+      "port": 9222,
+      "trace": true,
+      // "webRoot": "${workspaceFolder}/3TR-client/src",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true,
+      // "sourceMapPathOverrides": {
+      //   "webpack:///./src/*": "${workspaceFolder}/3TR-client/src/*"
+      // },
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${workspaceFolder}/src/*"
+      },
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/3TR-client/node_modules/**/*.js"
+      ]
+    },
+    {
+      "type": "edge",
+      "request": "launch",
+      "name": "Launch Edge",
+      "runtimeExecutable": "/usr/bin/microsoft-edge-beta",
+      "urlFilter": "http://172.16.20.203:4000/",
+      "port": 2015,
+      "webRoot": "${workspaceFolder}/3TR-client",
+      "trace": true,
+      "sourceMaps": true,
+      "userDataDir": "${workspaceFolder}/.vscode/edge",
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${workspaceFolder}/3TR-client/src/*"
+      },
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/3TR-client/node_modules/**/*.js",
+        "${workspaceFolder}/3TR-client/node_modules/react-dom/cjs/*.js"
+      ]
+    },
+  ]
+}

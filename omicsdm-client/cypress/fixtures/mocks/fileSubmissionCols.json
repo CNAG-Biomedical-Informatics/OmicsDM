@@ -1,0 +1,30 @@
+[
+  {
+    "message": [
+      {
+        "id": "DatasetID",
+        "title": "Dataset ID",
+        "inputType": "select-dataset",
+        "description": "Select the Dataset ID",
+        "mandatory": true,
+        "selection": []
+      },
+      {
+        "id": "file",
+        "title": "File",
+        "inputType": "file",
+        "description": "Select the file(s) you will be uploading",
+        "mandatory": true,
+        "selection": []
+      },
+      {
+        "id": "Comment",
+        "title": "Comments",
+        "inputType": "text",
+        "description": "",
+        "mandatory": false,
+        "selection": []
+      }
+    ]
+  }
+]

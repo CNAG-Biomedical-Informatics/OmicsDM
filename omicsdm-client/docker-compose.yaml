@@ -1,0 +1,55 @@
+services:
+  keycloak-db:
+    image: postgres:13-alpine
+    container_name: kc-db
+    environment:
+      POSTGRES_DB: ${KC_DB}
+      POSTGRES_USER: ${KC_DB_USER}
+      POSTGRES_PASSWORD: ${KC_DB_PW}
+    restart: unless-stopped
+    healthcheck:
+      test: pg_isready -U ${KC_DB_USER}
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:20.0.1
+    # image: quay.io/keycloak/keycloak:18.0.0
+    depends_on:
+      - keycloak-db
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: ${KC_DB_USER}
+      DB_PASSWORD: ${KC_DB_PW}
+      KEYCLOAK_ADMIN: ${KC_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PW}
+      # KC_PROXY: edge
+      # KC_HOSTNAME_STRICT: false
+      # KC_HOSTNAME_PATH: /auth
+      # KC_HOSTNAME_URL: https://${DOMAIN}/auth/
+      # KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}/auth/
+      # KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt.pem
+      # KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key.pem
+      KC_HEALTH_ENABLED: true
+    ports:
+      - 8080:8080
+    volumes:
+      - type: bind
+        source: ./realm-export.json
+        target: /opt/keycloak/data/import/realm-export.json
+    #   - type: bind
+    #     source: ./nginx_mountpoint/certs/${DOMAIN}.pem
+    #     target: /opt/keycloak/conf/server.crt.pem
+    #     read_only: true
+    #   - type: bind
+    #     source: ./nginx_mountpoint/certs/${DOMAIN}-key.pem
+    #     target: /opt/keycloak/conf/server.key.pem
+    #     read_only: true
+    restart: unless-stopped
+    command: ${KC_CMD}
+    healthcheck:
+      test: curl localhost:8080/health | grep -q "UP"
+      interval: 10s
+      timeout: 10s
+      retries: 5

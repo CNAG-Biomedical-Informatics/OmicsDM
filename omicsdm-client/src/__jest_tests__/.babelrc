@@ -1,0 +1,8 @@
+//enables import statements in the test files
+{
+    "presets": [
+        ["@babel/preset-env",{"targets": {"node": "current"}}],
+        "@babel/preset-react"
+    ],
+    "plugins": ["@babel/transform-runtime"]
+}

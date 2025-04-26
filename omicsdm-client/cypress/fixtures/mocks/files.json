@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "name": "test.txt",
+      "project_id": "project_id1",
+      "version": 1,
+      "id": "1",
+      "dataset_id": "t1",
+      "submitter_name": "test",
+      "submit_date": "2021/07/16, 14:01:19",
+      "comment": "hello world",
+      "visibility":"private",
+      "enabled": true,
+      "shared_with":"None",
+      "isUserOwner": true,
+      "owner": "cnag"
+    },
+    {
+      "name": "test2.txt",
+      "project_id": "project_id2",
+      "version": 1,
+      "id": "2",
+      "dataset_id": "t1",
+      "submitter_name": "test",
+      "submit_date": "2021/07/16, 14:01:19",
+      "comment": "hello world",
+      "visibility": "private",
+      "shared_with":"cnag",
+      "enabled": true,
+      "isUserOwner": false,
+      "owner": "3tr"
+
+    }
+  ],
+  "_meta": {
+    "total_items": 2,
+    "total_pages": 1,
+    "page_size": 1,
+    "page": 1
+  }
+}

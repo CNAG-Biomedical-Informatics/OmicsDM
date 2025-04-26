@@ -1,0 +1,3 @@
+﻿Dataset ID	Name	Disease	Treatment	Molecular Information	Sample Type	Data Type	Value Type	Platform	Genome Assembly	Annotation	Samples Count	Features Count	Features ID	Healthy Controls Included	Additional Info	Contact	Tags	Visibility
+test	our first dataset	CANCER	Drug1	info1	Tissue	Microbiome 	Array	Platform1	Assembly1	Annotation1	10	100	feature1	true	info	contact	tags	private
+test2	our second dataset	healthy control	Drug2	info2	Tissue	Imaging and histology/pathology	Array	Platform2	Assembly1	Annotation2	10	100	feature2	false	info	contact	tags	visible to all

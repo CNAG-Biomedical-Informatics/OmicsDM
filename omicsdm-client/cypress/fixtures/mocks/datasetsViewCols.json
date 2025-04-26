@@ -1,0 +1,38 @@
+[
+  {
+    "headers": [
+      { "label": "ID", "key": "id", "hidden":true },
+      { "label": "Dataset ID", "key": "dataset_id" },
+      { "label": "Project ID", "key": "project_id" },
+      { "label": "Name", "key": "name" },
+      { "label": "Submitter", "key": "submitter_name" },
+      { "label": "Disease", "key": "disease" },
+      { "label": "Treatment", "key": "treatment" },
+      { "label": "Molecular Info", "key": "molecularInfo" },
+      { "label": "Data Type", "key": "dataType" },
+      { "label": "Sample Type", "key": "sampleType" },
+      { "label": "Value Type", "key": "valueType" },
+      { "label": "Platform", "key": "platform" },
+      { "label": "Genome Assembly", "key": "genomeAssembly" },
+      { "label": "Annotation", "key": "annotation" },
+      { "label": "Samples Count", "key": "samplesCount" },
+      { "label": "Features Count", "key": "featuresCount" },
+      { "label": "Features ID", "key": "featuresID" },
+      {
+        "label": "Healthy Controls Included",
+        "key": "healthyControllsIncluded"
+      },
+      { "label": "Additional Info", "key": "additionalInfo" },
+      { "label": "Contact", "key": "contact" },
+      { "label": "Tags", "key": "tags" },
+      { "label": "Visibility", "key": "visibility" },
+      { "label": "Shared with", "key": "shared_with" },
+      {
+        "label": "Data Policy",
+        "key": "policy_presigned_url",
+        "hidden": true
+      },
+      { "label": "Pheno Formats", "key": "pheno_formats", "hidden": true }
+    ]
+  }
+]

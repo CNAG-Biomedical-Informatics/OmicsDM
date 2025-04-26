@@ -1,0 +1,177 @@
+{
+  "message": "colum options returned",
+  "headers": [
+    {
+      "id": "id",
+      "title": "Dataset ID",
+      "inputType": "text",
+      "description": "Project ID for the Opal database",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "name",
+      "title": "Name",
+      "inputType": "text",
+      "description": "A dataset title for the human beings.",
+      "mandatory": false,
+      "selection": []
+    },
+    {
+      "id": "disease",
+      "title": "Disease",
+      "inputType": "select",
+      "description": "Disease",
+      "mandatory": true,
+      "selection": ["select", "COPD", "ASTHMA", "CD", "UC", "MS", "SLE", "RA"]
+    },
+    {
+      "id": "treatment",
+      "title": "Treatment",
+      "inputType": "text",
+      "description": "Treatment",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "molecularInfo",
+      "title": "Molecular Information",
+      "inputType": "text",
+      "description": "Metyhlome,Transcriptome…",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "sampleType",
+      "title": "Sample Type",
+      "inputType": "text",
+      "description": "e.g. whole blood,tissue etc.",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "dataType",
+      "title": "Data Type",
+      "inputType": "text",
+      "description": "Array, Sequencing",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "valueType",
+      "title": "Value Type",
+      "inputType": "text",
+      "description": "e.g. beta values/counts",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "platform",
+      "title": "Platform",
+      "inputType": "text",
+      "description": "e.g. Infinium HumanMethylation450 BeadChip",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "genomeAssembly",
+      "title": "Genome Assembly",
+      "inputType": "text",
+      "description": "GRCh37",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "annotation",
+      "title": "Annotation",
+      "inputType": "text",
+      "description": "GENCODE v19",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "samplesCount",
+      "title": "Samples Count",
+      "inputType": "text",
+      "description": "integer",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "featuresCount",
+      "title": "Features Count",
+      "inputType": "text",
+      "description": "integer",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "featuresID",
+      "title": "Features ID",
+      "inputType": "text",
+      "description": "feature id",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "healthyControllsIncluded",
+      "title": "Healthy Controls Included",
+      "inputType": "select",
+      "description": "True / False",
+      "mandatory": true,
+      "selection": ["true", "false"],
+      "allowedValues": [true, false]
+    },
+    {
+      "id": "additionalInfo",
+      "title": "Additional Info",
+      "inputType": "text",
+      "description": "additional info",
+      "mandatory": false,
+      "selection": []
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "inputType": "text",
+      "description": "contact",
+      "mandatory": true,
+      "selection": []
+    },
+    {
+      "id": "tags",
+      "title": "Tags",
+      "inputType": "text",
+      "description": "Optional comma separated keywords",
+      "mandatory": false,
+      "selection": []
+    },
+    {
+      "id": "visibility",
+      "title": "Visibility",
+      "inputType": "select",
+      "description": "Optional comma separated keywords",
+      "mandatory": false,
+      "selection": ["private", "visible to all"]
+    },
+    {
+      "id": "file",
+      "title": "Data Usage Policy File",
+      "inputType": "file",
+      "description": "Upload your data usage policy file",
+      "mandatory": false,
+      "selection": []
+    }
+  ],
+  "options": [
+    "select",
+    "healthy control",
+    "COPD",
+    "ASTHMA",
+    "CD",
+    "UC",
+    "MS",
+    "SLE",
+    "RA"
+  ]
+}

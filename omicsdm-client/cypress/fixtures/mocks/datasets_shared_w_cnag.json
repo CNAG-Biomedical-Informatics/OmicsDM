@@ -1,0 +1,35 @@
+{
+  "items": [
+    {
+      "id": "1",
+      "dataset_id":"test",
+      "project_id":"test",
+      "name":"test",
+      "submitter_name":"test",
+      "disease":"test",
+      "treatment":"test",
+      "molecularInfo":"test",
+      "sampleType":"test",
+      "valueType":"test",
+      "platform":"test",
+      "genomeAssembly":"test",
+      "annotation":"test",
+      "samplesCount":"test",
+      "featuresCount":"test",
+      "healthyControllsIncluded":"test",
+      "additionalInfo":"test",
+      "contact":"test",
+      "tags":"test",
+      "visibility":"private",
+      "shared_with":"cnag",
+      "owner":"3tr",
+      "isUserOwner": true
+    }
+  ],
+  "_meta": {
+    "total_items": 1,
+    "total_pages": 1,
+    "page_size": 1,
+    "page": 1
+  }
+}

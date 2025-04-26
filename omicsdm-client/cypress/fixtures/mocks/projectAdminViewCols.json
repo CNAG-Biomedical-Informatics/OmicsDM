@@ -1,0 +1,22 @@
+[
+  {
+    "headers": [
+      { "label": "ID", "key": "id" },
+      { "label": "Project ID", "key": "project_id" },
+      { "label": "Name", "key": "name" },
+      { "label": "Owners", "key": "owners" },
+      { "label": "Description", "key": "description" },
+      { "label": "Diseases", "key": "diseases" },
+      { "label": "Logo Url", "key": "logo_url" },
+      {
+        "label": "Dataset Visibility default",
+        "key": "dataset_visibility_default"
+      },
+      {
+        "label": "Dataset Visibility Changeable",
+        "key": "dataset_visibility_changeable"
+      },
+      { "label": "File Download Allowed", "key": "file_dl_allowed" }
+    ]
+  }
+]

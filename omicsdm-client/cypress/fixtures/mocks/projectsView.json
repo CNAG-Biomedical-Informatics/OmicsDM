@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "id": "1",
+      "project_id": "proj_1",
+      "name": "project 1",
+      "owners":"group1,group2",
+      "description": "hello world",
+      "diseases": "cancer",
+      "logo_url": "http://www.google.com",
+      "dataset_visibility_default": "private",
+      "dataset_visibility_changeable": "true",
+      "file_dl_allowed": "true"
+    }
+  ],
+  "_meta": {
+    "total_items": 1,
+    "total_pages": 1,
+    "page_size": 1,
+    "page": 1
+  }
+}

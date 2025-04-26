@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+    <file path="/home/ivo/projects/bioinfo/cnag/repos/3TR-client/src/__jest_tests__/App.test.jsx">
+        <testCase name="renders Management" duration="117"/>
+    </file>
+</testExecutions>

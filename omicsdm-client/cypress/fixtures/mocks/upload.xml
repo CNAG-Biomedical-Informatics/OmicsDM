@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<InitiateMultipartUploadResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+	<Bucket>bucketdevel3tropal</Bucket>
+	<Key>3tr/test/testfile1.csv_uploadedVersion_2.csv</Key>
+	<UploadId>2~r-nDsEHvuULFiXvsCaTSFzns_ne5vsp</UploadId>
+</InitiateMultipartUploadResult>

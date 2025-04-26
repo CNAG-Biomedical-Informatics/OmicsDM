@@ -1,0 +1,25 @@
+// {
+//   "version": "2.0.0",
+//   "tasks": [
+//     {
+//       "type": "npm",
+//       "script": "dev",
+//       "problemMatcher": [],
+//       "label": "npm: dev",
+//       "detail": "webpack serve --open --config webpack.dev.js",
+//       "runOptions": {
+//         "runOn": "folderOpen"
+//       }
+//     },
+//     {
+//       "type": "npm",
+//       "script": "cy:open",
+//       "problemMatcher": [],
+//       "label": "npm: cy:open",
+//       "detail": "cypress open --config-file cypress/cfg.json",
+//       // "runOptions": {
+//       //   "runOn": "folderOpen"
+//       // }
+//     }
+//   ]
+// }

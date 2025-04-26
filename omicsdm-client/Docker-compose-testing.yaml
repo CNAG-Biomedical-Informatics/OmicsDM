@@ -1,0 +1,37 @@
+# based on
+# https://stackoverflow.com/questions/59514234/viewing-the-interactive-cypress-test-runner-in-docker-on-linux
+# https://spin.atomicobject.com/2021/10/14/cypress-running-docker-container/
+
+version: '3.4'
+services:
+  client:
+    build:
+      context: .
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - 5000:5000
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    command: ["npm","run","dev:docker:testing"]
+  vnc:
+    build:
+        context: .
+        dockerfile: ./cypress/vnc-dockerfile
+    working_dir: /cy
+    entrypoint: sleep infinity
+    tty: true
+    # restart: unless-stopped
+    ports:
+      - "5920:5920"
+    environment:
+      CYPRESS_RUN_BINARY: "/root/.cache/Cypress/9.7.0/Cypress/Cypress"
+      CYPRESS_BASE_URL: 'http://client:5000'
+    volumes:
+      - ./package.json:/cy/package.json
+      - ./cypress/node_modules:/cy/node_modules
+      - ./cypress.env.json:/cy/cypress.env.json
+      - ./webpack.config.js:/cy/webpack.config.js
+      - ./cypress/:/cy/cypress
+      - ./.nyc_output:/cy/.nyc_output

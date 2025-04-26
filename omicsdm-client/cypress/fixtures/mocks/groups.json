@@ -1,0 +1,32 @@
+[
+  {
+    "id": "12345",
+    "name": "3tr",
+    "path": "/3tr",
+    "subGroups": []
+  },
+  {
+    "id": "123456",
+    "name": "cnag",
+    "path": "/cnag",
+    "subGroups": []
+  },
+  {
+    "id": "1234567",
+    "name": "crg",
+    "path": "/crg",
+    "subGroups": []
+  },
+  {
+    "id": "12345678",
+    "name": "granada",
+    "path": "/granada",
+    "subGroups": []
+  },
+  {
+    "id": "123456789",
+    "name": "jenkins",
+    "path": "/jenkins",
+    "subGroups": []
+  }
+]

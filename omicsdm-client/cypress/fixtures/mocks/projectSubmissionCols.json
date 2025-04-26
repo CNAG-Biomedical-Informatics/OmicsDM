@@ -1,0 +1,80 @@
+[
+  {
+    "message": [
+      {
+        "id": "id",
+        "title": "Project ID",
+        "inputType": "text",
+        "description": "Project ID for the Opal database",
+        "mandatory": true,
+        "selection": []
+      },
+      {
+        "id": "name",
+        "title": "Name",
+        "inputType": "text",
+        "description": "A project title for the human beings.",
+        "mandatory": false,
+        "selection": []
+      },
+      {
+        "id": "owners",
+        "title": "Owners",
+        "inputType": "text",
+        "description": "owners of the dataset",
+        "mandatory": true,
+        "selection": []
+      },
+      {
+        "id": "description",
+        "title": "Description",
+        "inputType": "text",
+        "description": "A short description of the project.",
+        "mandatory": false,
+        "selection": []
+      },
+      {
+        "id": "diseases",
+        "title": "Diseases",
+        "inputType": "text",
+        "description": "Diseases associated with the project",
+        "mandatory": true,
+        "selection": []
+      },
+      {
+        "id": "logoUrl",
+        "title": "Logo Url",
+        "inputType": "text",
+        "description": "Path to the logo image for the project",
+        "mandatory": false,
+        "selection": []
+      },
+      {
+        "id": "datasetVisibilityDefault",
+        "title": "Dataset Visibility default",
+        "inputType": "select",
+        "description": "default dataset visibility",
+        "mandatory": true,
+        "selection": ["private", "visible to all"]
+      },
+      {
+        "id": "datasetVisibilityChangeable",
+        "title": "Dataset Visibility Changeable",
+        "inputType": "select",
+        "description": "Whether the dataset visibility can be changed",
+        "mandatory": true,
+        "selection": ["true", "false"],
+        "allowedValues": [true, false]
+      },
+      {
+        "id": "fileDlAllowed",
+        "title": "File Download Allowed",
+        "inputType": "select",
+        "description": "Whether the user can download the files",
+        "mandatory": true,
+        "selection": ["true", "false"],
+        "allowedValues": [true, false]
+      }
+    ]
+  }
+]

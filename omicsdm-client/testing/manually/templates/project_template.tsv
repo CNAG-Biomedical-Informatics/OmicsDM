@@ -1,0 +1,3 @@
+﻿Project ID	Name	Owners	Description	Diseases	Logo Url	Dataset Visibility default	Dataset Visibility Changeable	File Download Allowed
+proj1	project1	3tr	lorem ipsum	ASTHMA	https://statics.cnag.crg.dev/3tr/img/omicsdm/logos/cnag.png	visible to all	false	true
+proj2	project2	cnag	lorem ipsum	COPD, RA		private	true	false
