@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { size, toArray } from "lodash";
+import React from "react";
+import { size } from "lodash";
 
 import UploadItem from "../UploadItem/UploadItem";
 import Styles from "./UploadProgress.module.css";

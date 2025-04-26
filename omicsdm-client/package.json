@@ -23,7 +23,6 @@
     "aws-sdk": "^2.1692.0",
     "babel-loader": "^10.0.0",
     "babel-plugin-istanbul": "^7.0.0",
-    "bootstrap": "^5.3.3",
     "copy-webpack-plugin": "^13.0.0",
     "evaporate": "^2.1.4",
     "export-to-csv": "^1.4.0",
@@ -31,7 +30,6 @@
     "html-webpack-plugin": "^5.6.3",
     "jwt-decode": "^4.0.0",
     "keycloak-js": "^26.1.4",
-    "lodash.debounce": "^4.0.8",
     "material-react-table": "^3.2.1",
     "papaparse": "^5.5.2",
     "prop-types": "^15.8.1",
@@ -41,7 +39,6 @@
     "react-error-boundary": "^5.0.0",
     "react-hot-toast": "^2.5.2",
     "react-loader-spinner": "^6.1.6",
-    "react-papaparse": "^4.4.0",
     "react-router": "^7.3.0",
     "react-select": "^5.10.1",
     "react-select-async-paginate": "^0.7.9",
@@ -68,6 +65,7 @@
     "@storybook/test": "^8.6.12",
     "@testing-library/cypress": "^8.0.2",
     "@testing-library/react": "^11.2.7",
+    "@types/node": "^22.15.2",
     "babel-jest": "^27.0.2",
     "babel-loader": "^8.0.2",
     "babel-plugin-istanbul": "^6.0.0",
@@ -92,6 +90,7 @@
     "jsdoc": "^3.6.7",
     "junit-report-merger": "^3.0.2",
     "kill-port": "^2.0.1",
+    "knip": "^5.50.5",
     "license-report": "^6.3.0",
     "lint-staged": "^11.2.3",
     "mocha-junit-reporter": "^2.0.2",
@@ -102,6 +101,7 @@
     "sonarqube-scanner": "^2.8.1",
     "storybook": "^8.6.12",
     "style-loader": "^4.0.0",
+    "typescript": "^5.8.3",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.0"
   },
@@ -167,7 +167,8 @@
     "cors": "docker run -p 8086:8080  redocly/cors-anywhere",
     "licenses": "node_modules/license-report/index.js --output=markdown --only=prod > licenses.md",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "knip": "knip"
   },
   "nyc": {
     "report-dir": "cypress/coverage",
