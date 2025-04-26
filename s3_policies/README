@@ -1,0 +1,10 @@
+
+How to create the new user:
+mc admin user add local omicsdm 12345678
+
+How to add and apply the policies:
+mc admin policy create local full-access /tmp/s3_policies/full-access.json
+mc admin policy attach local full-access --user omicsdm
+
+mc admin policy create local listbuckets /tmp/s3_policies/listbuckets.json
+mc admin policy attach local listbuckets --user omicsdm
