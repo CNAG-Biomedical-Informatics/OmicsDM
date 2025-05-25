@@ -157,8 +157,8 @@ docker-plugin-s3fs-install:
   	S3FS_ACCESSKEY=admin \
   	S3FS_SECRETKEY=12345678
 
-s3fs-mount:
-	s3fs bucketdevel3tropal s3fs_mountpoint -o passwd_file=minio_secret,use_path_request_style,url=http://localhost:9000,allow_other -o dbglevel=info -f
+#s3fs-mount:
+#	s3fs bucketdevel3tropal s3fs_mountpoint -o passwd_file=minio_secret,use_path_request_style,url=http://localhost:9000,allow_other -o dbglevel=info -f
 
 s3fs-mount:
 	nohup s3fs bucketdevelomicsdm s3fs_mountpoint -o passwd_file=minio_secret,use_path_request_style,url=https://minio.omicsdm.cnag.dev,allow_other -o dbglevel=info -f > s3fs.log 2>&1 &
@@ -170,7 +170,7 @@ create-docker-volume-s3fs:
 	docker volume create \
 		--driver local \
 		--opt type=none \
-		--opt device=/home/ivo/projects/bioinfo/cnag/repos/omicsdm-server/s3fs_mountpoint \
+		--opt device=/home/ivo/projects/bioinfo/cnag/repos/omicsdm/omicsdm-server/s3fs_mountpoint \
 		--opt o=bind \
 		s3data_external
 
@@ -178,9 +178,13 @@ create-docker-volume-cxg:
 	docker volume create \
 		--driver local \
 		--opt type=none \
-		--opt device=/home/ivo/projects/bioinfo/cnag/repos/omicsdm-server/cxg_mountpoint \
+		--opt device=/home/ivo/projects/bioinfo/cnag/repos/omicsdm/omicsdm-server/cxg_mountpoint \
 		--opt o=bind \
 		cxgdata
 
 shinyproxy-ip:
 	docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' shinyproxy
+
+docker-cxg:
+	docker run --rm -it -v $(shell pwd)/s3fs_mountpoint:/data cz/cellxgene:latest \
+		cellxgene launch /data/3tr_sgfeg4g4444/sc_gene_sets_scoring/out/results/data_scored.h5ad

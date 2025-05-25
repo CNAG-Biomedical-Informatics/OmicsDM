@@ -353,7 +353,17 @@ def run_analysis(self, analysis_id, name, options, group_name):
                 if member.name == "out/_main.html":
                     file_obj = tar.extractfile(member)
                     file_content = file_obj.read()
-                    break
+                    # break
+
+                # check if a file has .h5ad
+                if member.name.endswith(".h5ad"):
+                    file_obj = tar.extractfile(member)
+                    file_content = file_obj.read()
+                    
+                    # save the h5ad file to S3
+                    s3_key = f"{analysis_id}/{name}/{member.name}"
+                    boto3_client = boto3.resource("s3", **boto3_client_args)
+                    boto3_client.Object(app.config["BUCKET_NAME"], s3_key).put(Body=file_content)
 
         if file_content is None:
             return {"error": "File _main.html not found"}

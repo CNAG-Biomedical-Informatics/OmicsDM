@@ -20,7 +20,7 @@ from server.model import File, Dataset, Group
 from server.security import login_required, get_token
 from server.factories.view_factory import data_view_builder
 
-from server.model import Groups, Project, ProjectMapping
+from server.model import Groups, Project, ProjectMapping, Analyses, Analysisgroups
 
 from server.utils.table_methods import db_add, db_commit
 from server.utils.ceph import create_presigned_url
@@ -789,6 +789,59 @@ class FileDataStartUpload(Resource):
 
         return result
 
+def run_cellxgene_launch_script(s3_key, userid, token):
+    """
+    Helper function to run the cellxgene launch script
+    """
+    cmd_args = [
+        "cellxgene",
+        "launch",
+        "--host",
+        "0.0.0.0",
+        f"/bucket/{s3_key}",
+    ]
+
+    # in debug mode
+    with open(f"../cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:       
+    # with open(f"./cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
+        f.write(" ".join(cmd_args))
+
+    random_id = str(uuid.uuid4())
+    url = f"http://localhost:3830/app_i/01_cellxgene/{random_id}"
+    print("url", url)
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
+
+    print("token", token)
+
+    try:
+        response = requests.post(
+            # nosec (for now, should be changed)
+            url,
+            headers=headers,
+            verify=False,
+            timeout=10,
+        )
+        print(response)
+    except Timeout:
+        print("Timeout has been raised.")
+
+    # return make_response("cellxgene container started", 200)
+    res = make_response(
+        jsonify(
+            {
+                "message": "File metadata inserted in database",
+                "shiny_proxy_url": url,
+            }
+        ),
+        200,
+    )
+    return res
+
+
 
 @ns.route("/cellxgene", methods=(["POST"]))
 class FileCellxgene(Resource):
@@ -810,23 +863,59 @@ class FileCellxgene(Resource):
             return make_response(
                 jsonify({"message": "File name must end with .h5ad"}), 404
             )
-
-        schema = get_obj_schema(
-            {
-                "file_name": {"type": "string"},
-                "file_version": {"type": "integer"},
-                "dataset_id": {"type": "string"},
-                "dataset_owner": {"type": "string"},
-            },
-            required=[
-                "file_name",
-                "file_version",
-                "dataset_id",
-                "dataset_owner",
-            ],
-        )
+        
+        if data["isAnalysisResult"]:
+            schema = get_obj_schema(
+                {
+                    "isAnalysisResult": {"type": "boolean"},
+                    "analysis_id": {"type": "string"},
+                    "file_name": {"type": "string"},
+                },
+                required=[
+                    "analysis_id",
+                    "isAnalysisResult",
+                    "file_name",
+                ],
+            )
+        else:
+            schema = get_obj_schema(
+                {
+                    "file_name": {"type": "string"},
+                    "file_version": {"type": "integer"},
+                    "dataset_id": {"type": "string"},
+                    "dataset_owner": {"type": "string"},
+                },
+                required=[
+                    "file_name",
+                    "file_version",
+                    "dataset_id",
+                    "dataset_owner",
+                ],
+            )
 
         validate_schema(data, schema)
+
+        if data["isAnalysisResult"]:
+
+            # check if the analysis_id is valid
+            analysis_id = data["analysis_id"]
+            analysis = (
+                db.session.query(Analyses)
+                .filter(Analyses.analysis_id == analysis_id)
+                .filter(Analysisgroups.group_id == group.id)
+                .one_or_none()
+            )
+            if analysis is None:
+                return make_response(
+                    jsonify({"message": "Analysis result not found"}), 404
+                )
+            
+            s3_key = "3tr_sgfeg4g4444/sc_gene_sets_scoring/out/results/data_scored.h5ad"
+            s3_path = "sc_gene_sets_scoring/out/results/data_scored.h5ad"
+            s3_key = f"{analysis_id}/{s3_path}"
+
+            res = run_cellxgene_launch_script(s3_key, userid, token)
+            return res
 
         # TODO
         # add Tests
