@@ -8,3 +8,4 @@ in
 renv
 log
 src/scRNA_GeneSetScoring.py
+aws_cfg

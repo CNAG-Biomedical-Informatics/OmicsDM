@@ -231,7 +231,7 @@ def run_analysis(self, analysis_id, name, options, group_name):
     image_name = f"{docker_registry}/r-{name}:{image_version}"
 
     if name == "sc_gene_sets_scoring":
-        image_version = "1.0.3"
+        image_version = "1.0.4"
         image_name = f"{docker_registry}/sc-gene-sets-scoring:{image_version}"
 
     # image_name = f"{name}:{image_version}"
@@ -240,8 +240,8 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # this should not be limited to snakemake
     # but nextflow should be supported as well
 
-    cmd = ["/home/venv/bin/snakemake", "-c1", "--nolock", "--nocolor"]
-    # cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
+    # cmd = ["/home/venv/bin/snakemake", "-c1", "--nolock", "--nocolor"]
+    cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
 
     # convert the options to a JSON string
     json_data = json.dumps(options)
@@ -266,11 +266,15 @@ def run_analysis(self, analysis_id, name, options, group_name):
     renviron_path = str(pipeline_path / ".Renviron")
     scripts_path = str(pipeline_path / "src")
     snakemake_logs_path = str(pipeline_path / "log")
+    aws_creds_path = str(pipeline_path / "aws_config/credentials")  
+    aws_cfg_path = str(pipeline_path / "aws_config/config")  
 
     container_snakefile_path = "/home/Snakefile"
     container_scripts_path = "/home/src"
     container_logs_path = "/home/log"
     container_renviron_path = "/home/.Renviron"
+    container_aws_creds_path = "/root/.aws/credentials"
+    container_aws_cfg_path = "/root/.aws/config"
 
     try:
         container = docker_client.containers.run(
@@ -292,6 +296,14 @@ def run_analysis(self, analysis_id, name, options, group_name):
                 },
                 scripts_path: {
                     "bind": container_scripts_path,
+                    "mode": "ro",
+                },
+                aws_creds_path: {
+                    "bind": container_aws_creds_path,
+                    "mode": "ro",
+                },
+                aws_cfg_path: {
+                    "bind": container_aws_cfg_path,
                     "mode": "ro",
                 },
             },

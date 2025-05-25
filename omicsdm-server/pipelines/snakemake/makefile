@@ -1,7 +1,7 @@
 
 include .env
 # include .aws.env
-VER=1.0.3
+VER=1.0.4
 
 AWS := /usr/local/aws-cli/v2/2.9.6/bin/aws
 
