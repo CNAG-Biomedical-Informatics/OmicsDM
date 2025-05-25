@@ -24,6 +24,11 @@ getgo:
 	cd getgo && docker build --no-cache -t ${DOCKER_REGISTRY}/r-getgo:${VER} . && \
 	docker push ${DOCKER_REGISTRY}/r-getgo:${VER}
 
+.PHONY: sc_gene_sets_scoring
+sc_gene_sets_scoring:
+	cd sc_gene_sets_scoring && docker build --no-cache -t ${DOCKER_REGISTRY}/sc-gene-sets-scoring:${VER} . && \
+	docker push ${DOCKER_REGISTRY}/sc-gene-sets-scoring:${VER}
+
 build: base deseq2 fgsea getgo
 
 s3_ls:

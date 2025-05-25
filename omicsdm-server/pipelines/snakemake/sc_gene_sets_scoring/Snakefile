@@ -1,0 +1,69 @@
+PROJ_NAME = "sc_gene_sets_scoring"
+
+# --- Variable Declarations ---- #
+runR = "Rscript --no-save --no-restore --verbose"
+logAll = "2>&1"
+
+
+rule all:
+    input:
+        report_html=f"out/_main.html",
+
+
+rule report:
+    input:
+        rmd="src/report/index.Rmd",
+        in0="out/results/data_scored.h5ad",
+        # in1="out/results/sessionInfo/sessionInfo.txt",
+        # in2="out/results/sessionInfo/platform.rds",
+        # in3="out/results/sessionInfo/packages.rds",
+    output:
+        html="out/_main.html",
+        book=directory("out/_book"),
+    log:
+        "log/report.log",
+    shell:
+        """
+        cp {input.rmd} out/.
+        {runR} src/lib/build_report.R | tee {log}
+        """
+
+
+rule analysis:
+    input:
+        in1="in/data.h5ad",
+        in2="in/modules.gmt",
+        config=f"config/{PROJ_NAME}.json",
+    output:
+        out1="out/results/data_scored.h5ad",
+        # out2="out/results/sessionInfo/sessionInfo.txt",
+        # out3="out/results/sessionInfo/platform.rds",
+        # out4="out/results/sessionInfo/packages.rds",
+    log:
+        "log/analysis.log",
+    shell:
+        """
+        python3 /script/scRNA_GeneSetScoring.py \
+            --path in/data.h5ad \
+            --gene_sets in/modules.gmt \
+            --method Zscores | tee {log}
+
+        mkdir -p out/results
+        cp data_scored.h5ad out/results/data_scored.h5ad
+        """
+
+rule get_data:
+    input:
+        config=f"config/{PROJ_NAME}.json",
+    output:
+        out1="in/data.h5ad",
+        out2="in/modules.gmt"
+    log:
+        "log/get_data.log",
+    shell:
+        """
+        bash src/get_data.sh | tee {log}  
+        """
+
+# 2. Other rules
+include: "rules/renv.smk"

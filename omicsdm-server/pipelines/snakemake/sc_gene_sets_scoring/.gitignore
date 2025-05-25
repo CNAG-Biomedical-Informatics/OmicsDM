@@ -1,0 +1,10 @@
+.snakemake
+docker-out
+out
+.Rhistory
+in
+.Rproj.user
+.Renviron
+renv
+log
+src/scRNA_GeneSetScoring.py

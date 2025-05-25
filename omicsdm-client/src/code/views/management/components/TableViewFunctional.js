@@ -13,7 +13,6 @@ import ShareDataDialogContent from "../datasets-view/components/ShareDataDialogC
 import NavigateToFilesView from "../datasets-view/components/NavigateToFilesView";
 
 // Files Table specific imports
-import ShowSelectedFiles from "../files-view/components/ShowSelectedFiles";
 import getFilesViewTableCols from "../files-view/components/FilesTableCols";
 import {
   OpenDownloadLinksDialogBtn,

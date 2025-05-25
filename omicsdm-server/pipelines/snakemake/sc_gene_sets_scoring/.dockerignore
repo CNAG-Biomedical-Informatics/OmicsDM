@@ -1,0 +1,15 @@
+.Rproj.user
+.snakemake
+log
+out
+renv
+.dockerignore
+.gitignore
+.Rhistory
+.Rprofile
+deseq2.Rproj
+Docker-compose.yaml
+Dockerfile
+README.md
+renv_bk
+Snakefile

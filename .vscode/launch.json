@@ -1,0 +1,62 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flask",
+      "request": "launch",
+      "type": "python",
+      "python": "${workspaceFolder}/omicsdm-server/venv/bin/python3",
+      "module": "flask",
+      "cwd": "${workspaceFolder}/omicsdm-server/server/",
+      "env": {
+        "FLASK_APP": "app.py",
+        "FLASK_ENV": "development",
+        "FLASK_DEBUG": "1",
+        "FLASK_RUN_HOST": "localhost",
+        "FLASK_RUN_PORT": "8082",
+        "APPMAP": "false"
+      },
+      "args": ["run"],
+      "jinja": true,
+      "justMyCode": true
+    },
+    {
+      
+      "name": "Celery",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/omicsdm-server/",
+      "type": "python",
+      "python": "${workspaceFolder}/omicsdm-server/venv/bin/python3",
+      "module": "celery",
+      "console": "integratedTerminal",
+      "env": {
+        "FLASK_APP": "app.py",
+        "FLASK_ENV": "development",
+        "FLASK_DEBUG": "1",
+        "FLASK_RUN_HOST": "localhost",
+        "FLASK_RUN_PORT": "8082",
+        "APPMAP": "false"
+      },
+      "args": [
+        "--config",
+        "server.config.celeryconfig",
+        "-A",
+        "server.app.celery",
+        "worker",
+        "-l",
+        "info",
+        "-P",
+        "solo",
+        "--events"
+      ],
+      "jinja": true,
+      "justMyCode": true
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Celery and Flask",
+      "configurations": ["Celery", "Flask"]
+    }
+  ]
+}

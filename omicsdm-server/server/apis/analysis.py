@@ -229,6 +229,11 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # docker_registry = "docker.vm2.dev"
     docker_registry = "docker.omicsdm.cnag.dev"
     image_name = f"{docker_registry}/r-{name}:{image_version}"
+
+    if name == "sc_gene_sets_scoring":
+        image_version = "1.0.3"
+        image_name = f"{docker_registry}/sc-gene-sets-scoring:{image_version}"
+
     # image_name = f"{name}:{image_version}"
 
     # TODO
