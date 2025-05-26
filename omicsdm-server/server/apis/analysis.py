@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-    API endpoint that get Project Fields For React Experiment View
-        Resource = /api/project
+API endpoint that get Project Fields For React Experiment View
+    Resource = /api/project
 """
 import io
 import json
@@ -266,8 +266,8 @@ def run_analysis(self, analysis_id, name, options, group_name):
     renviron_path = str(pipeline_path / ".Renviron")
     scripts_path = str(pipeline_path / "src")
     snakemake_logs_path = str(pipeline_path / "log")
-    aws_creds_path = str(pipeline_path / "aws_config/credentials")  
-    aws_cfg_path = str(pipeline_path / "aws_config/config")  
+    aws_creds_path = str(pipeline_path / "aws_config/credentials")
+    aws_cfg_path = str(pipeline_path / "aws_config/config")
 
     container_snakefile_path = "/home/Snakefile"
     container_scripts_path = "/home/src"
@@ -359,11 +359,13 @@ def run_analysis(self, analysis_id, name, options, group_name):
                 if member.name.endswith(".h5ad"):
                     file_obj = tar.extractfile(member)
                     file_content = file_obj.read()
-                    
+
                     # save the h5ad file to S3
                     s3_key = f"{analysis_id}/{name}/{member.name}"
                     boto3_client = boto3.resource("s3", **boto3_client_args)
-                    boto3_client.Object(app.config["BUCKET_NAME"], s3_key).put(Body=file_content)
+                    boto3_client.Object(app.config["BUCKET_NAME"], s3_key).put(
+                        Body=file_content
+                    )
 
         if file_content is None:
             return {"error": "File _main.html not found"}
@@ -1294,17 +1296,40 @@ class AnalysisResults(Resource):
             html_string = "".join(htmlized)
             return html_string
 
-        s3_key = f"{analysis_id}/{analysis}/_main.html"
+        s3_key = f"{analysis_id}/{analysis}"
         if previous_analysis_id:
-            s3_key = f"{group_name}_{previous_analysis_id}/{analysis}/_main.html"
+            s3_key = f"{group_name}_{previous_analysis_id}/{analysis}"
 
         # TODO
         # sometimes the old html is not found
 
-        res = ceph.get_file(app.config, s3_key, previous_analysis_id)
+        res = ceph.get_file(app.config, f"{s3_key}/_main.html", previous_analysis_id)
         html = "Analysis not finished"
         if res:
-            html = res.decode()
+            try:
+                html = res.decode()
+            except Exception as e:
+                print("Error decoding HTML:", e)
+                print("Try to get the file out of the tar.gz file again")
+                res = ceph.get_file(
+                    app.config, f"{s3_key}/results.tar.gz", previous_analysis_id
+                )
+                if res:
+                    with tarfile.open(fileobj=io.BytesIO(res), mode="r:gz") as tar:
+                        for member in tar.getmembers():
+                            if member.name == "out/_main.html":
+                                file_obj = tar.extractfile(member)
+                                html = file_obj.read().decode()
+
+                                # save it again to the S3 storage
+                                boto3_client = boto3.resource("s3", **boto3_client_args)
+                                boto3_client.Object(
+                                    app.config["BUCKET_NAME"], f"{s3_key}/_main.html"
+                                ).put(Body=html)
+                                break
+                else:
+                    print("Failed to retrieve the tar.gz file")
+                    html = "Failed to retrieve the tar.gz file"
         return html
 
     @login_required

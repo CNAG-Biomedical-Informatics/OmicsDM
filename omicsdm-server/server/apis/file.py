@@ -789,6 +789,7 @@ class FileDataStartUpload(Resource):
 
         return result
 
+
 def run_cellxgene_launch_script(s3_key, userid, token):
     """
     Helper function to run the cellxgene launch script
@@ -802,8 +803,8 @@ def run_cellxgene_launch_script(s3_key, userid, token):
     ]
 
     # in debug mode
-    with open(f"../cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:       
-    # with open(f"./cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
+    # with open(f"../cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
+    with open(f"./cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
         f.write(" ".join(cmd_args))
 
     random_id = str(uuid.uuid4())
@@ -842,7 +843,6 @@ def run_cellxgene_launch_script(s3_key, userid, token):
     return res
 
 
-
 @ns.route("/cellxgene", methods=(["POST"]))
 class FileCellxgene(Resource):
     """
@@ -863,7 +863,7 @@ class FileCellxgene(Resource):
             return make_response(
                 jsonify({"message": "File name must end with .h5ad"}), 404
             )
-        
+
         if data["isAnalysisResult"]:
             schema = get_obj_schema(
                 {
@@ -909,7 +909,7 @@ class FileCellxgene(Resource):
                 return make_response(
                     jsonify({"message": "Analysis result not found"}), 404
                 )
-            
+
             s3_key = "3tr_sgfeg4g4444/sc_gene_sets_scoring/out/results/data_scored.h5ad"
             s3_path = "sc_gene_sets_scoring/out/results/data_scored.h5ad"
             s3_key = f"{analysis_id}/{s3_path}"
