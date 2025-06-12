@@ -306,12 +306,6 @@ const AnalysisResultsView = (props) => {
           analysisJson={analysisJson}
         />
       </Grid>
-      <Grid item xs={4}>
-        <ShowGeneratedFiles
-          analysisId={analysisId}
-          analysisJson={analysisJson}
-        />
-      </Grid>
       <Grid item xs={12}>
         {!allAborted && shouldProgressUpdateBeShown(status, data) ? (
           <>
@@ -351,9 +345,10 @@ const AnalysisResultsView = (props) => {
         />
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="h6" align="center">
-          Analysis Results
-        </Typography>
+        <ShowGeneratedFiles
+          analysisId={analysisId}
+          analysisJson={analysisJson}
+        />
         <ShowAnalysesResults
           analysisJson={analysisJson}
           htmls={dataHtml}

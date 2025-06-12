@@ -11,6 +11,7 @@ import {
   DialogContentText,
   DialogTitle,
   FormControl,
+  FormControlLabel,
   IconButton,
   InputLabel,
   MenuItem,
@@ -20,6 +21,9 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
+
+// import { styled } from '@mui/material/styles';
+// import Switch, { SwitchProps } from '@mui/material/Switch';
 
 import Grid from "@mui/material/Grid";
 
@@ -34,6 +38,67 @@ import {
 import auth from "../../../../Auth";
 
 import ReactQueryTable from "../../../components/dataTable/ReactQueryTable";
+
+// const MaterialUISwitch = styled(Switch)(({ theme }) => ({
+//   width: 62,
+//   height: 34,
+//   padding: 7,
+//   '& .MuiSwitch-switchBase': {
+//     margin: 1,
+//     padding: 0,
+//     transform: 'translateX(6px)',
+//     '&.Mui-checked': {
+//       color: '#fff',
+//       transform: 'translateX(22px)',
+//       '& .MuiSwitch-thumb:before': {
+//         content: "'Y'",
+//         display: 'flex',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         fontSize: '0.75rem',
+//         fontWeight: 'bold',
+//         color: '#fff',
+//       },
+//       '& + .MuiSwitch-track': {
+//         opacity: 1,
+//         backgroundColor: '#aab4be',
+//         ...theme.applyStyles('dark', {
+//           backgroundColor: '#8796A5',
+//         }),
+//       },
+//     },
+//   },
+//   '& .MuiSwitch-thumb': {
+//     backgroundColor: '#001e3c',
+//     width: 32,
+//     height: 32,
+//     '&::before': {
+//       content: "'N'",
+//       display: 'flex',
+//       alignItems: 'center',
+//       justifyContent: 'center',
+//       fontSize: '0.75rem',
+//       fontWeight: 'bold',
+//       color: '#fff',
+//       position: 'absolute',
+//       width: '100%',
+//       height: '100%',
+//       left: 0,
+//       top: 0,
+//     },
+//     ...theme.applyStyles('dark', {
+//       backgroundColor: '#003892',
+//     }),
+//   },
+//   '& .MuiSwitch-track': {
+//     opacity: 1,
+//     backgroundColor: '#aab4be',
+//     borderRadius: 20 / 2,
+//     ...theme.applyStyles('dark', {
+//       backgroundColor: '#8796A5',
+//     }),
+//   },
+// }));
 
 const renderCards = (
   cardType,
@@ -56,6 +121,14 @@ const renderCards = (
 
   return (
     <>
+      {/* {cardType === "followUps" ? (
+        <FormControlLabel
+          id="integrate-all-results-yes-no"
+          control={<MaterialUISwitch />}
+          label="Integrate the results in the scRNA-seq dataset"
+          labelPlacement="start"
+        />
+      ) : null} */}
       {objectList.map((object, index) => (
         <IconButton key={index}>
           <Grid item>
@@ -150,6 +223,8 @@ export default function ConfigureAnalysis(props) {
   const [returnedJson, setReturnedJson] = useState({});
 
   const [columnFilters, setColumnFilters] = useState([]);
+
+  const [labelTransfer, setLabelTransfer] = useState(false);
 
   // TODO
   // better put them together in a single object
@@ -736,7 +811,7 @@ export default function ConfigureAnalysis(props) {
           <Button
             onClick={() => handleClose(selectedAnalysisId)}
             autoFocus
-            // disabled={disableConfirmButton()}
+          // disabled={disableConfirmButton()}
           >
             Confirm selection
           </Button>

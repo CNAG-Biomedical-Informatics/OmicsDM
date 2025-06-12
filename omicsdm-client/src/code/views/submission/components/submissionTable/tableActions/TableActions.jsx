@@ -276,7 +276,7 @@ const TableActions = (props) => {
       return formRows;
     }
 
-    // project or dataset submssion specific validation
+    // project or dataset submission specific validation
     // send POST requests to /validate endpoint
     const apiSuccesses = [];
 

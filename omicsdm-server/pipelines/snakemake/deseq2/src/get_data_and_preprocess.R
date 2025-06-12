@@ -36,7 +36,7 @@ s3 <- paws::s3(
     ),
     endpoint = "https://minio.omicsdm.cnag.dev",
     s3_force_path_style = TRUE,
-    region = ""
+    region = "us-east-1"
   )
 )
 

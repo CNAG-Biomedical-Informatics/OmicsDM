@@ -97,7 +97,7 @@ const AddOrModifyAnalysisTemplate = (props) => {
     setContent({ json: templateData });
 
     setFormValues({
-      analysisType: "RNA-seq",
+      analysisType: "bulk RNA-seq",
       description: `Example analysis template for ${template}`
     });
   }
@@ -223,7 +223,7 @@ export default function AnalysisTemplates() {
       </Typography>
       <TableWithDeleteRowButton
         data={data}
-        accessorKeys={["analysisType","name","description"]}
+        accessorKeys={["analysisType", "name", "description"]}
         deleteId="name"
         confirmationQuestion="Are you sure you want to delete this template?"
         deletionHandler={handleDelete}

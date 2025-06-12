@@ -240,8 +240,9 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # this should not be limited to snakemake
     # but nextflow should be supported as well
 
-    # cmd = ["/home/venv/bin/snakemake", "-c1", "--nolock", "--nocolor"]
-    cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
+    # in debug mode
+    # cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
+    cmd = ["/home/venv/bin/snakemake", "-c1", "--nolock", "--nocolor"]
 
     # convert the options to a JSON string
     json_data = json.dumps(options)
@@ -1534,21 +1535,25 @@ class AnalysisTypes(Resource):
         print(request_data)
 
         # check if the analysis name already exists
-        query = (
+        analysis_templates = (
             db.session.query(AnalysisTemplates)
             .with_entities(AnalysisTemplates.analysis_type)
             .all()
         )
 
-        analysis_types = list({analysis[0] for analysis in query})
-        analysis_types.append("Single Cell")
+        analysis_types = list({analysis[0] for analysis in analysis_templates})
+
+        analysis_types = ["bulk RNA-seq", "scRNA-seq"]
+
+        # analysis_types.append("Single Cell")
 
         res = []
         for analysis in analysis_types:
             res.append(
                 {
                     "name": analysis,
-                    "description": "Templates for " + analysis + " analysis",
+                    # "description": "Templates for " + analysis + " analysis",
+                    "description": "",
                 }
             )
 
@@ -1606,7 +1611,7 @@ class AnalysisTemplatesSubmission(Resource):
         if bases_on:
             query = (
                 db.session.query(AnalysisTemplates)
-                .filter(AnalysisTemplates.analysis_type == analysis_type)
+                # .filter(AnalysisTemplates.analysis_type == analysis_type)
                 .filter(AnalysisTemplates.name == bases_on)
                 .with_entities(AnalysisTemplates.id)
                 .one_or_none()
@@ -1910,13 +1915,14 @@ class AnalysisTemplateQuery(Resource):
 
         follow_ups = []
         if follow_ups_query:
-            follow_ups_res = [analysis.name for analysis in follow_ups_query]
-            for analysis in follow_ups_res:
+            for analysis in follow_ups_query:
                 follow_ups.append(
                     {
-                        "name": analysis,
-                        "description": f"Templates for {analysis} analysis",
+                        "name": analysis.name,
+                        # "description": analysis.description,
+                        "description": "",
                     }
+                    # TODO in the client side the description should be a tooltip
                 )
 
         return make_response(
