@@ -29,7 +29,7 @@ sc_gene_sets_scoring:
 	cd sc_gene_sets_scoring && docker build --no-cache -t ${DOCKER_REGISTRY}/sc-gene-sets-scoring:${VER} . && \
 	docker push ${DOCKER_REGISTRY}/sc-gene-sets-scoring:${VER}
 
-build: base deseq2 fgsea getgo
+build: base deseq2 fgsea getgo sc_gene_sets_scoring
 
 s3_ls:
 	$(AWS) s3 --endpoint-url=${aws_http} ls s3://${bucket} --ca-bundle ${AWS_CA_BUNDLE}
