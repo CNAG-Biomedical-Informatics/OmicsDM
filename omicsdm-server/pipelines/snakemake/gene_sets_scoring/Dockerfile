@@ -3,6 +3,7 @@ FROM docker.omicsdm.cnag.dev/r-minimal:1.0.2
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   curl \
+  jq \
   libcurl4-openssl-dev \             
   libfontconfig1-dev \        
   libfreetype6-dev \          
@@ -27,9 +28,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #clusterProfiler 4.16.0
 #Matrix 1.7-3
 
-RUN Rscript -e '\
-  pak::repo_add(CRAN = "https://packagemanager.posit.co/cran/__linux__/noble/latest"); \
-  pak::pkg_install(c("Matrix","clusterProfiler","escape"))'
+WORKDIR /home
+
+COPY renv.lock .
+ENV RENV_CONFIG_PAK_ENABLED=TRUE
+RUN R -e "renv::restore()"
+
+# RUN Rscript -e '\
+#   pak::repo_add(CRAN = "https://packagemanager.posit.co/cran/__linux__/noble/latest"); \
+#   pak::pkg_install(c("Matrix","clusterProfiler","escape"))'
 
 # 2. Install R packages via pak
 # ENV R_LIBS_USER=/usr/local/lib/R/site-library
@@ -55,8 +62,8 @@ RUN apt-get remove -y --purge libcurl4-openssl-dev && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # 5. Copy script
-WORKDIR /script
-COPY src/scRNA_GeneSetScoring.py /script/scRNA_GeneSetScoring.py
+# WORKDIR /script
+# COPY src/scRNA_GeneSetScoring.py /script/scRNA_GeneSetScoring.py
 # COPY example_inputs/ example_inputs/
 
 # 6. Set the entrypoint

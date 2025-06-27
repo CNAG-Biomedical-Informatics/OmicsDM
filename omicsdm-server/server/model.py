@@ -262,7 +262,7 @@ class Analyses(db.Model):
     __tablename__ = "analyses"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    analysis_id = Column(String(120), nullable=False)
+    analysis_id = Column(String(120), nullable=False, unique=True)
     name = Column(String(120), nullable=False)
     tags = Column(String(120), nullable=False)
     description = Column(String(120), nullable=False)

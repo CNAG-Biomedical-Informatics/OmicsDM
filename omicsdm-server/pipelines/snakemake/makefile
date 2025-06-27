@@ -1,7 +1,7 @@
 
 include .env
 # include .aws.env
-VER=1.0.4
+VER=1.0.7
 
 AWS := /usr/local/aws-cli/v2/2.9.6/bin/aws
 
@@ -26,7 +26,7 @@ getgo:
 
 .PHONY: sc_gene_sets_scoring
 sc_gene_sets_scoring:
-	cd sc_gene_sets_scoring && docker build --no-cache -t ${DOCKER_REGISTRY}/sc-gene-sets-scoring:${VER} . && \
+	cd gene_sets_scoring && docker build --no-cache -t ${DOCKER_REGISTRY}/sc-gene-sets-scoring:${VER} . && \
 	docker push ${DOCKER_REGISTRY}/sc-gene-sets-scoring:${VER}
 
 build: base deseq2 fgsea getgo sc_gene_sets_scoring
