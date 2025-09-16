@@ -229,7 +229,6 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # docker_registry = "docker.vm2.dev"
     docker_registry = "docker.omicsdm.cnag.dev"
     image_name = f"{docker_registry}/r-{name}:{image_version}"
-    
 
     # TODO
     # this should not be limited to snakemake
@@ -238,11 +237,11 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # in debug mode
     # cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
     cmd = ["/home/venv/bin/snakemake", "-c1", "--nolock", "--nocolor"]
-    
+
     if name in ["gsva", "z-scoring"]:
         image_version = "1.0.7"
         image_name = f"{docker_registry}/sc-gene-sets-scoring:{image_version}"
-        
+
         method = "Zscores"
         if name == "gsva":
             method = "GSVA"
@@ -266,11 +265,13 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # this is only working when celery-worker is not running in a container
     # otherwise it needs the full_path on the docker-compose host
 
-    if name in ["gsva","z-scoring"]:
-        pipeline_path = Path(app.root_path).parent / "pipelines/snakemake" / "gene_sets_scoring"
+    if name in ["gsva", "z-scoring"]:
+        pipeline_path = (
+            Path(app.root_path).parent / "pipelines/snakemake" / "gene_sets_scoring"
+        )
     else:
         pipeline_path = Path(app.root_path).parent / "pipelines/snakemake" / name
-        
+
     print("pipeline_path", pipeline_path)
     snakefile_path = str(pipeline_path / "Snakefile")
     renviron_path = str(pipeline_path / ".Renviron")
@@ -321,8 +322,8 @@ def run_analysis(self, analysis_id, name, options, group_name):
             extra_hosts={  # only needed when running it locally
                 "minio.omicsdm.cnag.dev": "172.16.10.112"
             },
-            mem_limit="3g",      
-            memswap_limit="3g",    # no swap beyond that
+            mem_limit="6g",
+            memswap_limit="6g",  # no swap beyond that
         )
 
         # Connect the container to the Docker Compose network
@@ -1801,7 +1802,7 @@ class AnalysisTemplateQuery(Resource):
         create a new project in Opal via Jenkins
         """
         request_data = request.get_json()
-        
+
         print("HEEEERE request_data")
         print(request_data)
 
@@ -1845,7 +1846,7 @@ class AnalysisTemplateQuery(Resource):
         if analysis_level == "analysisTypes":
             query = query.filter(
                 AnalysisTemplates.analysis_type.ilike(f"%{analysis_name}%")
-                ).filter(AnalysisTemplates.based_on == [])
+            ).filter(AnalysisTemplates.based_on == [])
 
         elif analysis_level == "base":
             # TODO

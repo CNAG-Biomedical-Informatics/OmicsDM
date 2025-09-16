@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Tooltip, Typography } from "@mui/material";
-import Papa from 'papaparse';
+import Papa from "papaparse";
 
 import { OMICSDM_BUTTON_LIGHT } from "../../../../components/buttonCollection/buttons";
 
@@ -10,8 +10,7 @@ import auth from "../../../../../Auth";
 
 import TableFieldsGenerator from "../tableFields/TableFields";
 
-const CSVReader = ({loadFile}) => {
-
+const CSVReader = ({ loadFile }) => {
   // TODO
   // add a file type check
   // only tsv, csv or txt files should be allowed
@@ -31,7 +30,11 @@ const CSVReader = ({loadFile}) => {
 
   return (
     <div>
-      <input type="file" accept=".csv" onChange={handleFileChange} />
+      <input
+        type="file"
+        accept=".csv, .tsv, .txt"
+        onChange={handleFileChange}
+      />
     </div>
   );
 };
@@ -105,7 +108,7 @@ const TableTemplates = (props) => {
         lg={4}
         style={{
           border: "1px solid #9ecae1",
-          "borderRadius": "10px",
+          borderRadius: "10px",
           padding: "0.5%",
           textAlign: "center",
         }}
