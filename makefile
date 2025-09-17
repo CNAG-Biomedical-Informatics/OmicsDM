@@ -1,7 +1,7 @@
 #!make
 SHELL := /bin/bash
 
-include .aws.env
+# include .aws.env
 
 CURRENT_DATE = $(shell date)
 export IGNORE_CACHE_FROM_HERE:=$(CURRENT_DATE)
@@ -47,7 +47,7 @@ kc-ip:
 	docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' keycloak
 
 api-db-ip:
-	docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' omicsdm-cellxgene-analysis-api-db-1
+	docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' omicsdm-api-omicsdm-db-1
 
 cx-db-ip:
 	docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' omicsdm-cellxgene-cellxgene-db-1
@@ -96,3 +96,24 @@ update-server-config-file:
 	echo "token: $$token" && \
 	sed -i -e "s/ACCOUNT_TOKEN =.*/ACCOUNT_TOKEN = '$$token'/" $$cfg_file
 
+create-docker-volume-s3fs:
+	docker volume create \
+		--driver local \
+		--opt type=none \
+		--opt device=/home/devel/ileist/repos/omicsdm/s3fs_mountpoint \
+		--opt o=bind \
+		s3data_external
+
+create-docker-volume-cxg:
+	docker volume create \
+		--driver local \
+		--opt type=none \
+		--opt device=/home/devel/ileist/repos/omicsdm/cxg_mountpoint \
+		--opt o=bind \
+		cxgdata
+
+s3fs-mount-test:
+	s3fs bucketdevelomicsdm s3fs_mountpoint -o passwd_file=minio_secret,use_path_request_style,url=https://minio.omicsdm.cnag.dev,allow_other -o dbglevel=info -f
+
+s3fs-mount:
+	nohup s3fs bucketdevelomicsdm s3fs_mountpoint -o passwd_file=minio_secret,use_path_request_style,url=https://minio.omicsdm.cnag.dev,allow_other -o dbglevel=info -f > s3fs.log 2>&1 &

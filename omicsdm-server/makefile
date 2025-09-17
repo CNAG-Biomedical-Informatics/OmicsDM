@@ -3,8 +3,8 @@ SHELL := /bin/bash
 export AWS_PROFILE=omicsdm
 export AWS_CA_BUNDLE=/usr/local/share/ca-certificates/mkcert-rootCA-vm-analysis1.crt
 
-include .env
-include .aws.env
+# include .env
+# include .aws.env
 export aws_http
 # export aws_http2
 # export aws_https
@@ -170,7 +170,7 @@ create-docker-volume-s3fs:
 	docker volume create \
 		--driver local \
 		--opt type=none \
-		--opt device=/home/ivo/projects/bioinfo/cnag/repos/omicsdm/omicsdm-server/s3fs_mountpoint \
+		--opt device=/home/ivo/projects/bioinfo/cnag/repos/OmicsDM/omicsdm-server/s3fs_mountpoint \
 		--opt o=bind \
 		s3data_external
 
@@ -178,7 +178,7 @@ create-docker-volume-cxg:
 	docker volume create \
 		--driver local \
 		--opt type=none \
-		--opt device=/home/ivo/projects/bioinfo/cnag/repos/omicsdm/omicsdm-server/cxg_mountpoint \
+		--opt device=/home/ivo/projects/bioinfo/cnag/repos/OmicsDM/omicsdm-server/cxg_mountpoint \
 		--opt o=bind \
 		cxgdata
 

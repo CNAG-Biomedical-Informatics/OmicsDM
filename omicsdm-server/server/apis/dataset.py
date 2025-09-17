@@ -5,6 +5,8 @@ from flask import jsonify, make_response, request
 from flask_restx import Resource, Namespace
 from flask_cors import cross_origin
 
+from datetime import datetime, timezone
+
 from sqlalchemy import or_
 from sqlalchemy.orm.attributes import flag_modified
 
@@ -533,6 +535,16 @@ class DatasetView(Resource):
         result = data_view_builder(
             group_name, Dataset, "DATASETS", request, ns
         )
+
+        ns.logger.info("Returning datasets data !")
+        ns.logger.info(result)
+
+        # data type the result
+        ns.logger.info(type(result))
+
+        # add retrieval timestamp
+        result["utc_timestamp"] = datetime.now(timezone.utc).isoformat()
+
         return result
 
 

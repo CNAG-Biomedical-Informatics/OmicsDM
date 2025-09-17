@@ -1,96 +1,319 @@
-version: '3.9'
-
 services:
   api-omicsdm:
     build:
-      context: ./omicsdm_server
+      context: ./omicsdm-server
       # target: dev
       args:
         - IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}
     depends_on:
       - api-omicsdm-db
-    # ports:
-    #   - 8083:8083
     env_file:
       - .env
     tty: true
     volumes:
-      - /etc/kubernetes/pki/ca.crt:/home/.kube/ca.crt
-      - ./omicsdm_server/server/config/config.py:/usr/src/app/server/config/config.py
+      #- ./omicsdm-server/server/config/config.py:/usr/src/app/server/config/config.py
+      - ./omicsdm-server/server/config:/usr/src/app/server/config
+      - ./omicsdm-server/server/utils/ceph.py:/usr/src/app/server/utils/ceph.py
+      - ./omicsdm-server/server/apis/file.py:/usr/src/app/server/apis/file.py
+      - ./omicsdm-server/server/apis/analysis.py:/usr/src/app/server/apis/analysis.py
+      - ./cxg_mountpoint/launch_scripts:/usr/src/app/cxg_mountpoint/launch_scripts
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./omicsdm_server/server/apis/analysis.py:/usr/src/app/server/apis/analysis.py
-
-    command: [ sh, compose_server.sh ]
+    command: ["flask","run","--host=0.0.0.0"]
+    #command: ["tail","-f","/dev/null"]
+    extra_hosts:
+      #- omicsdm.cnag.dev:127.0.0.1
+      - omicsdm.cnag.dev:172.16.10.112 #somehow needed for the analysis results download/files also works without it...
+    ports:
+      - 5000:5000
     networks:
-      - api-nw
-      - devops_vm_reverseproxy-nw
-
+      - omicsdm_sp-net 
+  
   api-omicsdm-db:
     image: postgres:13-alpine
     volumes:
-      - postgres-data-omicsdm:/var/lib/postgresql/data/
+        - postgres-data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=${API_DB}
-      - POSTGRES_USER=${API_DB_USER}
-      - POSTGRES_PASSWORD=${API_DB_PW}
+        - POSTGRES_PASSWORD=password
     networks:
-      - api-nw
+      - omicsdm_sp-net 
 
   client-omicsdm:
     build:
-      context: ./omicsdm_client
+      context: ./omicsdm-client
       args:
         - IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}
-    depends_on:
-      - api-omicsdm
+    #depends_on:
+      #- api-omicsdm
     volumes:
-      - ./omicsdm_client/config.js:/usr/share/nginx/html/config.js:ro
+      - ./omicsdm-client/config.js:/usr/share/nginx/html/config.js:ro
+      - ./omicsdm-client/deployment_config.js:/usr/share/nginx/html/deployment_config.js:ro
       - ./nginx_mountpoint/logs:/var/log/nginx
       - ./nginx_mountpoint/templates:/etc/nginx/templates:ro
       - ./nginx_mountpoint/includes:/etc/nginx/includes:ro
-      - ./nginx_mountpoint/certs/omicsdm.cnag.crg.dev.pem:/etc/nginx/omicsdm.cnag.crg.dev.pem:ro
-      - ./nginx_mountpoint/certs/omicsdm.cnag.crg.dev-key.pem:/etc/nginx/omicsdm.cnag.crg.dev-key.pem:ro
+      - ./nginx_mountpoint/certs:/etc/nginx/certs:ro
+    #command: ["tail","-f","/dev/null"]
     environment:
       NODE_ENV: production
     networks:
-      - devops_vm_reverseproxy-nw
+      - omicsdm_sp-net
+    ports:
+      - 80:80
+      - 443:443
     tty: true
-  
+
+  # watch out minio crashes the vscode ssh connection 
+  # when accessing the minio UI
+  s3bucket:
+    image: bitnami/minio:2024.12.18-debian-12-r0
+    ports:
+      - 9000:9000
+      - 9001:9001
+    tty: True
+    healthcheck:
+      test: |
+        curl -Is http://s3bucket:9000/minio/health/live | head -n 1 | grep 200
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=12345678
+      - MINIO_DEFAULT_BUCKETS=bucketdevelomicsdm
+      - MINIO_REGION_NAME=us-east-1
+      - MINIO_BROWSER_REDIRECT_URL=https://monitor.omicsdm.cnag.dev/s3
+      #- MINIO_DOMAIN=omicsdm.cnag.dev
+      #- MINIO_BROWSER_CONTENT_SECURITY_POLICY=default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'
+      #- CONSOLE_SUBPATH=/s3/
+    restart: unless-stopped
+    volumes:
+      - ./s3_policies:/tmp/s3_policies
+    networks:
+      - omicsdm_sp-net
+
+  shinyproxy:
+    image: openanalytics/shinyproxy:3.1.1
+    container_name: shinyproxy
+    environment:
+      DOMAIN: ${DOMAIN}
+      KC_INTERNAL_URL: keycloak:8080
+      KC_REALM: ${KC_REALM}
+      KC_CLIENT_ID: ${KC_CLIENT_ID}
+      KC_CLIENT_SECRET: ${KC_CLIENT_SECRET}
+    ports:
+      - 3830:8080
+    volumes:
+      - /run/docker.sock:/var/run/docker.sock:ro
+      - ./shinyproxy/application.yml:/opt/shinyproxy/application.yml:ro
+      # - ./shinyproxy/shinyproxy.log:/opt/shinyproxy/shinyproxy.log:rw
+    group_add:
+      - '991' # getent group docker | cut -d: -f3
+    networks:
+      - omicsdm_sp-net
+    restart: unless-stopped
+
+  keycloak-db:
+    image: postgres:16.1-alpine3.18
+    container_name: kc-db
+    environment:
+      POSTGRES_DB: ${KC_DB}
+      POSTGRES_USER: ${KC_DB_USER}
+      POSTGRES_PASSWORD: ${KC_DB_PW}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "psql -U $KC_DB_USER -d $KC_DB -c 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:20.0 # version > 20.0 query-groups not working # versions > 24 are running on the client into a login loop
+    depends_on:
+      - keycloak-db
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: ${KC_DB_USER}
+      DB_PASSWORD: ${KC_DB_PW}
+      KEYCLOAK_ADMIN: ${KC_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PW}
+      KC_PROXY: edge
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_PATH: /auth
+      KC_HOSTNAME_URL: https://${DOMAIN}/auth/
+      KC_HOSTNAME_ADMIN_URL: https://${DOMAIN}/auth/
+      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt.pem
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key.pem
+      KC_HEALTH_ENABLED: true
+    volumes:
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
+      - type: bind
+        source: ./nginx_mountpoint/certs/${DOMAIN}.pem
+        target: /opt/keycloak/conf/server.crt.pem
+        read_only: true
+      - type: bind
+        source: ./nginx_mountpoint/certs/${DOMAIN}-key.pem
+        target: /opt/keycloak/conf/server.key.pem
+        read_only: true
+    restart: unless-stopped
+    command: ${KC_CMD}
+    healthcheck:
+      test: curl localhost:8080/health | grep -q "UP"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 8080:8080
+    networks:
+      #- sp-net
+      - omicsdm_sp-net
+
   rabbitmq:
     image: rabbitmq:3.13.0-rc.4-management-alpine
+    ports:
+        - 5672:5672
+        - 15672:15672
     environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=admin1234
+        - RABBITMQ_DEFAULT_USER=admin
+        - RABBITMQ_DEFAULT_PASS=admin1234
     networks:
-      - api-nw
+        #- sp-net
+        - omicsdm_sp-net
 
   redis:
     image: redis:7.2.4-alpine
+    ports:
+        - 6379:6379
     networks:
-      - api-nw
+        #- sp-net
+        - omicsdm_sp-net
 
   celery-worker:
     build:
-      context: ./omicsdm_server
-      # target: dev
+      context: ./omicsdm-server
+       # target: dev
       args:
         - IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}
     depends_on:
-      - api-omicsdm-db
       - rabbitmq
       - redis
     volumes:
-      - ./omicsdm_server/server/config/config.py:/usr/src/app/server/config/config.py
+      - ./omicsdm-server/server/config/config.py:/usr/src/app/server/config/config.py
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./omicsdm_server/server/apis/analysis.py:/usr/src/app/server/apis/analysis.py
-    command: [celery,--config,server.config.celeryconfig,-A,server.app.celery,worker,--loglevel=info,-E]
+      - ./omicsdm-server/server/apis/analysis.py:/usr/src/app/server/apis/analysis.py
+      - ./omicsdm-server/pipelines:/usr/src/app/pipelines
+    command: [
+       celery,--config,server.config.celeryconfig,
+       -A,server.app.celery,worker,--loglevel=info,-E,
+       --concurrency=4,-O,fair]
     networks:
-      - api-nw
+      #- sp-net
+      - omicsdm_sp-net
+
+  flower:
+    image: mher/flower:2.0.1
+    environment:
+        - CELERY_BROKER_URL=amqp://admin:admin1234@rabbitmq:5672//
+    depends_on:
+        - rabbitmq
+    command: [
+      "celery","flower",
+      "--broker_api=http://admin:admin1234@rabbitmq:15672/api/",
+      "--url_prefix=flower"]
+    networks:
+      #- sp-net
+      - omicsdm_sp-net
+
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      #- sp-net
+      - omicsdm_sp-net
+    environment:
+      - DOZZLE_BASE=/dozzle
+
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: ghcr.io/joeferner/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - URL_PREFIX=/rdc
+    user: redis
+    networks:
+      #- sp-net
+      - omicsdm_sp-net
+
+  #for the analysis module if using multiple virtual machines
+  docker-registry:
+    image: registry:2
+    container_name: docker-registry
+    restart: unless-stopped
+    environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Local Registry Realm
+      
+      #REGISTRY_HTTP_PREFIX: /docker  # Inform the registry about the subpath
+      #REGISTRY_HTTP_TLS_CERTIFICATE: /certs/${DOMAIN}.pem
+      #REGISTRY_HTTP_TLS_KEY: /certs/${DOMAIN}-key.pem
+      #REGISTRY_HTTP_ADDR: https://omicsdm.cnag.dev/docker/ 
+    volumes:
+      - ./docker-registry_data/data:/var/lib/registry
+      - ./docker-registry_data/auth:/auth:ro
+      - ./nginx_mountpoint/certs:/certs:ro
+    networks:
+      - omicsdm_sp-net
+      #- sp-net
+    # ports:
+    #  - 5000:5000
+
+  # s3fs:
+  #   privileged: true
+  #   image: efrecon/s3fs:1.94
+  #   restart: always
+  #   environment:
+  #     - AWS_S3_BUCKET=bucketdevel3tropal
+  #     - AWS_S3_ACCESS_KEY_ID=admin
+  #     - AWS_S3_SECRET_ACCESS_KEY=12345678
+  #     - AWS_S3_URL=http://s3bucket:9000
+  #   volumes:
+  #   # This also mounts the S3 bucket to `/mnt/s3data` on the host machine
+  #     - /mnt/s3data:/opt/s3fs/bucket:shared
+
+  test:
+    image: alpine:latest
+    container_name: alpine
+    volumes:
+      - s3data:/mnt/s3data
+    command: sleep infinity # Keeps the container running
+    stdin_open: true # Optional: Allows interaction with the container via `docker exec`
+    tty: true # Optional: Allows a pseudo-TTY for interactive shell
 
 volumes:
-  postgres-data-omicsdm:
+  postgres-data:
+  minio_data:
+  s3data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/devel/ileist/repos/OmicsDM/omicsdm-server/s3fs_mountpoint
+      o: bind
 
 networks:
-  devops_vm_reverseproxy-nw:
+  omicsdm_default:
     external: true
-  api-nw:
+  omicsdm_sp-net:
+    external: true
+
+#networks:
+  #sp-net:
+    # driver: bridge
+    # ipam:
+    #   config:
+    #     - subnet: 192.168.100.0/24

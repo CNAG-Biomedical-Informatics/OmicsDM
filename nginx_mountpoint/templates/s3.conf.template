@@ -1,0 +1,23 @@
+server {
+    listen 443 ssl; # For IPv4 addresses
+    listen [::]:443 ssl; # For IPv6 addresses
+    ssl_certificate       /etc/nginx/certs/minio.omicsdm.cnag.dev.pem;
+    ssl_certificate_key   /etc/nginx/certs/minio.omicsdm.cnag.dev-key.pem;
+
+    #listen 80;
+    access_log  /var/log/nginx/minio.access.log;
+    server_name minio.omicsdm.cnag.dev;
+
+    location / {   
+        access_log  /var/log/nginx/s3.access.log;
+        error_log  /var/log/nginx/s3.error.log;
+
+        # This is the maximum size of the file that can be uploaded
+        # todo throw an error on the client side if the file is too big
+        client_max_body_size 1G;
+ 
+        include includes/proxy-set-header.conf;
+        #proxy_pass http://s3bucket:9000/bucketdevelomicsdm/;
+        proxy_pass http://s3bucket:9000/;
+    }
+}

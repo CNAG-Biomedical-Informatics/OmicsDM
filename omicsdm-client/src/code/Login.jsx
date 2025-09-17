@@ -20,7 +20,7 @@ import { useSession } from "./SessionContext";
 
 const kcConfig = {
   realm: "Shinyproxy",
-  "auth-server-url": "http://localhost:8080/",
+  "auth-server-url": "https://omicsdm.cnag.dev/auth/", //should not be hardcoded
   resource: "omicsdm",
 };
 

@@ -11,4 +11,4 @@ RUN pip install -r requirements.txt
 ARG IGNORE_CACHE_FROM_HERE=unknown
 RUN echo "IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}"
 COPY server ./server
-COPY ./compose_server.sh .
+#COPY ./compose_server.sh .

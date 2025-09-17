@@ -1,0 +1,5 @@
+# Ignore all PEM files (private keys, certificates)
+*.pem
+
+# Make sure Markdown files are NOT ignored
+!*.md

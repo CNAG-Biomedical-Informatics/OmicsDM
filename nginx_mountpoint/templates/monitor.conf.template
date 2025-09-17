@@ -1,0 +1,50 @@
+server {
+    listen 443 ssl; # For IPv4 addresses
+    listen [::]:443 ssl; # For IPv6 addresses
+    ssl_certificate       /etc/nginx/certs/monitor.omicsdm.cnag.dev.pem;
+    ssl_certificate_key   /etc/nginx/certs/monitor.omicsdm.cnag.dev-key.pem;
+
+    #listen 80;
+    access_log  /var/log/nginx/monitor.access.log;
+    error_log  /var/log/nginx/monitor.error.log;
+    
+    server_name monitor.omicsdm.cnag.dev;
+
+    location /flower {
+    	access_log /var/log/nginx/flower.access.log;
+    	error_log /var/log/nginx/flower.error.log;
+
+	proxy_pass http://flower:5555;
+        include includes/proxy-set-header.conf;	
+    }
+
+    location /dozzle {
+        access_log /var/log/nginx/dozzle.access.log;
+        error_log /var/log/nginx/dozzle.error.log;
+
+        proxy_pass http://dozzle:8080;
+        include includes/proxy-set-header.conf;
+    }
+
+    location /rdc {
+        access_log /var/log/nginx/rdc.access.log;
+        error_log /var/log/nginx/rdc.error.log;
+
+        proxy_pass http://redis-commander:8081;
+        include includes/proxy-set-header.conf;
+    }
+
+     location /s3/ {
+        rewrite   ^/s3/(.*) /$1 break;
+	access_log /var/log/nginx/s3.access.log;
+        error_log /var/log/nginx/s3.error.log;
+
+        proxy_pass http://s3bucket:9001;
+        include includes/proxy-set-header.conf;
+
+	# Support WebSocket for the MinIO Console
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}

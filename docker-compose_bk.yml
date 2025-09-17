@@ -1,0 +1,96 @@
+version: '3.9'
+
+services:
+  api-omicsdm:
+    build:
+      context: ./omicsdm_server
+      # target: dev
+      args:
+        - IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}
+    depends_on:
+      - api-omicsdm-db
+    # ports:
+    #   - 8083:8083
+    env_file:
+      - .env
+    tty: true
+    volumes:
+      - /etc/kubernetes/pki/ca.crt:/home/.kube/ca.crt
+      - ./omicsdm_server/server/config/config.py:/usr/src/app/server/config/config.py
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./omicsdm_server/server/apis/analysis.py:/usr/src/app/server/apis/analysis.py
+
+    command: [ sh, compose_server.sh ]
+    networks:
+      - api-nw
+      - devops_vm_reverseproxy-nw
+
+  api-omicsdm-db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres-data-omicsdm:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${API_DB}
+      - POSTGRES_USER=${API_DB_USER}
+      - POSTGRES_PASSWORD=${API_DB_PW}
+    networks:
+      - api-nw
+
+  client-omicsdm:
+    build:
+      context: ./omicsdm_client
+      args:
+        - IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}
+    depends_on:
+      - api-omicsdm
+    volumes:
+      - ./omicsdm_client/config.js:/usr/share/nginx/html/config.js:ro
+      - ./nginx_mountpoint/logs:/var/log/nginx
+      - ./nginx_mountpoint/templates:/etc/nginx/templates:ro
+      - ./nginx_mountpoint/includes:/etc/nginx/includes:ro
+      - ./nginx_mountpoint/certs/omicsdm.cnag.crg.dev.pem:/etc/nginx/omicsdm.cnag.crg.dev.pem:ro
+      - ./nginx_mountpoint/certs/omicsdm.cnag.crg.dev-key.pem:/etc/nginx/omicsdm.cnag.crg.dev-key.pem:ro
+    environment:
+      NODE_ENV: production
+    networks:
+      - devops_vm_reverseproxy-nw
+    tty: true
+  
+  rabbitmq:
+    image: rabbitmq:3.13.0-rc.4-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin1234
+    networks:
+      - api-nw
+
+  redis:
+    image: redis:7.2.4-alpine
+    networks:
+      - api-nw
+
+  celery-worker:
+    build:
+      context: ./omicsdm_server
+      # target: dev
+      args:
+        - IGNORE_CACHE_FROM_HERE=${IGNORE_CACHE_FROM_HERE}
+    depends_on:
+      - api-omicsdm-db
+      - rabbitmq
+      - redis
+    volumes:
+      - ./omicsdm_server/server/config/config.py:/usr/src/app/server/config/config.py
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./omicsdm_server/server/apis/analysis.py:/usr/src/app/server/apis/analysis.py
+    command: [celery,--config,server.config.celeryconfig,-A,server.app.celery,worker,--loglevel=info,-E]
+    networks:
+      - api-nw
+
+volumes:
+  postgres-data-omicsdm:
+
+networks:
+  devops_vm_reverseproxy-nw:
+    external: true
+  api-nw:
