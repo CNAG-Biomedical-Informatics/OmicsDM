@@ -19,11 +19,11 @@ export const updateTable = (
     column.Header =
       "tooltip" in header
         ? () => (
-          <span title={header.tooltip}>
-            {header.label}{" "}
-            <i className="fa fa-comment-o" aria-hidden="true" />
-          </span>
-        )
+            <span title={header.tooltip}>
+              {header.label}{" "}
+              <i className="fa fa-comment-o" aria-hidden="true" />
+            </span>
+          )
         : header.label;
     column.accessor = header.key;
 
@@ -37,11 +37,9 @@ export const updateTable = (
     }
     column["minWidth"] = 100;
 
-    // 
+    //
 
     if (column.accessor === "healthyControllsIncluded") {
-
-
       column.Filter = ({ filter, onChange }) => (
         <select
           onChange={(event) => onChange(event.target.value)}
@@ -60,8 +58,6 @@ export const updateTable = (
     }
 
     if (column.accessor === "visibility") {
-
-
       column.Filter = ({ filter, onChange }) => (
         <select
           onChange={(event) => onChange(event.target.value)}
@@ -82,7 +78,6 @@ export const updateTable = (
     columns.push(column);
 
     // remove the last column (data policy)
-
   }
 
   //Build data to render on in a table
@@ -210,31 +205,32 @@ export const createRowButton = () => ({
   Cell: ({ original }) => {
     if (original.visualizer === "cellxgene") {
       return (
-        <icon className="cellxgene"
+        <icon
+          className="cellxgene"
           onClick={async () => {
-            console.log("cellxgene button clicked")
+            console.log("cellxgene button clicked");
             try {
               const response = await datasetVisualization(
                 auth.getToken(),
                 config.api_endpoint,
                 JSON.stringify({
-                  'dataset_owner': original.owner,
-                  'dataset_id': original.dataset_id,
-                  'file_name': original.name,
-                  'file_version': original.version
+                  dataset_owner: original.owner,
+                  dataset_id: original.dataset_id,
+                  file_name: original.name,
+                  file_version: original.version,
                 })
-              )
-              console.log(response)
+              );
+              console.log(response);
               const msg = await response.text();
               if (response.status !== 200) {
-                alert("Server error: " + response.status + " with message: " + msg);
-              } else {
-                const url = await JSON.parse(msg).data
-                console.log(url)
-                window.open(
-                  `${url}`
+                alert(
+                  "Server error: " + response.status + " with message: " + msg
                 );
-                alert("cellxgene instance opened in a new tab at " + url)
+              } else {
+                const url = await JSON.parse(msg).data;
+                console.log(url);
+                window.open(`${url}`);
+                alert("HERE cellxgene instance opened in a new tab at " + url);
               }
             } catch (err) {
               alert("Server is not responding: ", err);

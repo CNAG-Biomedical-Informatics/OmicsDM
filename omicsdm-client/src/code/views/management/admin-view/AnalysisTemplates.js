@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
 import toast from "react-hot-toast";
@@ -29,31 +25,30 @@ import { TableWithDeleteRowButton } from "../../components/dataTable/DataTable";
 // add a custom text for no rows found
 
 // e.g.
-{/* <Typography variant="body2" color="textSecondary" align="center">
+{
+  /* <Typography variant="body2" color="textSecondary" align="center">
   No templates available. Please add a new template.
-</Typography> */}
+</Typography> */
+}
 
 const AddOrModifyAnalysisTemplate = (props) => {
-
   const { setTemplates } = props;
 
   const [content, setContent] = useState({ json: {} });
   const [formValues, setFormValues] = useState({});
 
-  const exampleTemplates = ["deseq2", "getgo", "fgsea"]
+  const exampleTemplates = ["deseq2", "getgo", "fgsea", "gsva", "z-scoring"];
 
   const save = async () => {
     console.log("content", content);
 
     let analysisJson = null;
-    analysisJson = content.text === undefined
-      ? content.json
-      : JSON.parse(content.text);
+    analysisJson =
+      content.text === undefined ? content.json : JSON.parse(content.text);
 
     // const analysisJson = JSON.parse(content.text);
 
-    console.log("analysisJson", analysisJson)
-
+    console.log("analysisJson", analysisJson);
 
     console.log("formValues", formValues);
 
@@ -98,24 +93,25 @@ const AddOrModifyAnalysisTemplate = (props) => {
 
     setFormValues({
       analysisType: "bulk RNA-seq",
-      description: `Example analysis template for ${template}`
+      description: `Example analysis template for ${template}`,
     });
-  }
+  };
 
   return (
     <>
       <p>Add the analysis settings below</p>
       <Grid item xs={12}>
         <Typography>Examples</Typography>
-        {exampleTemplates.map((template) => ((
+        {exampleTemplates.map((template) => (
           <OMICSDM_BUTTON
             onClick={() => {
               handleExampleButtonClicked(template);
             }}
-          > {template}
+          >
+            {" "}
+            {template}
           </OMICSDM_BUTTON>
-        ))
-        )}
+        ))}
       </Grid>
       <br />
       <Grid container spacing={2}>
@@ -139,36 +135,31 @@ const AddOrModifyAnalysisTemplate = (props) => {
             InputLabelProps={{ shrink: !!formValues.description }}
           />
         </Grid>
-      </Grid >
+      </Grid>
       <br />
-      <Grid container spacing={2} >
+      <Grid container spacing={2}>
         <Grid item xs={6}>
-          <JSONEditorWrapper
-            content={content}
-            onChange={setContent}
-          />
+          <JSONEditorWrapper content={content} onChange={setContent} />
         </Grid>
         <Grid item xs={6}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={save}
-          > Save to Server </Button>
+          <Button variant="contained" color="primary" onClick={save}>
+            {" "}
+            Save to Server{" "}
+          </Button>
         </Grid>
       </Grid>
     </>
-  )
-}
+  );
+};
 
 export default function AnalysisTemplates() {
-
   const [templates, setTemplates] = useState([]);
 
   useEffect(() => {
     const fetchTemplates = async () => {
       const query = {
-        analysisLevel: "analysisTypes"
-      }
+        analysisLevel: "analysisTypes",
+      };
       const response = await analysisTemplatesList(
         auth.getToken(),
         config.api_endpoint,
@@ -192,7 +183,9 @@ export default function AnalysisTemplates() {
 
     if (response.ok) {
       toast.success("Analysis template deleted successfully");
-      const updatedTemplates = templates.filter((template) => template.name !== templateName);
+      const updatedTemplates = templates.filter(
+        (template) => template.name !== templateName
+      );
       setTemplates(updatedTemplates);
     } else {
       toast.error("Error deleting analysis template");
@@ -207,12 +200,12 @@ export default function AnalysisTemplates() {
   // add an extra field type which specifies the pipeline type
   // snakemaker or nextflow
 
-  const data = []
+  const data = [];
   for (const template of templates) {
     data.push({
       analysisType: template.analysisType,
       name: template.name,
-      description: template.description
+      description: template.description,
     });
   }
 

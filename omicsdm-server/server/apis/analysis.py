@@ -230,12 +230,6 @@ def run_analysis(self, analysis_id, name, options, group_name):
     docker_registry = "docker.omicsdm.cnag.dev"
     image_name = f"{docker_registry}/r-{name}:{image_version}"
 
-    if name == "sc_gene_sets_scoring":
-        image_version = "1.0.4"
-        image_name = f"{docker_registry}/sc-gene-sets-scoring:{image_version}"
-
-    # image_name = f"{name}:{image_version}"
-
     # TODO
     # this should not be limited to snakemake
     # but nextflow should be supported as well
@@ -243,6 +237,16 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # in debug mode
     # cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
     cmd = ["/home/venv/bin/snakemake", "-c1", "--nolock", "--nocolor"]
+
+    if name in ["gsva", "z-scoring"]:
+        image_version = "1.0.7"
+        image_name = f"{docker_registry}/sc-gene-sets-scoring:{image_version}"
+
+        method = "Zscores"
+        if name == "gsva":
+            method = "GSVA"
+
+        cmd = cmd + ["--config", f"method={method}"]
 
     # convert the options to a JSON string
     json_data = json.dumps(options)
@@ -260,9 +264,15 @@ def run_analysis(self, analysis_id, name, options, group_name):
 
     # this is only working when celery-worker is not running in a container
     # otherwise it needs the full_path on the docker-compose host
-    pipeline_path = Path(app.root_path).parent / "pipelines/snakemake" / name
-    print("pipeline_path", pipeline_path)
 
+    if name in ["gsva", "z-scoring"]:
+        pipeline_path = (
+            Path(app.root_path).parent / "pipelines/snakemake" / "gene_sets_scoring"
+        )
+    else:
+        pipeline_path = Path(app.root_path).parent / "pipelines/snakemake" / name
+
+    print("pipeline_path", pipeline_path)
     snakefile_path = str(pipeline_path / "Snakefile")
     renviron_path = str(pipeline_path / ".Renviron")
     scripts_path = str(pipeline_path / "src")
@@ -312,6 +322,8 @@ def run_analysis(self, analysis_id, name, options, group_name):
             extra_hosts={  # only needed when running it locally
                 "minio.omicsdm.cnag.dev": "172.16.10.112"
             },
+            mem_limit="6g",
+            memswap_limit="6g",  # no swap beyond that
         )
 
         # Connect the container to the Docker Compose network
@@ -1552,7 +1564,6 @@ class AnalysisTypes(Resource):
             res.append(
                 {
                     "name": analysis,
-                    # "description": "Templates for " + analysis + " analysis",
                     "description": "",
                 }
             )
@@ -1792,6 +1803,9 @@ class AnalysisTemplateQuery(Resource):
         """
         request_data = request.get_json()
 
+        print("HEEEERE request_data")
+        print(request_data)
+
         analysis_name = request_data.get("analysisName")
         analysis_level = request_data.get("analysisLevel")
         selected_files = request_data.get("selectedFiles")
@@ -1826,9 +1840,12 @@ class AnalysisTemplateQuery(Resource):
 
         query = db.session.query(AnalysisTemplates)
 
+        # from sqlalchemy import func
+
+        # query.filter(AnalysisTemplates.analysis_type == analysis_name)
         if analysis_level == "analysisTypes":
             query = query.filter(
-                AnalysisTemplates.analysis_type == analysis_name
+                AnalysisTemplates.analysis_type.ilike(f"%{analysis_name}%")
             ).filter(AnalysisTemplates.based_on == [])
 
         elif analysis_level == "base":

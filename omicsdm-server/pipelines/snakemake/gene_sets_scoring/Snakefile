@@ -4,7 +4,6 @@ PROJ_NAME = "sc_gene_sets_scoring"
 runR = "Rscript --no-save --no-restore --verbose"
 logAll = "2>&1"
 
-
 rule all:
     input:
         report_html=f"out/_main.html",
@@ -44,10 +43,10 @@ rule analysis:
         "log/analysis.log",
     shell:
         """
-        python3 /script/scRNA_GeneSetScoring.py \
+        venv/bin/python3 src/scRNA_GeneSetScoring.py \
             --path in/data.h5ad \
             --gene_sets in/modules.gmt \
-            --method Zscores | tee {log}
+            --method {config[method]} | tee {log}
 
         mkdir -p out/results
         cp data_scored.h5ad out/results/data_scored.h5ad

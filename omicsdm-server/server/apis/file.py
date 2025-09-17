@@ -835,7 +835,7 @@ def run_cellxgene_launch_script(s3_key, userid, token):
         jsonify(
             {
                 "message": "File metadata inserted in database",
-                "shiny_proxy_url": url,
+                "url": url,
             }
         ),
         200,
@@ -909,9 +909,17 @@ class FileCellxgene(Resource):
                 return make_response(
                     jsonify({"message": "Analysis result not found"}), 404
                 )
+            
+            # s3_key = f"{analysis_id}/sc_gene_sets_scoring/out/results/data_scored.h5ad"
+            # s3_key = "3tr_sgfeg4g4444/sc_gene_sets_scoring/out/results/data_scored.h5ad"
 
-            s3_key = "3tr_sgfeg4g4444/sc_gene_sets_scoring/out/results/data_scored.h5ad"
-            s3_path = "sc_gene_sets_scoring/out/results/data_scored.h5ad"
+            # TODO
+            # z-scoring should not be hardcoded
+
+            # TODO
+            # it would be good to have "_z_scored" or "_gsva_scored" in the file name
+
+            s3_path = "z-scoring/out/results/data_scored.h5ad"
             s3_key = f"{analysis_id}/{s3_path}"
 
             res = run_cellxgene_launch_script(s3_key, userid, token)

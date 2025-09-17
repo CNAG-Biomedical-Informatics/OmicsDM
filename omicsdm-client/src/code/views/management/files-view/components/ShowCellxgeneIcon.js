@@ -39,7 +39,7 @@ const CellxgeneButton = ({ row }) => {
       } else {
         const url = JSON.parse(msg).shiny_proxy_url;
         window.open(url);
-        alert("cellxgene instance opened in a new tab at " + url);
+        alert("HERE 2 cellxgene instance opened in a new tab at " + url);
       }
     } catch (err) {
       console.error("ERROR", err);

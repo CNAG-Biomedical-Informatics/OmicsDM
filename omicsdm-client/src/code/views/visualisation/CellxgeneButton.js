@@ -16,7 +16,7 @@ const CellxgeneButton = ({ fileOrAnalysis }) => {
   let payload = {};
   if (fileOrAnalysis.isAnalysisResult) {
     payload["isAnalysisResult"] = true;
-    payload["analysis_id"] = "3tr_sgfeg4g4444";
+    payload["analysis_id"] = window.location.href.split("/").pop();
     payload["file_name"] = "data_scored.h5ad";
   } else {
     payload = {
@@ -44,11 +44,13 @@ const CellxgeneButton = ({ fileOrAnalysis }) => {
       );
       console.log(response);
       const msg = await response.text();
+      console.log("msg", msg);
       if (response.status === 200) {
-        const url = await JSON.parse(msg).data;
-        console.log(url);
-        window.open(`${url}`);
-        alert(`cellxgene instance opened in a new tab at ${url}`);
+        const data = await JSON.parse(msg);
+        console.log("JSON.parse(msg)", JSON.parse(msg));
+        console.log(data.url);
+        window.open(`${data.url}`);
+        alert(`HERE 3 cellxgene instance opened in a new tab at ${data.url}`);
       } else {
         alert(`Server error: ${response.status} with message: ${msg}`);
       }

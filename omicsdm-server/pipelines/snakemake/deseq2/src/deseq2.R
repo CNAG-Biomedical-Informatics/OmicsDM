@@ -31,10 +31,21 @@ library("dplyr", character.only = TRUE)
 library("openxlsx", character.only = TRUE)
 
 libs <- c(
-  "jsonlite", "stringr", "glue",
-  "DESeq2", "BiocParallel", "pheatmap",
-  "RColorBrewer", "ggplot2", "genefilter",
-  "gridExtra", "grid", "methods", "tibble", "dplyr", "openxlsx"
+  "jsonlite",
+  "stringr",
+  "glue",
+  "DESeq2",
+  "BiocParallel",
+  "pheatmap",
+  "RColorBrewer",
+  "ggplot2",
+  "genefilter",
+  "gridExtra",
+  "grid",
+  "methods",
+  "tibble",
+  "dplyr",
+  "openxlsx"
 )
 for (lib in libs) {
   print(lib)
@@ -109,7 +120,6 @@ getEnv_fromObj <- function(cfg) {
 }
 
 
-
 # read in json passed from omicsdm_server
 script_options <- fromJSON("analysis_options.json")
 project <- paste("out/results/", script_options$project, sep = "")
@@ -166,14 +176,21 @@ print(names(head(coldata)))
 # source(config)
 if (!is.null(covariants$factor)) {
   for (i in seq(length(names(covariants$factor)))) {
-    coldata[, covariants$factor[[i]]] <- as.factor(coldata[, covariants$factor[[i]]])
+    coldata[, covariants$factor[[i]]] <- as.factor(coldata[, covariants$factor[[
+      i
+    ]]])
   }
 }
 
 if (!is.null(covariants$continuous)) {
   for (i in seq(length(names(covariants$continuous)))) {
-    levels_tmp <- paste(names(covariants$continuous)[i], seq(as.numeric(covariants$continuous[[i]][2])), sep = "")
-    coldata[, covariants$continuous[[i]][1]] <- cut(coldata[, covariants$continuous[[i]][1]],
+    levels_tmp <- paste(
+      names(covariants$continuous)[i],
+      seq(as.numeric(covariants$continuous[[i]][2])),
+      sep = ""
+    )
+    coldata[, covariants$continuous[[i]][1]] <- cut(
+      coldata[, covariants$continuous[[i]][1]],
       as.numeric(covariants$continuous[[i]][2]),
       labels = levels_tmp
     )
@@ -199,10 +216,15 @@ dds <- DESeqDataSetFromMatrix(
 )
 
 dds <- estimateSizeFactors(dds)
-bc_per_group <- lapply(unique(coldata$group), function(x) rownames(coldata)[coldata$group == x])
+bc_per_group <- lapply(unique(coldata$group), function(x) {
+  rownames(coldata)[coldata$group == x]
+})
 all_members <- function(x) {
   if (length(x) > 1) {
-    return(rowSums(counts(dds, normalized = TRUE)[, unlist(x)] >= 0) == length(unlist(x)))
+    return(
+      rowSums(counts(dds, normalized = TRUE)[, unlist(x)] >= 0) ==
+        length(unlist(x))
+    )
   } else {
     return(counts(dds, normalized = TRUE)[, unlist(x)] >= 0)
   }
@@ -222,6 +244,7 @@ print(sessionInfo())
 if (!onlypca) {
   # if (!args$onlypca){
   dds <- DESeq(dds, parallel = TRUE)
+  # dds <- DESeq(dds, parallel = FALSE)
 }
 
 ############## POLTS SENSE CONTRASTOS ############################################################
@@ -245,12 +268,21 @@ if ((plot)) {
   pdf(paste(project, "_sampletosample_heatmap.pdf", sep = ""), onefile = FALSE)
   # pdf(paste(args$project,"_sampletosample_heatmap.pdf",sep=""),onefile=FALSE)
   # annotation_heatmap = as.data.frame(sapply(plot_atr$heatmap_ann,function(x) eval(parse(text=x))), row.names = colnames(coldata))
-  annotation_heatmap <- as.data.frame(colData(dds)[, plot_atr$heatmap_ann], row.names = row.names(colData(dds)))
+  annotation_heatmap <- as.data.frame(
+    colData(dds)[, plot_atr$heatmap_ann],
+    row.names = row.names(colData(dds))
+  )
   names(annotation_heatmap) <- plot_atr$heatmap_ann
   ## SAVED: annotation_col = as.data.frame(coldata[,plot_atr$heatmap_ann]
-  pheatmap(sampleDistMatrix,
-    clustering_distance_rows = sampleDists, clustering_distance_cols = sampleDists, col = colors,
-    fontsize = 4, border_color = NA, annotation_col = annotation_heatmap, row.names = row.names(coldata)
+  pheatmap(
+    sampleDistMatrix,
+    clustering_distance_rows = sampleDists,
+    clustering_distance_cols = sampleDists,
+    col = colors,
+    fontsize = 4,
+    border_color = NA,
+    annotation_col = annotation_heatmap,
+    row.names = row.names(coldata)
   )
   dev.off()
   print("sample correlation heatmap done")
@@ -276,12 +308,30 @@ if (plot) {
 
   pdf(paste(project, "_pca.pdf", sep = ""))
   # pdf(paste(args$project,"_pca.pdf", sep=""))
-  print(ggplot() +
-    geom_text(aes_q(x = pca$x[, dims[1, 1]], y = pca$x[, dims[2, 1]], color = color_factor, label = as.factor(dds[["group"]]))) +
-    xlab(paste(colnames(pca$x)[1], " (", round(percentVar[1] * 100, digits = 2), "%)", sep = "")) +
-    ylab(paste(colnames(pca$x)[2], " (", round(percentVar[2] * 100, digits = 2), "%)", sep = "")) +
-    theme(legend.title = element_blank()))
-
+  print(
+    ggplot() +
+      geom_text(aes_q(
+        x = pca$x[, dims[1, 1]],
+        y = pca$x[, dims[2, 1]],
+        color = color_factor,
+        label = as.factor(dds[["group"]])
+      )) +
+      xlab(paste(
+        colnames(pca$x)[1],
+        " (",
+        round(percentVar[1] * 100, digits = 2),
+        "%)",
+        sep = ""
+      )) +
+      ylab(paste(
+        colnames(pca$x)[2],
+        " (",
+        round(percentVar[2] * 100, digits = 2),
+        "%)",
+        sep = ""
+      )) +
+      theme(legend.title = element_blank())
+  )
 
   grid_arrange_shared_legend <- function(plots) {
     #  plots <- list(...)
@@ -289,9 +339,12 @@ if (plot) {
     legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
     lheight <- sum(legend$height)
     grid.arrange(
-      do.call(arrangeGrob, lapply(plots, function(x) {
-        x + theme(legend.position = "none")
-      })),
+      do.call(
+        arrangeGrob,
+        lapply(plots, function(x) {
+          x + theme(legend.position = "none")
+        })
+      ),
       legend,
       ncol = 1,
       heights = unit.c(unit(1, "npc") - lheight, lheight)
@@ -300,9 +353,25 @@ if (plot) {
 
   toplot <- lapply(c(2:dim(dims)[2]), function(i) {
     ggplot() +
-      geom_point(aes_q(x = pca$x[, dims[1, i]], y = pca$x[, dims[2, i]], color = color_factor)) +
-      xlab(paste(colnames(pca$x)[dims[1, i]], " (", round(percentVar[dims[1, i]] * 100, digits = 2), "%)", sep = "")) +
-      ylab(paste(colnames(pca$x)[dims[2, i]], " (", round(percentVar[dims[2, i]] * 100, digits = 2), "%)", sep = "")) +
+      geom_point(aes_q(
+        x = pca$x[, dims[1, i]],
+        y = pca$x[, dims[2, i]],
+        color = color_factor
+      )) +
+      xlab(paste(
+        colnames(pca$x)[dims[1, i]],
+        " (",
+        round(percentVar[dims[1, i]] * 100, digits = 2),
+        "%)",
+        sep = ""
+      )) +
+      ylab(paste(
+        colnames(pca$x)[dims[2, i]],
+        " (",
+        round(percentVar[dims[2, i]] * 100, digits = 2),
+        "%)",
+        sep = ""
+      )) +
       theme(legend.title = element_blank(), legend.position = "none")
   })
 
@@ -312,20 +381,40 @@ if (plot) {
   dims <- combn(c(5:ifelse(dim(pca$x)[2] < 8, dim(pca$x)[2], 8)), 2)
   toplot <- lapply(c(1:dim(dims)[2]), function(i) {
     ggplot() +
-      geom_point(aes_q(x = pca$x[, dims[1, i]], y = pca$x[, dims[2, i]], color = color_factor)) +
-      xlab(paste(colnames(pca$x)[dims[1, i]], " (", round(percentVar[dims[1, i]] * 100, digits = 2), "%)", sep = "")) +
-      ylab(paste(colnames(pca$x)[dims[2, i]], " (", round(percentVar[dims[2, i]] * 100, digits = 2), "%)", sep = "")) +
+      geom_point(aes_q(
+        x = pca$x[, dims[1, i]],
+        y = pca$x[, dims[2, i]],
+        color = color_factor
+      )) +
+      xlab(paste(
+        colnames(pca$x)[dims[1, i]],
+        " (",
+        round(percentVar[dims[1, i]] * 100, digits = 2),
+        "%)",
+        sep = ""
+      )) +
+      ylab(paste(
+        colnames(pca$x)[dims[2, i]],
+        " (",
+        round(percentVar[dims[2, i]] * 100, digits = 2),
+        "%)",
+        sep = ""
+      )) +
       theme(legend.title = element_blank(), legend.position = "none")
   })
-
 
   # grid.arrange(grobs = toplot, nrow=3)
   grid_arrange_shared_legend(toplot)
 
   dev.off()
 
-  write.table(sweep(abs(pca$rotation), 2, colSums(abs(pca$rotation)), "/"), paste(project, "_pc_contribution.txt", sep = ""),
-    sep = "\t", quote = F, row.names = T, col.names = T
+  write.table(
+    sweep(abs(pca$rotation), 2, colSums(abs(pca$rotation)), "/"),
+    paste(project, "_pc_contribution.txt", sep = ""),
+    sep = "\t",
+    quote = F,
+    row.names = T,
+    col.names = T
   )
   # write.table( sweep(abs(pca$rotation), 2, colSums(abs(pca$rotation)), "/"), paste(args$project,'_pc_contribution.txt', sep=""),
   #              sep = "\t", quote = F,row.names = T, col.names = T)
@@ -333,12 +422,16 @@ if (plot) {
 
 ################## CONTRASTS FROM NOW ###############################################
 
-
 ## EXTRACT RESULTS ##
 process_contrast <- function(title, contrastos) {
   print(glue("process {title}"))
 
-  resAll <- results(dds, cooksCutoff = TRUE, contrast = contrastos, parallel = FALSE)
+  resAll <- results(
+    dds,
+    cooksCutoff = TRUE,
+    contrast = contrastos,
+    parallel = FALSE
+  )
   res2 <- lfcShrink(dds, contrast = contrastos, res = resAll, type = "normal")
   res <- subset(res2, abs(log2FoldChange) > log2(1.5))
   resOrdered <- res[order(res$padj), ]
@@ -347,7 +440,12 @@ process_contrast <- function(title, contrastos) {
   ## EXTRACT COUNTS NORMALIZED ##
   c <- counts(dds, normalized = TRUE)
   c_ordered <- c[rownames(resAllOrdered), ]
-  colnames(c_ordered) <- paste(dds[[contrastos[1]]], ",", colnames(c_ordered), sep = "")
+  colnames(c_ordered) <- paste(
+    dds[[contrastos[1]]],
+    ",",
+    colnames(c_ordered),
+    sep = ""
+  )
   counts_dds <- (c_ordered[, order(colnames(c_ordered))])
   cc <- round(counts_dds, digits = 2)
 
@@ -362,16 +460,41 @@ process_contrast <- function(title, contrastos) {
   sink()
 
   ## WRITE TABLE RESULTS ##
-  write.table(cc, paste(project, "_", title, "_norm_counts.txt", sep = ""), quote = FALSE)
+  write.table(
+    cc,
+    paste(project, "_", title, "_norm_counts.txt", sep = ""),
+    quote = FALSE
+  )
   # write.table(cc, paste(args$project,"_",title,"_norm_counts.txt",sep=""),quote=FALSE)
-  pass_filter <- as.numeric(as.numeric(rownames(resAllOrdered) %in% rownames(resOrdered)) & (resAllOrdered$padj < 0.05))
+  pass_filter <- as.numeric(
+    as.numeric(rownames(resAllOrdered) %in% rownames(resOrdered)) &
+      (resAllOrdered$padj < 0.05)
+  )
 
   df_all <- as.data.frame(resAllOrdered)
   df_all["filter"] <- pass_filter
   df_all["shrunkenlfc"] <- res2[rownames(df_all), "log2FoldChange"]
-  df_all <- df_all[, c("baseMean", "log2FoldChange", "shrunkenlfc", "lfcSE", "stat", "filter", "pvalue", "padj")]
-  write.table(df_all, paste(project, "_", title, "_results.txt", sep = ""), quote = FALSE)
-  write.xlsx(df_all, paste(project, "_", title, "_results.xlsx", sep = ""), row.names = TRUE, colWidths = rep("auto", 9))
+  df_all <- df_all[, c(
+    "baseMean",
+    "log2FoldChange",
+    "shrunkenlfc",
+    "lfcSE",
+    "stat",
+    "filter",
+    "pvalue",
+    "padj"
+  )]
+  write.table(
+    df_all,
+    paste(project, "_", title, "_results.txt", sep = ""),
+    quote = FALSE
+  )
+  write.xlsx(
+    df_all,
+    paste(project, "_", title, "_results.xlsx", sep = ""),
+    row.names = TRUE,
+    colWidths = rep("auto", 9)
+  )
 
   # write.table(df_all,paste(args$project,"_", title,"_results.txt",sep=""),quote=FALSE)
   print("DE analysis finished")
@@ -379,16 +502,43 @@ process_contrast <- function(title, contrastos) {
   if ((plot) & (length(rownames(resOrdered)) >= plot_atr$de_genes_n)) {
     # if ((args$plot) & (length(rownames(resOrdered))>=plot_atr$de_genes_n)){
     select <- rlogMat[rownames(resOrdered), ][1:plot_atr$de_genes_n, ]
-    data_subset <- subset(colData(dds), dds[[contrastos[1]]] %in% c(contrastos[3], contrastos[2]))
+    data_subset <- subset(
+      colData(dds),
+      dds[[contrastos[1]]] %in% c(contrastos[3], contrastos[2])
+    )
     select2 <- select[, row.names(data_subset)]
 
-    df <- as.data.frame(data_subset[, plot_atr$heatmap_ann], row.names = row.names(data_subset))
+    df <- as.data.frame(
+      data_subset[, plot_atr$heatmap_ann],
+      row.names = row.names(data_subset)
+    )
     colnames(df) <- c(plot_atr$heatmap_ann)
 
-    pdf(paste(project, "_", title, "_top", plot_atr$de_genes_n, "DEgenes_heatmap.pdf", sep = ""), onefile = FALSE)
+    pdf(
+      paste(
+        project,
+        "_",
+        title,
+        "_top",
+        plot_atr$de_genes_n,
+        "DEgenes_heatmap.pdf",
+        sep = ""
+      ),
+      onefile = FALSE
+    )
     # pdf(paste(args$project,"_",title,"_top50DEgenes_heatmap.pdf",sep=""),onefile=FALSE)
 
-    pheatmap(select2, fontsize_row = 6, show_rownames = TRUE, cluster_rows = TRUE, cluster_cols = TRUE, annotation_col = df, scale = "row", fontsize = 4, show_colnames = FALSE)
+    pheatmap(
+      select2,
+      fontsize_row = 6,
+      show_rownames = TRUE,
+      cluster_rows = TRUE,
+      cluster_cols = TRUE,
+      annotation_col = df,
+      scale = "row",
+      fontsize = 4,
+      show_colnames = FALSE
+    )
     dev.off()
     print(glue("top {plot_atr$de_genes_n} DE genes heatmap done"))
   }
