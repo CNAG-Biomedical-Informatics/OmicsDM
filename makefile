@@ -1,6 +1,7 @@
 #!make
 SHELL := /bin/bash
 
+include .env
 # include .aws.env
 
 CURRENT_DATE = $(shell date)
@@ -100,7 +101,7 @@ create-docker-volume-s3fs:
 	docker volume create \
 		--driver local \
 		--opt type=none \
-		--opt device=/home/devel/ileist/repos/omicsdm/s3fs_mountpoint \
+		--opt device=$(S3FS_MOUNTPOINT) \
 		--opt o=bind \
 		s3data_external
 
@@ -108,12 +109,15 @@ create-docker-volume-cxg:
 	docker volume create \
 		--driver local \
 		--opt type=none \
-		--opt device=/home/devel/ileist/repos/omicsdm/cxg_mountpoint \
+		--opt device=$(CXG_MOUNTPOINT)\
 		--opt o=bind \
 		cxgdata
 
 s3fs-mount-test:
-	s3fs bucketdevelomicsdm s3fs_mountpoint -o passwd_file=minio_secret,use_path_request_style,url=https://minio.omicsdm.cnag.dev,allow_other -o dbglevel=info -f
+	s3fs $(S3_BUCKET) s3fs_mountpoint -o passwd_file=minio_secret,use_path_request_style,url=$(S3_URL),allow_other -o dbglevel=info -f
 
 s3fs-mount:
-	nohup s3fs bucketdevelomicsdm s3fs_mountpoint -o passwd_file=minio_secret,use_path_request_style,url=https://minio.omicsdm.cnag.dev,allow_other -o dbglevel=info -f > s3fs.log 2>&1 &
+	nohup s3fs $(S3_BUCKET) s3fs_mountpoint -o passwd_file=minio_secret,use_path_request_style,url=$(S3_URL),allow_other -o dbglevel=info -f > s3fs.log 2>&1 &
+
+run-test-container-to-check-s3fs:
+	docker run --rm -it -v s3data_external:/mnt busybox sh -lc 'echo "--- mount entry ---";mount | grep "on /mnt ";echo "--- count files ---";ls -la /mnt | wc -l'

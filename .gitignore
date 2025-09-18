@@ -4,4 +4,8 @@
 logs
 ceph
 ceph_mountpoint
+s3fs_mountpoint/*
+s3fs.log
 mockS3/node_modules/
+
+minio_secret

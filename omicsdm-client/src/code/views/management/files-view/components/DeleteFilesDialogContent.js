@@ -80,6 +80,14 @@ const DeleteFilesDialogContent = (props) => {
     ];
   });
 
+  // TODO
+  // Files to be deleted not shown
+
+  // Maybe better have action buttons here
+  // In the first column of the table
+  // One for download (generating presigned url)
+  // Another to trigger "delete"
+
   return (
     <SelectedRowsDialog
       dialogTitle={"Delete Files"}

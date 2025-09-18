@@ -10,6 +10,9 @@ print("start loading libs")
 
 # The aws.s3 needs to be installed using renv
 
+# TODO
+# Do not use aws.s3 but use paws instead
+
 libs <- c("aws.s3", "httr", "jsonlite")
 for (lib in libs) {
   print(lib)

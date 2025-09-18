@@ -65,7 +65,7 @@ proxy:
       # access-groups: [admin, user] #assign the role "user" to all users
       container-network-connections: [omicsdm-server_sp-net]
       container-volumes: ["s3data_external:/bucket"]
-
+      
     - id: flask-demo
       container-image: openanalytics/shinyproxy-flask-demo
       port: 8080

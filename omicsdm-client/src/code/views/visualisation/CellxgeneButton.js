@@ -48,9 +48,9 @@ const CellxgeneButton = ({ fileOrAnalysis }) => {
       if (response.status === 200) {
         const data = await JSON.parse(msg);
         console.log("JSON.parse(msg)", JSON.parse(msg));
-        console.log(data.url);
-        window.open(`${data.url}`);
-        alert(`HERE 3 cellxgene instance opened in a new tab at ${data.url}`);
+        console.log(data.shiny_proxy_url);
+        window.open(`${data.shiny_proxy_url}`);
+        alert(`HERE 3 cellxgene instance opened in a new tab at ${data.shiny_proxy_url}`);
       } else {
         alert(`Server error: ${response.status} with message: ${msg}`);
       }

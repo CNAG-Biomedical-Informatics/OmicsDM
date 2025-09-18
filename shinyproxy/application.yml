@@ -48,7 +48,7 @@ proxy:
         sh,
         "/cxgdata/launch_scripts/#{proxy.userId}.sh"
       ]
-      container-image: cz/cellxgene #entrypoint has been removed
+      container-image: docker.io/cz/cellxgene #entrypoint has been removed
       container-network-connections: [omicsdm_sp-net]
       container-volumes: [
         "/home/devel/ileist/repos/omicsdm/s3fs_mountpoint:/bucket", 

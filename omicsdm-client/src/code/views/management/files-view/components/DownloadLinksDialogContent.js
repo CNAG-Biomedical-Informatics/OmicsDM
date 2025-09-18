@@ -19,6 +19,11 @@ import {
 
 const { config } = window;
 
+// TODO
+// On productions it gets stuck at "Generating download URLs..."
+// on local host it works fine
+// Have not yet reproduced the production error locally
+
 const OpenDownloadLinksDialogBtn = ({ table, setAction }) => {
   return (
     <TableActionButton
