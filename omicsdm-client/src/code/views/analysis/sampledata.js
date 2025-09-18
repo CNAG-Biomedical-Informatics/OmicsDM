@@ -53,7 +53,19 @@ const sampleData = {
         use_reactome_identifier_mapping_file: null,
       },
     },
-    // scRNA-seq - option a
+    // scRNA-seq - after normalisation - option a
+    "sc-normalisation": {
+      report: "sc-normalisation",
+      analysis: "sc-normalisation",
+      files: {
+        h5ad: "PerezRK_subset_pruned.h5ad",
+      },
+      options: {
+        bases_on: null,
+        target_sum: 1e4,
+      },
+    },
+    // scRNA-seq - after normalisation - option b
     gsva: {
       report: "gsva",
       analysis: "gsva",
@@ -70,15 +82,16 @@ const sampleData = {
         // genesets_names_or_pattern: ["*B_CELL*"],
 
         // TODO
-        // inform theu user that at least two genesets are required
+        // inform the user that at least two genesets are required
         genesets_names_or_pattern: [
           "GOBP_PRO_B_CELL_DIFFERENTIATION",
           "GOBP_NEGATIVE_REGULATION_OF_B_CELL_APOPTOTIC_PROCESS",
         ],
-        gsea_pval_threshold: 0.05, // only applies when bases_on is fgsea
-        gsea_min_nes_threshold: 1, // only applies when bases_on is fgsea
+        gsea_pval_threshold: 0.05, // only applies when bases_on includes bulk_fgsea
+        gsea_min_nes_threshold: 1, // only applies when bases_on includes bulk_fgsea
       },
     },
+    // scRNA-seq - after normalisation - option b
     "z-scoring": {
       report: "z-scoring",
       analysis: "z-scoring",
@@ -94,8 +107,8 @@ const sampleData = {
           "GOBP_PRO_B_CELL_DIFFERENTIATION",
           "GOBP_NEGATIVE_REGULATION_OF_B_CELL_APOPTOTIC_PROCESS",
         ],
-        gsea_pval_threshold: 0.05, //only applies when bases_on is fgsea
-        gsea_min_nes_threshold: 1, // only applies when bases_on is fgsea
+        gsea_pval_threshold: 0.05, //only applies when bases_on includes bulk_fgsea
+        gsea_min_nes_threshold: 1, // only applies when bases_on includes bulk_fgsea
       },
     },
   },

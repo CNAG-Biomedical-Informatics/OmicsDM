@@ -30,6 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /home
 
+
 COPY renv.lock .
 ENV RENV_CONFIG_PAK_ENABLED=TRUE
 RUN R -e "renv::restore()"

@@ -248,6 +248,10 @@ def run_analysis(self, analysis_id, name, options, group_name):
 
         cmd = cmd + ["--config", f"method={method}"]
 
+    if name == "sc-normalisation":
+        image_version = "1.0.10"
+        image_name = f"{docker_registry}/sc-normalisation:{image_version}"
+
     # convert the options to a JSON string
     json_data = json.dumps(options)
 
@@ -271,6 +275,11 @@ def run_analysis(self, analysis_id, name, options, group_name):
         )
     else:
         pipeline_path = Path(app.root_path).parent / "pipelines/snakemake" / name
+
+    if name == "sc-normalisation":
+        pipeline_path = (
+            Path(app.root_path).parent / "pipelines/snakemake" / "sc_normalisation"
+        )
 
     print("pipeline_path", pipeline_path)
     snakefile_path = str(pipeline_path / "Snakefile")

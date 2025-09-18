@@ -37,7 +37,7 @@ const AddOrModifyAnalysisTemplate = (props) => {
   const [content, setContent] = useState({ json: {} });
   const [formValues, setFormValues] = useState({});
 
-  const exampleTemplates = ["deseq2", "getgo", "fgsea", "gsva", "z-scoring"];
+  const exampleTemplates = ["deseq2", "sc-normalisation", "getgo", "fgsea", "gsva", "z-scoring"];
 
   const save = async () => {
     console.log("content", content);

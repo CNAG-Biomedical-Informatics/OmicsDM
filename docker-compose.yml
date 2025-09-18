@@ -64,7 +64,7 @@ services:
   # watch out minio crashes the vscode ssh connection 
   # when accessing the minio UI
   s3bucket:
-    image: bitnami/minio:2024.12.18-debian-12-r0
+    image: bitnami/minio:2024.12.18-debian-12-r0 #404 on dockerhub
     ports:
       - 9000:9000
       - 9001:9001
