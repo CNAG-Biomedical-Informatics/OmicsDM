@@ -73,11 +73,10 @@ const sampleData = {
       // TODO
       // it should be possible to select multiple gmts (which should be merged)
       files: {
-        h5ad: "PerezRK_subset_pruned.h5ad", //TODO better call the option "annData"
         gmt: "min.gmt", // 2 genesets from GO_BP_selected_subset.gmt
       },
       options: {
-        bases_on: null,
+        bases_on: "sc-normalisation",
         label_transfer_on_h5ad: "TRUE",
         // genesets_names_or_pattern: ["*B_CELL*"],
 
@@ -87,8 +86,8 @@ const sampleData = {
           "GOBP_PRO_B_CELL_DIFFERENTIATION",
           "GOBP_NEGATIVE_REGULATION_OF_B_CELL_APOPTOTIC_PROCESS",
         ],
-        gsea_pval_threshold: 0.05, // only applies when bases_on includes bulk_fgsea
-        gsea_min_nes_threshold: 1, // only applies when bases_on includes bulk_fgsea
+        // gsea_pval_threshold: 0.05, // only applies when bases_on includes bulk_fgsea
+        // gsea_min_nes_threshold: 1, // only applies when bases_on includes bulk_fgsea
       },
     },
     // scRNA-seq - after normalisation - option b
@@ -96,19 +95,18 @@ const sampleData = {
       report: "z-scoring",
       analysis: "z-scoring",
       files: {
-        h5ad: "PerezRK_subset_pruned.h5ad",
         gmt: "min.gmt", // 2 genesets from GO_BP_selected_subset.gmt
       },
       options: {
-        bases_on: null,
+        bases_on: "sc-normalisation",
         label_transfer_on_h5ad: "TRUE",
         // genesets_name_or_pattern: ["*B_CELL*"],
         genesets_name_or_pattern: [
           "GOBP_PRO_B_CELL_DIFFERENTIATION",
           "GOBP_NEGATIVE_REGULATION_OF_B_CELL_APOPTOTIC_PROCESS",
         ],
-        gsea_pval_threshold: 0.05, //only applies when bases_on includes bulk_fgsea
-        gsea_min_nes_threshold: 1, // only applies when bases_on includes bulk_fgsea
+        // gsea_pval_threshold: 0.05, //only applies when bases_on includes bulk_fgsea
+        // gsea_min_nes_threshold: 1, // only applies when bases_on includes bulk_fgsea
       },
     },
   },

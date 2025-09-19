@@ -238,19 +238,23 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
     cmd = ["/home/venv/bin/snakemake", "-c1", "--nolock", "--nocolor"]
 
-    if name in ["gsva", "z-scoring"]:
-        image_version = "1.0.7"
-        image_name = f"{docker_registry}/sc-gene-sets-scoring:{image_version}"
+    # if name in ["gsva", "z-scoring"]:
+    #     image_version = "1.0.7"
+    #     image_name = f"{docker_registry}/sc-gene-sets-scoring:{image_version}"
 
-        method = "Zscores"
-        if name == "gsva":
-            method = "GSVA"
+    #     method = "Zscores"
+    #     if name == "gsva":
+    #         method = "GSVA"
 
-        cmd = cmd + ["--config", f"method={method}"]
+    #     cmd = cmd + ["--config", f"method={method}"]
 
     if name == "sc-normalisation":
         image_version = "1.0.10"
         image_name = f"{docker_registry}/sc-normalisation:{image_version}"
+
+    if name == "gsva":
+        image_version = "1.0.12"
+        image_name = f"{docker_registry}/gsva:{image_version}"
 
     # convert the options to a JSON string
     json_data = json.dumps(options)
@@ -269,17 +273,19 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # this is only working when celery-worker is not running in a container
     # otherwise it needs the full_path on the docker-compose host
 
-    if name in ["gsva", "z-scoring"]:
-        pipeline_path = (
-            Path(app.root_path).parent / "pipelines/snakemake" / "gene_sets_scoring"
-        )
-    else:
-        pipeline_path = Path(app.root_path).parent / "pipelines/snakemake" / name
-
+    # if name in ["gsva", "z-scoring"]:
+    #     pipeline_path = (
+    #         Path(app.root_path).parent / "pipelines/snakemake" / "gene_sets_scoring"
+    #     )
+    # else:
+    #     pipeline_path = Path(app.root_path).parent / "pipelines/snakemake" / name
+    #
+    pipeline_path = Path(app.root_path).parent / "pipelines/snakemake" / name
     if name == "sc-normalisation":
         pipeline_path = (
             Path(app.root_path).parent / "pipelines/snakemake" / "sc_normalisation"
         )
+
 
     print("pipeline_path", pipeline_path)
     snakefile_path = str(pipeline_path / "Snakefile")
