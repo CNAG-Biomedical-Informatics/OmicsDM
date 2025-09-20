@@ -24,7 +24,7 @@ def main():
 
     # out_file = os.path.join(args.out_dir, f"{base}_normalised.h5ad")
     out_file = os.path.join(args.out_dir, "normalised.h5ad")
-    adata.write(out_file)
+    adata_filtered.write(out_file)
     print('Saved normalised AnnData to', out_file)
 
 

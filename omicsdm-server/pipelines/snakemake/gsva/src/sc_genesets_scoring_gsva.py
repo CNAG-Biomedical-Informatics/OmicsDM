@@ -12,6 +12,9 @@ import shutil
 import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
 
+# TODO
+# Try to run evything at once 
+
 
 def compute_gsva(adata_filtered, gmt_path, tmp_dir='tmp'):
     """Run GSVA via R (escape) and return DataFrame of scores."""
