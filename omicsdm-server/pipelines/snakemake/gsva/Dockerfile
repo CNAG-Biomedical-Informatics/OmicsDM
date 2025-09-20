@@ -57,7 +57,7 @@ COPY .renvignore .
 COPY renv.lock .
 
 ENV RENV_CONFIG_PAK_ENABLED=TRUE
-# RUN R -e "renv::restore()"
+RUN R -e "renv::restore()"
 
 # TODO
 # Docker image building is failing because R package dependency issues
