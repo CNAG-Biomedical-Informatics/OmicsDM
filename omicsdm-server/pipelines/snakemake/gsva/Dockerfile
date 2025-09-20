@@ -1,18 +1,20 @@
-FROM rocker/r-ver:4.5.0
+# FROM rocker/r-ver:4.5.0
+FROM rocker/r-ver:4.4.0
 # FROM docker.omicsdm.cnag.dev/r-minimal:1.0.2
 
 RUN apt-get update && apt-get install -y \
   curl \
   jq \
-	python3 \
-	python3.12-venv \
-	python3-pip \
-	libxml2 \
-	pandoc \
+  python3 \
+  python3.10-venv \
+  python3-pip \
+  libxml2 \
+  pandoc \
   git \
   libfontconfig1-dev \
   libfreetype6-dev \
   libicu-dev \ 
+  libglpk-dev \
   libpng-dev \ 
   libxml2-dev \
   libfribidi-dev \ 
@@ -55,7 +57,7 @@ COPY .renvignore .
 COPY renv.lock .
 
 ENV RENV_CONFIG_PAK_ENABLED=TRUE
-RUN R -e "renv::restore()"
+# RUN R -e "renv::restore()"
 
 # TODO
 # Docker image building is failing because R package dependency issues

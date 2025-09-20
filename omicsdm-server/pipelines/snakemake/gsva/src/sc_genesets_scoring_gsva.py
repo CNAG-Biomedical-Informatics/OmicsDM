@@ -58,7 +58,7 @@ def compute_gsva(adata_filtered, gmt_path, tmp_dir='tmp'):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='normalise scRNA data.')
+    parser = argparse.ArgumentParser(description='score with gsva.')
     parser.add_argument('--path', required=True, help='Input .h5ad file')
     parser.add_argument('--gene_sets', required=True, help='GMT file of gene sets')
     parser.add_argument('--out_dir', default='.')
