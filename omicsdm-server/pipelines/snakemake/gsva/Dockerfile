@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN python3 -m venv /home/venv
 RUN /home/venv/bin/pip install snakemake
-RUN pip3 install pulp==2.7.0
+RUN /home/venv/bin/pip install pulp==2.7.0
 # reason to use pulp 2.7.0:
 # AttributeError: module 'pulp' has no attribute 'list_solvers'
 # https://github.com/snakemake/snakemake/issues/2607

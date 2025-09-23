@@ -253,7 +253,7 @@ def run_analysis(self, analysis_id, name, options, group_name):
         image_name = f"{docker_registry}/sc-normalisation:{image_version}"
 
     if name == "gsva":
-        image_version = "1.0.13"
+        image_version = "1.0.16"
         image_name = f"{docker_registry}/gsva:{image_version}"
 
     # convert the options to a JSON string
@@ -285,7 +285,6 @@ def run_analysis(self, analysis_id, name, options, group_name):
         pipeline_path = (
             Path(app.root_path).parent / "pipelines/snakemake" / "sc_normalisation"
         )
-
 
     print("pipeline_path", pipeline_path)
     snakefile_path = str(pipeline_path / "Snakefile")
