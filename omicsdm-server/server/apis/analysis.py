@@ -256,6 +256,10 @@ def run_analysis(self, analysis_id, name, options, group_name):
         image_version = "1.0.16"
         image_name = f"{docker_registry}/gsva:{image_version}"
 
+    if name == "z-scoring":
+        image_version = "1.0.17"
+        image_name = f"{docker_registry}/z-scoring:{image_version}"
+
     # convert the options to a JSON string
     json_data = json.dumps(options)
 
@@ -284,6 +288,11 @@ def run_analysis(self, analysis_id, name, options, group_name):
     if name == "sc-normalisation":
         pipeline_path = (
             Path(app.root_path).parent / "pipelines/snakemake" / "sc_normalisation"
+        )
+
+    if name == "z-scoring":
+        pipeline_path = (
+            Path(app.root_path).parent / "pipelines/snakemake" / "z_scoring"
         )
 
     print("pipeline_path", pipeline_path)

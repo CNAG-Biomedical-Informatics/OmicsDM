@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-    Icon,
-    IconButton
+  Icon,
+  IconButton
 } from '@mui/material';
 import styled from '@mui/material/styles/styled';
 
@@ -43,7 +43,7 @@ const CellxgeneButton = ({ row }) => {
       }
     } catch (err) {
       console.error("ERROR", err);
-      alert("Server is not responding: " + err);
+      alert("Server is not responding !: " + err);
     }
   }
 

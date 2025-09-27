@@ -1,3 +1,41 @@
+// Small helper that always either returns parsed data or throws an HTTPError
+export default class HTTPError extends Error {
+  constructor(response, bodyText, parsed) {
+    super(`HTTP ${response.status} ${response.statusText}`);
+    this.name = "HTTPError";
+    this.response = response;
+    this.bodyText = bodyText;
+    this.parsed = parsed;
+  }
+}
+
+export async function requestJson(makeRequest) {
+  // makeRequest must return a fetch Response (or a promise of it)
+  const res = await makeRequest();
+
+  // Read body as text once; try JSON if content-type says so
+  const bodyText = await res.text();
+  let parsed;
+  const ctype = res.headers.get("content-type") || "";
+  if (ctype.includes("application/json") && bodyText) {
+    try {
+      parsed = JSON.parse(bodyText);
+    } catch {
+      /* keep parsed undefined */
+    }
+  }
+
+  if (!res.ok) {
+    throw new HTTPError(res, bodyText, parsed);
+  }
+  // If ok but server sent non-JSON, decide what you prefer; here we require JSON:
+  if (parsed === undefined) {
+    // you could return bodyText instead, if that fits your API
+    throw new Error("Server returned non-JSON success response.");
+  }
+  return parsed;
+}
+
 export async function download_excel(token, urlprefix, arg, excel_name) {
   try {
     const res = await fetch(`${urlprefix}api/template?arg=${arg}`, {

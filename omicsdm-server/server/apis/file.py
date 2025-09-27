@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import codecs
+import re
 import uuid
 import requests
 from requests.exceptions import Timeout
@@ -816,7 +817,62 @@ def run_cellxgene_launch_script(s3_key, userid, token):
         "Content-Type": "application/json",
     }
 
-    print("token", token)
+    # print("token", token)
+
+    # it returns a 401
+    
+    print("Starting cellxgene instance...")
+    # try:
+    #     # call your other server
+    #     r = requests.post(
+    #         url, 
+    #         headers=headers,
+    #         verify=False,
+    #         timeout=10,
+    #     )
+    #     print("Upstream response status:", r.status_code)
+    #     # optional: fail if not 2xx
+    #     r.raise_for_status()
+
+    #     # Inspect upstream response safely
+    #     ct = r.headers.get("Content-Type", "")
+    #     print("Content-Type:", ct)
+    #     body_text = r.text  # may be empty
+    #     # If you expect JSON, guard it:
+    #     upstream_json = None
+    #     if "application/json" in ct and body_text.strip():
+    #         try:
+    #             upstream_json = r.json()
+    #         except ValueError:
+    #             upstream_json = None
+
+    #     print("upstream_json", upstream_json)
+
+    #     msg = "Cellxgene instance started"
+    #     if r.status_code != 200:
+    #         msg = f"Upstream returned {r.status_code}" 
+    #         print("upstream body:", body_text)
+        
+    #     print(msg)
+    #     # Now return a definite JSON to the browser
+    #     return (
+    #         jsonify(
+    #             {
+    #                 "message": msg,
+    #                 "shiny_proxy_url": url
+    #             }
+    #         ),
+    #         200,
+    #     )
+
+    # except requests.Timeout:
+    #     return jsonify({"error": "Upstream timeout"}), 504
+    # except requests.HTTPError as e:
+    #     return jsonify({"error": f"Upstream HTTP {e.response.status_code}"}), 502
+    # except Exception as e:
+    #     print("Error contacting upstream:", str(e))
+    #     # Don’t just print — return a response so the client never gets `null`
+    #     # return jsonify({"error": str(e)}), 500
 
     try:
         response = requests.post(
@@ -827,20 +883,99 @@ def run_cellxgene_launch_script(s3_key, userid, token):
             timeout=10,
         )
         print(response)
+        response.raise_for_status()
+
+        ct = response.headers.get("Content-Type", "")
+        print("Content-Type:", ct)
+        body_text = response.text  # may be empty
+        print("body_text", body_text)
+        # If you expect JSON, guard it:
+        upstream_json = None
+        if "application/json" in ct and body_text.strip():
+            try:
+                upstream_json = response.json()
+            except ValueError:
+                upstream_json = None
+
+        print("upstream_json", upstream_json)
+            
+        return make_response(
+            jsonify(
+                {
+                    "message": "Instance started",
+                    "shiny_proxy_url": url,
+                }
+            ),
+            200,
+        )
+
+    # put below into error handlers
     except Timeout:
         print("Timeout has been raised.")
 
-    # return make_response("cellxgene container started", 200)
-    res = make_response(
-        jsonify(
-            {
-                "message": "File metadata inserted in database",
-                "url": url,
-            }
-        ),
-        200,
-    )
-    return res
+        return make_response(
+            jsonify(
+                {
+                    "message": "Upstream timeout",
+                    "shiny_proxy_url": None,
+                }
+            ),
+            504,
+        )
+    except requests.HTTPError as e:
+        print(f"Upstream HTTP Response code {e.response.status_code}")
+        upstream_body = e.response.text
+        print("Upstream body:", upstream_body)
+
+        if e.response.status_code == 401:
+            return make_response(
+                jsonify(
+                    {
+                        "message": "Unauthorized",
+                        "shiny_proxy_url": None,
+                    }
+            ),
+                401,
+            )
+
+        if e.response.status_code == 400:
+            if upstream_body != "":
+                print("Upstream body:", upstream_body)
+                upstream_json = e.response.json()
+            
+                match = re.search(r"\((.*?)\)", upstream_json["data"])
+                if match:
+                    x_value = match.group(1)
+                    print("Extracted (x) value:", x_value)
+
+            long_msg = (
+                f"Max number of running instances reached. ({x_value}) "
+                "Please close other instances"
+            )
+
+            msg = long_msg if match else "Unhandled error"
+            return make_response(
+                jsonify(
+                    {
+                        "message": msg,
+                        "shiny_proxy_url": None,
+                    }
+                ),
+                400,
+            )        
+
+
+    except Exception as e:
+        print("Error contacting upstream:", str(e))
+        return make_response(
+            jsonify(
+                {
+                    "message": "Error contacting upstream",
+                    "shiny_proxy_url": None,
+                }
+            ),
+            500,
+        ) 
 
 
 @ns.route("/cellxgene", methods=(["POST"]))
@@ -922,6 +1057,11 @@ class FileCellxgene(Resource):
             s3_path = "z-scoring/out/results/data_scored.h5ad"
             s3_key = f"{analysis_id}/{s3_path}"
 
+            # NOTE
+            # The visualisation works when started with the in the view analyses view
+            # but not in the files table
+            # so figure out why
+
             res = run_cellxgene_launch_script(s3_key, userid, token)
             return res
 
@@ -938,53 +1078,58 @@ class FileCellxgene(Resource):
             ds = data["dataset_id"]
             fn = data["file_name"]
             version = data["file_version"]
+            s3_key = f"{owner}/{ds}/{fn}_uploadedVersion_{version}.h5ad"
 
-            cmd_args = [
-                "cellxgene",
-                "launch",
-                "--host",
-                "0.0.0.0",
-                f"/bucket/{owner}/{ds}/{fn}_uploadedVersion_{version}.h5ad",
-            ]
+            print("s3_key", s3_key)
 
-            # with open(f"../cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
-            with open(f"./cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
-                f.write(" ".join(cmd_args))
+            run_cellxgene_launch_script(s3_key, userid, token)
 
-            random_id = str(uuid.uuid4())
-            url = f"http://localhost:3830/app_i/01_cellxgene/{random_id}"
-            print("url", url)
+            # cmd_args = [
+            #     "cellxgene",
+            #     "launch",
+            #     "--host",
+            #     "0.0.0.0",
+            #     f"/bucket/{owner}/{ds}/{fn}_uploadedVersion_{version}.h5ad",
+            # ]
 
-            headers = {
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-            }
+            # # with open(f"../cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
+            # with open(f"./cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
+            #     f.write(" ".join(cmd_args))
 
-            print("token", token)
+            # random_id = str(uuid.uuid4())
+            # url = f"http://localhost:3830/app_i/01_cellxgene/{random_id}"
+            # print("url", url)
 
-            try:
-                response = requests.post(
-                    # nosec (for now, should be changed)
-                    url,
-                    headers=headers,
-                    verify=False,
-                    timeout=10,
-                )
-                print(response)
-            except Timeout:
-                print("Timeout has been raised.")
+            # headers = {
+            #     "Authorization": f"Bearer {token}",
+            #     "Content-Type": "application/json",
+            # }
 
-            # return make_response("cellxgene container started", 200)
-            res = make_response(
-                jsonify(
-                    {
-                        "message": "File metadata inserted in database",
-                        "shiny_proxy_url": url,
-                    }
-                ),
-                200,
-            )
-            return res
+            # print("token", token)
+
+            # try:
+            #     response = requests.post(
+            #         # nosec (for now, should be changed)
+            #         url,
+            #         headers=headers,
+            #         verify=False,
+            #         timeout=10,
+            #     )
+            #     print(response)
+            # except Timeout:
+            #     print("Timeout has been raised.")
+
+            # # return make_response("cellxgene container started", 200)
+            # res = make_response(
+            #     jsonify(
+            #         {
+            #             "message": "File metadata inserted in database",
+            #             "shiny_proxy_url": url,
+            #         }
+            #     ),
+            #     200,
+            # )
+            # return res
         else:
             return make_response("no file with that name or version exist", 404)
 

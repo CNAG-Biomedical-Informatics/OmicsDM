@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { IconButton } from "@mui/material";
-import { datasetVisualization } from "../../apis";
+import HTTPError from "../../apis";
+import { requestJson, datasetVisualization } from "../../apis";
 import auth from "../../Auth";
 
 const { config } = window;
@@ -29,6 +30,76 @@ const CellxgeneButton = ({ fileOrAnalysis }) => {
   console.log("payload", payload);
 
   const handleClick = async () => {
+    try {
+      const data = await requestJson(() =>
+        datasetVisualization(
+          auth.getToken(),
+          config.api_endpoint,
+          JSON.stringify(payload)
+        )
+      );
+
+      console.log("cellxgene parsed:", data);
+      window.open(`${data.shiny_proxy_url}`);
+      alert(
+        `cellxgene instance opened in a new tab at ${data.shiny_proxy_url}`
+      );
+    } catch (err) {
+      // HTTP-level errors: server responded with a status (e.g., 400/500)
+      if (err instanceof HTTPError) {
+        const msg =
+          err.parsed?.message || // preferred: API-provided message
+          err.bodyText || // fallback: raw body
+          err.message; // final fallback: "HTTP 500 ..."
+        console.error("cellxgene HTTP error:", err.response.status, msg);
+        alert(msg);
+        return;
+      }
+
+      // Network/runtime-level errors: no Response object
+      // (fetch throws TypeError on network failure; AbortError on aborts)
+      if (err?.name === "AbortError") {
+        console.error("Request aborted:", err);
+        alert("Request was canceled. Please try again.");
+      } else {
+        console.error("Network or runtime error:", err);
+        alert(
+          "Network error. Check your connection or CORS settings and retry."
+        );
+      }
+    }
+  };
+
+  // state setters are examples; adjust to your hooks/state
+  const handleClick2 = async () => {
+    try {
+      const res = await datasetVisualization(
+        auth.getToken(),
+        config.api_endpoint,
+        JSON.stringify(payload)
+      );
+      // Peek the raw body without consuming the main stream
+      const raw = await res.clone().text();
+      console.log("cellxgene status:", res.status, res.statusText);
+      console.log("cellxgene raw:", raw);
+
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+
+      const data = await res.json(); // <- this awaits the server response
+      console.log("cellxgene parsed:", data);
+
+      window.open(`${data.shiny_proxy_url}`);
+      alert(
+        `cellxgene instance opened in a new tab at ${data.shiny_proxy_url}`
+      );
+    } catch (err) {
+      const errorData = await res.json();
+      console.error("cellxgene fetch failed:", err);
+      alert(errorData.message);
+    }
+  };
+
+  const handleClick3 = async () => {
     console.log("cellxgene button clicked");
     try {
       const response = await datasetVisualization(
@@ -42,20 +113,30 @@ const CellxgeneButton = ({ fileOrAnalysis }) => {
         // })
         JSON.stringify(payload)
       );
-      console.log(response);
+      // console.log(response);
+      // console.log("response.status", response.status);
+      // console.log("response.json()", response.json());
+      // const json = await response.json();
+      // console.log("json", json);
       const msg = await response.text();
-      console.log("msg", msg);
+      // console.log("msg", msg);
       if (response.status === 200) {
         const data = await JSON.parse(msg);
         console.log("JSON.parse(msg)", JSON.parse(msg));
         console.log(data.shiny_proxy_url);
         window.open(`${data.shiny_proxy_url}`);
-        alert(`HERE 3 cellxgene instance opened in a new tab at ${data.shiny_proxy_url}`);
+        alert(
+          `HERE 3 cellxgene instance opened in a new tab at ${data.shiny_proxy_url}`
+        );
       } else {
         alert(`Server error: ${response.status} with message: ${msg}`);
       }
     } catch (err) {
-      alert(`Server is not responding: ${err}`);
+      if (err instanceof TypeError && msg === null) {
+        console.error("response", response);
+        return;
+      }
+      alert(`Server is not responding !!: ${err}`);
     }
   };
 
