@@ -10,8 +10,8 @@
   License: GPL-3.0 license
 */
 import React, { StrictMode } from "react";
-import { createRoot } from 'react-dom/client';
-import { createHashRouter, RouterProvider } from 'react-router';
+import { createRoot } from "react-dom/client";
+import { createHashRouter, RouterProvider } from "react-router";
 // import { createBrowserRouter, RouterProvider } from 'react-router';
 import "./index.css";
 // import Main from "./code/Main";
@@ -19,18 +19,16 @@ import "./index.css";
 import Home from "./code/views/home/Home";
 
 import App from "./code/App2";
-import Layout from './code/layouts/dashboard'
+import Layout from "./code/layouts/dashboard";
 
-const container = document.getElementById('root');
+const container = document.getElementById("root");
 const root = createRoot(container, {
   onUncaughtError: (error, errorInfo) => {
-    console.error('Uncaught error:', error
-      + '\nError info:', errorInfo);
+    console.error("Uncaught error:", error + "\nError info:", errorInfo);
   },
   onCaughtError: (error, errorInfo) => {
-    console.error('Caught error:', error
-      + '\nError info:', errorInfo);
-  }
+    console.error("Caught error:", error + "\nError info:", errorInfo);
+  },
 });
 
 // const router = createHashRouter([
@@ -44,11 +42,9 @@ const router = createHashRouter([
     Component: App, // root layout route
     children: [
       {
-        path: '/',
+        path: "/",
         Component: Layout,
-        children: [
-          { path: '/', component: Home },
-        ],
+        children: [{ path: "/", component: Home }],
       },
     ],
   },

@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import {
-  Typography,
-  Button,
-} from "@mui/material"
+import { Typography, Button, Snackbar } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
 import { DNA } from "react-loader-spinner";
 
 import auth from "../../Auth";
-import { jobsStatus, analysisResults, analysisSubmissionData, analysis_abort } from "../../apis";
+import {
+  jobsStatus,
+  analysisResults,
+  analysisSubmissionData,
+  analysis_abort,
+} from "../../apis";
 
 import ShowGeneratedFiles from "./ShowGeneratedFiles";
 import ShowAnalysesResults from "./components/ShowAnalysesResults";
@@ -22,7 +24,6 @@ import AnalysisPipelineProgress from "./resultsView/components/analysisPipelineP
 import AccordionWrapper from "./components/accordionWrapper/AccordionWrapper";
 
 import { getColsDef } from "./helpers";
-
 
 // icons below maybe interesting to put on the tab headers
 // import TaskAltIcon from '@mui/icons-material/TaskAlt'; //Done
@@ -51,7 +52,10 @@ const getJobsStatus = async ({ queryKey }) => {
   console.log("res status :>> ", res);
   const data = await res.json();
   console.log("get JobsStatus data :>> ", data);
-  console.log("get JobsStatus data.analysis_json :>> ", data.data.analysis_json);
+  console.log(
+    "get JobsStatus data.analysis_json :>> ",
+    data.data.analysis_json
+  );
   console.log("get JobsStatus data. :>> ", data.data.analysis_json.analysis);
 
   const query2 = {
@@ -119,7 +123,10 @@ const getAnalysisJson = (props, AnalysisSummaryQuery) => {
     jsonData = AnalysisSummaryQuery.data.data.analysis_json;
     console.log("jsonData", jsonData);
   } else {
-    console.log("else AnalysisSummaryQuery.status :>> ", AnalysisSummaryQuery.status);
+    console.log(
+      "else AnalysisSummaryQuery.status :>> ",
+      AnalysisSummaryQuery.status
+    );
   }
   return jsonData;
 };
@@ -137,9 +144,8 @@ const getFileName = (props, AnalysisSummaryQuery) => {
 };
 
 const getTableContents = (props, AnalysisSummaryQuery) => {
-
   if (AnalysisSummaryQuery.status !== "success") {
-    return []
+    return [];
   }
 
   console.log("success AnalysisSummaryQuery :>> ", AnalysisSummaryQuery);
@@ -150,7 +156,7 @@ const getTableContents = (props, AnalysisSummaryQuery) => {
   // maybe it would be good to query the database again
   // to get for both the dataset_id and file_id as proper strings
 
-  const data = []
+  const data = [];
   const keys = Object.keys(fileData);
   keys.forEach((key) => {
     const file = fileData[key];
@@ -164,14 +170,14 @@ const getTableContents = (props, AnalysisSummaryQuery) => {
   });
 
   return data;
-}
+};
 
 const getHtmls = async ({ queryKey }) => {
   const [_key, { analysisId }] = queryKey;
 
   const query = {
     analysis_id: analysisId,
-  }
+  };
 
   console.log("query", query);
 
@@ -188,7 +194,7 @@ const getHtmls = async ({ queryKey }) => {
   console.log("data2", data2);
   // console.log("data2.htmls", data2.htmls);
   return data2.htmls;
-}
+};
 
 const AnalysisResultsView = (props) => {
   console.log("AnalysisSubmissionSummary props", props);
@@ -198,7 +204,13 @@ const AnalysisResultsView = (props) => {
 
   const [value, setValue] = useState(0); //needed for the tabs
   const [allAborted, setAllAborted] = useState(false);
-  const [refetchInterval, setRefetchInterval] = useState(6000)
+  const [refetchInterval, setRefetchInterval] = useState(6000);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const AnalysisSummaryQuery = useQuery({
     queryKey: ["analysisSubmissionSummary", { analysisId }],
@@ -213,7 +225,11 @@ const AnalysisResultsView = (props) => {
     refetchInterval,
   });
 
-  const { status: statusHtml, data: dataHtml, refetch } = useQuery({
+  const {
+    status: statusHtml,
+    data: dataHtml,
+    refetch,
+  } = useQuery({
     queryKey: ["analysesHtmls", { analysisId }],
     queryFn: getHtmls,
     retry: (failureCount, error) =>
@@ -228,12 +244,12 @@ const AnalysisResultsView = (props) => {
   };
 
   useEffect(() => {
-    if (status === 'success' && data.analysisStatus == "ABORTED") {
+    if (status === "success" && data.analysisStatus == "ABORTED") {
       setRefetchInterval(false);
       setAllAborted(true);
     }
 
-    if (status === 'success' && data.analysisStatus == "finished") {
+    if (status === "success" && data.analysisStatus == "finished") {
       setRefetchInterval(false);
     }
 
@@ -245,8 +261,8 @@ const AnalysisResultsView = (props) => {
     // }
 
     // TODO
-    // not only return the finished but also the R logs of the running analyses 
-    if (status === 'success') {
+    // not only return the finished but also the R logs of the running analyses
+    if (status === "success") {
       console.log("useEffect data", data);
       refetch();
     }
@@ -255,7 +271,7 @@ const AnalysisResultsView = (props) => {
   // TODO
   // The expected possible responses of the servers should be:
   // a) html for the finished analyses
-  // b) empty string for the analyses that are not finished yet 
+  // b) empty string for the analyses that are not finished yet
   //      ==> this should lead to a loading spinner in the corresponding tab
   //      ==> returning the job output of jenkins
   // c) html that renders the error message for the analyses that failed
@@ -264,8 +280,13 @@ const AnalysisResultsView = (props) => {
   const filename = getFileName(props, AnalysisSummaryQuery);
   const analysisJson = getAnalysisJson(props, AnalysisSummaryQuery);
 
-  const abortAnalyses = async (analysisId, analysis, token, api_endpoint, setAllAborted) => {
-
+  const abortAnalyses = async (
+    analysisId,
+    analysis,
+    token,
+    api_endpoint,
+    setAllAborted
+  ) => {
     // "analysis" can be "ALL" or "analysis_name
     // "analysis_name" is the name of the analysis that you want to abort
     // "ALL" indicates that you want to abort all the analyses
@@ -289,7 +310,7 @@ const AnalysisResultsView = (props) => {
       console.log("All Analyses aborted");
       setAllAborted(true);
     }
-  }
+  };
 
   return (
     <Grid container spacing={2}>
@@ -301,10 +322,7 @@ const AnalysisResultsView = (props) => {
         />
       </Grid>
       <Grid item xs={4}>
-        <AnalysisPipelineProgress
-          jobData={data}
-          analysisJson={analysisJson}
-        />
+        <AnalysisPipelineProgress jobData={data} analysisJson={analysisJson} />
       </Grid>
       <Grid item xs={12}>
         {!allAborted && shouldProgressUpdateBeShown(status, data) ? (
@@ -340,14 +358,22 @@ const AnalysisResultsView = (props) => {
             filename,
             tableData,
             tableAccessors: ["owner", "datasetId", "fileId", "name"],
-            analysisJson
+            analysisJson,
           }}
         />
       </Grid>
       <Grid item xs={12}>
+        <Snackbar
+          open={snackbarOpen}
+          onClose={handleSnackbarClose}
+          autoHideDuration={10000}
+          message={snackbarMessage}
+        />
         <ShowGeneratedFiles
           analysisId={analysisId}
           analysisJson={analysisJson}
+          setSnackbarMessage={setSnackbarMessage}
+          setSnackbarOpen={setSnackbarOpen}
         />
         <ShowAnalysesResults
           analysisJson={analysisJson}
@@ -357,41 +383,40 @@ const AnalysisResultsView = (props) => {
           jobData={data}
         />
       </Grid>
-    </Grid >
-  )
+    </Grid>
+  );
 };
-
 
 const shouldProgressUpdateBeShown = (status, data) => {
   console.log("shouldShouldProgressUpdateBeShown ", status, data);
   if (status === "loading" || status === "error") {
-    return true
+    return true;
   }
 
   if (status === "success" && data.analysisStatus !== "finished") {
-    return true
+    return true;
   }
-  return false
-}
+  return false;
+};
 
 const renderAnalysesProgress = (data, analysisId, abortAnalyses) => {
   console.log("renderAnalysesProgress data", data);
 
   if (data === undefined) {
-    return null
+    return null;
   }
   const jobs = data["jobs"];
   console.log("jobs", jobs);
 
   if (data["jobs"] === undefined) {
     console.log("data['jobs'] === undefined", data);
-    return null
+    return null;
   }
 
   const keys = Object.keys(data["jobs"]);
   console.log("keys", keys);
 
-  const progress_mapping = {}
+  const progress_mapping = {};
 
   // TODO
   // better use here the analysisJson
@@ -399,30 +424,31 @@ const renderAnalysesProgress = (data, analysisId, abortAnalyses) => {
   // have not even started yet
 
   Object.keys(jobs).map((job) => {
-    const status = jobs[job]["status"]
+    const status = jobs[job]["status"];
     console.log("status", status);
 
     if (status === "QUEUE") {
-      progress_mapping[job] = `${job} in queue`
+      progress_mapping[job] = `${job} in queue`;
       console.log("progress_mapping[job]", progress_mapping[job]);
     }
 
     if (status === "STARTED") {
-      const workflow_done_in_percent = jobs[job].console_out.workflow_done_in_percent
+      const workflow_done_in_percent =
+        jobs[job].console_out.workflow_done_in_percent;
       if (workflow_done_in_percent == null) {
-        progress_mapping[job] = `${job} started`
+        progress_mapping[job] = `${job} started`;
         console.log("progress_mapping[job]", progress_mapping[job]);
       } else {
-        progress_mapping[job] = `${job} ${workflow_done_in_percent}%`
+        progress_mapping[job] = `${job} ${workflow_done_in_percent}%`;
         console.log("progress_mapping[job]", progress_mapping[job]);
       }
     }
-  })
+  });
   console.log("progress_mapping", progress_mapping);
 
   // TODO
   // it would be good to have some kind of feed back if the abort was successful
-  // and if not prompt the user to try again 
+  // and if not prompt the user to try again
 
   return (
     <>
@@ -454,12 +480,10 @@ const renderAnalysesProgress = (data, analysisId, abortAnalyses) => {
               </Button>
             </Grid>
           </Grid>
-        )
-      }
-      )}
+        );
+      })}
     </>
-  )
+  );
 };
-
 
 export default AnalysisResultsView;

@@ -892,7 +892,7 @@ def run_cellxgene_launch_script(s3_key, userid, token):
         # If you expect JSON, guard it:
         upstream_json = None
         if "application/json" in ct and body_text.strip():
-            try:
+            try: 
                 upstream_json = response.json()
             except ValueError:
                 upstream_json = None

@@ -33,7 +33,8 @@ const { config } = window;
 // maybe we can refactor this
 
 export default function ShowGeneratedFiles(props) {
-  const { analysisJson, analysisId } = props;
+  const { analysisJson, analysisId, setSnackbarOpen, setSnackbarMessage } =
+    props;
 
   const [open, setOpen] = useState(false);
   const [data, setData] = useState({});
@@ -119,6 +120,8 @@ export default function ShowGeneratedFiles(props) {
     <>
       <Box display="flex" justifyContent="flex-end">
         <CellxgeneButton
+          setSnackbarOpen={setSnackbarOpen}
+          setSnackbarMessage={setSnackbarMessage}
           fileOrAnalysis={{
             isAnalysisResult: true,
           }}

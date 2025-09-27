@@ -1,6 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { IconButton } from "@mui/material";
+
+import toast from "react-hot-toast";
+
 import HTTPError from "../../apis";
 import { requestJson, datasetVisualization } from "../../apis";
 import auth from "../../Auth";
@@ -9,7 +12,11 @@ const { config } = window;
 import CELLXGENE_LOGO from "../../../img/cellxgene_logo.png";
 
 // CellxgeneButton as a React component
-const CellxgeneButton = ({ fileOrAnalysis }) => {
+const CellxgeneButton = ({
+  fileOrAnalysis,
+  setSnackbarOpen,
+  setSnackbarMessage,
+}) => {
   // if (file.visualizer !== "cellxgene") {
   //   return <div />;
   // }
@@ -30,6 +37,8 @@ const CellxgeneButton = ({ fileOrAnalysis }) => {
   console.log("payload", payload);
 
   const handleClick = async () => {
+    setSnackbarMessage("Starting cellxgene instance...");
+    setSnackbarOpen(true);
     try {
       const data = await requestJson(() =>
         datasetVisualization(
@@ -39,11 +48,28 @@ const CellxgeneButton = ({ fileOrAnalysis }) => {
         )
       );
 
-      console.log("cellxgene parsed:", data);
       window.open(`${data.shiny_proxy_url}`);
-      alert(
-        `cellxgene instance opened in a new tab at ${data.shiny_proxy_url}`
+
+      const snackbar_msg = (
+        <span>
+          cellxgene instance opened in a new tab at{" "}
+          <a
+            href={data.shiny_proxy_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {data.shiny_proxy_url}
+          </a>
+        </span>
       );
+
+      setSnackbarMessage(snackbar_msg);
+
+      // console.log("cellxgene parsed:", data);
+      // window.open(`${data.shiny_proxy_url}`);
+      // alert(
+      //   `cellxgene instance opened in a new tab at ${data.shiny_proxy_url}`
+      // );
     } catch (err) {
       // HTTP-level errors: server responded with a status (e.g., 400/500)
       if (err instanceof HTTPError) {
@@ -52,7 +78,9 @@ const CellxgeneButton = ({ fileOrAnalysis }) => {
           err.bodyText || // fallback: raw body
           err.message; // final fallback: "HTTP 500 ..."
         console.error("cellxgene HTTP error:", err.response.status, msg);
-        alert(msg);
+
+        setSnackbarOpen(true);
+        setSnackbarMessage(msg);
         return;
       }
 
@@ -64,7 +92,7 @@ const CellxgeneButton = ({ fileOrAnalysis }) => {
       } else {
         console.error("Network or runtime error:", err);
         alert(
-          "Network error. Check your connection or CORS settings and retry."
+          "Network or runtime error. Please check the console for details."
         );
       }
     }
@@ -149,7 +177,11 @@ const CellxgeneButton = ({ fileOrAnalysis }) => {
         padding: "4px",
         marginRight: "8px",
       }}
-      onClick={handleClick}
+      onClick={(e) => {
+        // e.preventDefault();
+        // e.stopPropagation();
+        handleClick();
+      }}
     >
       <img
         src={CELLXGENE_LOGO}
