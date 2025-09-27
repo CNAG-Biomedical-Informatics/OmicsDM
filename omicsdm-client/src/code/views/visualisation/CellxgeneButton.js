@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { IconButton } from "@mui/material";
 
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 import { useSnackbar } from "../../snackbarContext";
 import HTTPError from "../../apis";
@@ -65,6 +65,8 @@ const CellxgeneButton = ({
         </span>
       );
 
+      snackbar.success(snackbar_msg, { autoHideDuration: 8000 });
+
       // setSnackbarMessage(snackbar_msg);
 
       // console.log("cellxgene parsed:", data);
@@ -81,8 +83,7 @@ const CellxgeneButton = ({
           err.message; // final fallback: "HTTP 500 ..."
         console.error("cellxgene HTTP error:", err.response.status, msg);
 
-        // setSnackbarOpen(true);
-        // setSnackbarMessage(msg);
+        snackbar.error(msg);
         return;
       }
 
