@@ -1082,54 +1082,8 @@ class FileCellxgene(Resource):
 
             print("s3_key", s3_key)
 
-            run_cellxgene_launch_script(s3_key, userid, token)
-
-            # cmd_args = [
-            #     "cellxgene",
-            #     "launch",
-            #     "--host",
-            #     "0.0.0.0",
-            #     f"/bucket/{owner}/{ds}/{fn}_uploadedVersion_{version}.h5ad",
-            # ]
-
-            # # with open(f"../cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
-            # with open(f"./cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
-            #     f.write(" ".join(cmd_args))
-
-            # random_id = str(uuid.uuid4())
-            # url = f"http://localhost:3830/app_i/01_cellxgene/{random_id}"
-            # print("url", url)
-
-            # headers = {
-            #     "Authorization": f"Bearer {token}",
-            #     "Content-Type": "application/json",
-            # }
-
-            # print("token", token)
-
-            # try:
-            #     response = requests.post(
-            #         # nosec (for now, should be changed)
-            #         url,
-            #         headers=headers,
-            #         verify=False,
-            #         timeout=10,
-            #     )
-            #     print(response)
-            # except Timeout:
-            #     print("Timeout has been raised.")
-
-            # # return make_response("cellxgene container started", 200)
-            # res = make_response(
-            #     jsonify(
-            #         {
-            #             "message": "File metadata inserted in database",
-            #             "shiny_proxy_url": url,
-            #         }
-            #     ),
-            #     200,
-            # )
-            # return res
+            res = run_cellxgene_launch_script(s3_key, userid, token)
+            return res
         else:
             return make_response("no file with that name or version exist", 404)
 
