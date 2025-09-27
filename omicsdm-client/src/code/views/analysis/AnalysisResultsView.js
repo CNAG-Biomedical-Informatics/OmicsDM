@@ -205,12 +205,6 @@ const AnalysisResultsView = (props) => {
   const [value, setValue] = useState(0); //needed for the tabs
   const [allAborted, setAllAborted] = useState(false);
   const [refetchInterval, setRefetchInterval] = useState(6000);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
 
   const AnalysisSummaryQuery = useQuery({
     queryKey: ["analysisSubmissionSummary", { analysisId }],
@@ -363,17 +357,9 @@ const AnalysisResultsView = (props) => {
         />
       </Grid>
       <Grid item xs={12}>
-        <Snackbar
-          open={snackbarOpen}
-          onClose={handleSnackbarClose}
-          autoHideDuration={10000}
-          message={snackbarMessage}
-        />
         <ShowGeneratedFiles
           analysisId={analysisId}
           analysisJson={analysisJson}
-          setSnackbarMessage={setSnackbarMessage}
-          setSnackbarOpen={setSnackbarOpen}
         />
         <ShowAnalysesResults
           analysisJson={analysisJson}

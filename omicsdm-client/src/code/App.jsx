@@ -7,16 +7,14 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import { userAndAdminNav } from "./routesNavGenerator";
 import ErrorFallback from "./errors/ErrorFallback";
-
 import { SessionContext } from "./SessionContext";
-
+import { SnackbarProvider } from "./snackbarContext";
 import auth from "./Auth";
 
-export default function App() {
-  const nav = userAndAdminNav.adminNav;
-  const navigate = useNavigate();
-  console.log("nav", nav);
+const queryClient = new QueryClient();
 
+export default function App() {
+  const navigate = useNavigate();
   const [session, setSession] = useState(null);
 
   const signIn = useCallback(() => {
@@ -33,25 +31,27 @@ export default function App() {
     [session, setSession]
   );
 
+  const navigation = session
+    ? session.user.isAdmin
+      ? userAndAdminNav.adminNav
+      : userAndAdminNav.userNav
+    : userAndAdminNav.userNav;
+
   return (
     <SessionContext.Provider value={sessionContextValue}>
       <ReactRouterAppProvider
-        navigation={
-          session
-            ? session.user.isAdmin
-              ? userAndAdminNav.adminNav
-              : userAndAdminNav.userNav
-            : userAndAdminNav.userNav
-        }
+        navigation={navigation}
         session={session}
         authentication={{ signIn, signOut }}
       >
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <QueryClientProvider client={new QueryClient()}>
-            <ReactQueryDevtools />
-            <Outlet />
-          </QueryClientProvider>
-        </ErrorBoundary>
+        <SnackbarProvider>
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <QueryClientProvider client={queryClient}>
+              <ReactQueryDevtools />
+              <Outlet />
+            </QueryClientProvider>
+          </ErrorBoundary>
+        </SnackbarProvider>
       </ReactRouterAppProvider>
     </SessionContext.Provider>
   );

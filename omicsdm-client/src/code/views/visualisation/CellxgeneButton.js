@@ -4,6 +4,7 @@ import { IconButton } from "@mui/material";
 
 import toast from "react-hot-toast";
 
+import { useSnackbar } from "../../snackbarContext";
 import HTTPError from "../../apis";
 import { requestJson, datasetVisualization } from "../../apis";
 import auth from "../../Auth";
@@ -14,12 +15,14 @@ import CELLXGENE_LOGO from "../../../img/cellxgene_logo.png";
 // CellxgeneButton as a React component
 const CellxgeneButton = ({
   fileOrAnalysis,
-  setSnackbarOpen,
-  setSnackbarMessage,
+  // setSnackbarOpen,
+  // setSnackbarMessage,
 }) => {
   // if (file.visualizer !== "cellxgene") {
   //   return <div />;
   // }
+
+  const snackbar = useSnackbar();
 
   let payload = {};
   if (fileOrAnalysis.isAnalysisResult) {
@@ -37,8 +40,7 @@ const CellxgeneButton = ({
   console.log("payload", payload);
 
   const handleClick = async () => {
-    setSnackbarMessage("Starting cellxgene instance...");
-    setSnackbarOpen(true);
+    snackbar.info("Starting cellxgene instance...");
     try {
       const data = await requestJson(() =>
         datasetVisualization(
@@ -63,7 +65,7 @@ const CellxgeneButton = ({
         </span>
       );
 
-      setSnackbarMessage(snackbar_msg);
+      // setSnackbarMessage(snackbar_msg);
 
       // console.log("cellxgene parsed:", data);
       // window.open(`${data.shiny_proxy_url}`);
@@ -79,8 +81,8 @@ const CellxgeneButton = ({
           err.message; // final fallback: "HTTP 500 ..."
         console.error("cellxgene HTTP error:", err.response.status, msg);
 
-        setSnackbarOpen(true);
-        setSnackbarMessage(msg);
+        // setSnackbarOpen(true);
+        // setSnackbarMessage(msg);
         return;
       }
 
