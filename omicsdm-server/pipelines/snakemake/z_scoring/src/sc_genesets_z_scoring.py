@@ -53,10 +53,19 @@ def main():
 
     os.makedirs(args.out_dir, exist_ok=True)
     adata = sc.read_h5ad(args.path)
+
+    # TODO
+    # two adata neeed to be loaded here
+    # the normalised one and the original one
+    # because the join is with the original one
+
+
     gene_dict = load_gmt(args.gene_sets)
     scores_df = compute_zscores(adata, gene_dict)
 
-    adata.obs = adata.obs.join(scores_df)
+    original_adata.obs = original_adata.obs.join(scores_df)
+
+    # adata.obs = adata.obs.join(scores_df)
     # base = os.path.splitext(os.path.basename(args.path))[0]
     # out_file = os.path.join(args.out_dir, f"{base}_scored.h5ad")
     out_file = os.path.join(args.out_dir, "z-scored.h5ad")

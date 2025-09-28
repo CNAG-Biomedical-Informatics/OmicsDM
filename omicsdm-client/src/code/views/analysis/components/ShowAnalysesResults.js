@@ -1,6 +1,9 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Tabs, Tab, Typography, Paper, Box } from "@mui/material";
+import { Tabs, Tab, Typography, Paper, Box, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid";
+
+import CellxgeneButton from "../../visualisation/CellxgeneButton";
+import { analysis } from "../../../apis";
 
 // icons below maybe interesting to put on the tab headers
 // import TaskAltIcon from '@mui/icons-material/TaskAlt'; //Task Done
@@ -8,8 +11,12 @@ import Grid from "@mui/material/Grid";
 // import PendingOutlinedIcon from '@mui/icons-material/PendingOutlined'; // Pending Task
 // import CircularProgress from '@mui/material/CircularProgress'; // Task in progress
 
-const IframeEmbed = ({ htmlContent, title, width = '100%', height = '400px' }) => {
-
+const IframeEmbed = ({
+  htmlContent,
+  title,
+  width = "100%",
+  height = "400px",
+}) => {
   console.log("IframeEmbed props", { htmlContent, title, width, height });
 
   const iframeRef = useRef(null);
@@ -22,11 +29,11 @@ const IframeEmbed = ({ htmlContent, title, width = '100%', height = '400px' }) =
     };
     const iframeCurrent = iframeRef.current;
     if (iframeCurrent) {
-      iframeCurrent.addEventListener('error', handleIframeError);
+      iframeCurrent.addEventListener("error", handleIframeError);
     }
     return () => {
       if (iframeCurrent) {
-        iframeCurrent.removeEventListener('error', handleIframeError);
+        iframeCurrent.removeEventListener("error", handleIframeError);
       }
     };
   }, []);
@@ -38,10 +45,10 @@ const IframeEmbed = ({ htmlContent, title, width = '100%', height = '400px' }) =
       ) : (
         <Box
           sx={{
-            position: 'relative',
+            position: "relative",
             width,
-            paddingBottom: '56.25%', // Maintains a 16:9 aspect ratio
-            overflow: 'hidden',
+            paddingBottom: "56.25%", // Maintains a 16:9 aspect ratio
+            overflow: "hidden",
           }}
         >
           <iframe
@@ -49,8 +56,8 @@ const IframeEmbed = ({ htmlContent, title, width = '100%', height = '400px' }) =
             srcDoc={htmlContent}
             title={title}
             style={{
-              border: '0',
-              position: 'absolute',
+              border: "0",
+              position: "absolute",
               top: 0,
               left: 0,
               width,
@@ -84,16 +91,17 @@ const TabPanel = (props) => {
 };
 
 const ShowAnalysesResults = (props) => {
+  // TODO
+  // in analysis results
+  // put a box above the HTML results
+  // where the CellxgeneIcon Button is rendered
+  // so each ananlysis results tab has a button to launch
+  // a cellxgene instance for that particular analysis
 
-  const {
-    analysisJson,
-    htmls,
-    value,
-    handleChange,
-    jobData
-  } = props;
+  const { analysisId, analysisJson, htmls, value, handleChange, jobData } =
+    props;
 
-  console.log("ShowAnalyisResults props", props)
+  console.log("ShowAnalyisResults props", props);
 
   const renderTabLabels = (analysisJson, value, handleChange) => {
     const a11yProps = (index) => {
@@ -106,36 +114,32 @@ const ShowAnalysesResults = (props) => {
     console.log("analysisJson", analysisJson);
     const keys = Object.keys(analysisJson);
     return (
-      <Tabs
-        value={value}
-        onChange={handleChange}
-      >
-        {
-          keys.map((key, index) => (
+      <Tabs value={value} onChange={handleChange}>
+        {keys.map(
+          (key, index) => (
             console.log("key", key),
-            <Tab label={key} {...a11yProps(index)} key={index} />
-          ))
-        }
-      </Tabs >
-    )
-  }
+            (<Tab label={key} {...a11yProps(index)} key={index} />)
+          )
+        )}
+      </Tabs>
+    );
+  };
 
   const scrollToBottom = () => {
     ref.current.scrollTop = ref.current.scrollHeight;
-  }
+  };
 
   const renderTabs = (htmls, value, jobData) => {
-
-    let finished_analyses = []
+    let finished_analyses = [];
     if (htmls != undefined) {
       finished_analyses = Object.keys(htmls);
       console.log("finished_analyses", finished_analyses);
     }
 
-    let jobKeys = []
+    let jobKeys = [];
     if (jobData != undefined) {
-      console.log("jobData", jobData)
-      jobKeys = Object.keys(jobData["jobs"])
+      console.log("jobData", jobData);
+      jobKeys = Object.keys(jobData["jobs"]);
     }
 
     // TODO
@@ -146,39 +150,52 @@ const ShowAnalysesResults = (props) => {
     // pass information to render renderTab to distinguish
     // between log files and results files
 
-    console.log("renderTabs jobStatus", jobData)
-    console.log("renderTabs finished_analyses", finished_analyses)
-    console.log("renderTabs jobKeys", jobKeys)
+    console.log("renderTabs jobStatus", jobData);
+    console.log("renderTabs finished_analyses", finished_analyses);
+    console.log("renderTabs jobKeys", jobKeys);
+
+    // TODO
+    // The tabs should be in the same order as the analysisJson keys
 
     return (
       <>
-
         {finished_analyses.length === 0
           ? Object.keys(analysisJson).map((_, index) => (
-            <TabPanel value={value} index={index}>
-              <Typography variant={"h6"}> No results yet </Typography>
-            </TabPanel>
-          ))
+              <TabPanel value={value} index={index}>
+                <Typography variant={"h6"}> No results yet </Typography>
+              </TabPanel>
+            ))
           : finished_analyses.map((key, index) => (
-            <TabPanel value={value} index={index}>
-              <IframeEmbed
-                htmlContent={htmls[key]}
-                title={key}
-                width="100%"
-                height="600px"
-              />
-            </TabPanel>
-          ))
-        }
+              <TabPanel value={value} index={index}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography variant="body1">
+                    Click on the icon to start a cellxgene instance:
+                  </Typography>
+                  <CellxgeneButton
+                    fileOrAnalysis={{
+                      isAnalysisResult: true,
+                      analysis_id: analysisId,
+                      analysis: key,
+                    }}
+                  />
+                </Stack>
+                <IframeEmbed
+                  htmlContent={htmls[key]}
+                  title={key}
+                  width="100%"
+                  height="600px"
+                />
+              </TabPanel>
+            ))}
       </>
-    )
-  }
+    );
+  };
   return (
     <>
       {renderTabLabels(analysisJson, value, handleChange)}
       {renderTabs(htmls, value, jobData)}
     </>
-  )
-}
+  );
+};
 
 export default ShowAnalysesResults;

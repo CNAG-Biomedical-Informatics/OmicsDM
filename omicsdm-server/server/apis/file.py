@@ -804,8 +804,8 @@ def run_cellxgene_launch_script(s3_key, userid, token):
     ]
 
     # in debug mode
-    # with open(f"../cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
-    with open(f"./cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
+    with open(f"../cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
+    # with open(f"./cxg_mountpoint/launch_scripts/{userid}.sh", "w") as f:
         f.write(" ".join(cmd_args))
 
     random_id = str(uuid.uuid4())
@@ -1005,11 +1005,13 @@ class FileCellxgene(Resource):
                     "isAnalysisResult": {"type": "boolean"},
                     "analysis_id": {"type": "string"},
                     "file_name": {"type": "string"},
+                    "analysis": {"type": "string"},
                 },
                 required=[
                     "analysis_id",
                     "isAnalysisResult",
                     "file_name",
+                    "analysis",
                 ],
             )
         else:
@@ -1034,6 +1036,7 @@ class FileCellxgene(Resource):
 
             # check if the analysis_id is valid
             analysis_id = data["analysis_id"]
+            analysis_pipeline = data["analysis"]
             analysis = (
                 db.session.query(Analyses)
                 .filter(Analyses.analysis_id == analysis_id)
@@ -1044,23 +1047,18 @@ class FileCellxgene(Resource):
                 return make_response(
                     jsonify({"message": "Analysis result not found"}), 404
                 )
+            
+            print ("analysis_pipeline", analysis_pipeline)
+            print ("analysis_id", analysis_id)
 
-            # s3_key = f"{analysis_id}/sc_gene_sets_scoring/out/results/data_scored.h5ad"
-            # s3_key = "3tr_sgfeg4g4444/sc_gene_sets_scoring/out/results/data_scored.h5ad"
+            pipeline_to_outfile = {
+                "gsva": "gsva-scored.h5ad",
+                "z-scoring": "z-scored.h5ad",
+                "sc-normalisation": "normalised.h5ad",
+            }
 
-            # TODO
-            # z-scoring should not be hardcoded
-
-            # TODO
-            # it would be good to have "_z_scored" or "_gsva_scored" in the file name
-
-            s3_path = "z-scoring/out/results/data_scored.h5ad"
+            s3_path = f"{analysis_pipeline}/out/results/{pipeline_to_outfile[analysis_pipeline]}"
             s3_key = f"{analysis_id}/{s3_path}"
-
-            # NOTE
-            # The visualisation works when started with the in the view analyses view
-            # but not in the files table
-            # so figure out why
 
             res = run_cellxgene_launch_script(s3_key, userid, token)
             return res

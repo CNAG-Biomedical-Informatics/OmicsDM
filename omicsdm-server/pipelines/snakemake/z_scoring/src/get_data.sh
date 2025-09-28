@@ -62,4 +62,11 @@ downloaded_file=$(find in -name "*.h5ad" | head -n 1)
 mv "$downloaded_file" "in/data.h5ad"
 mv "$module_file" "in/modules.gmt"
 
+# TODO
+# both files are needed normalised.h5ad
+# and the original PerezRK_subset[...].h5ad
+
+# Beacause the join is with PerezRK_subset[...].h5ad
+# catll it original.h5ad
+
 rm in/results.tar.gz

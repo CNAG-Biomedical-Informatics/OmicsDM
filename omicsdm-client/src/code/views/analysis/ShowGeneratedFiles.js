@@ -120,8 +120,6 @@ export default function ShowGeneratedFiles(props) {
     <>
       <Box display="flex" justifyContent="flex-end">
         <CellxgeneButton
-          setSnackbarOpen={setSnackbarOpen}
-          setSnackbarMessage={setSnackbarMessage}
           fileOrAnalysis={{
             isAnalysisResult: true,
           }}

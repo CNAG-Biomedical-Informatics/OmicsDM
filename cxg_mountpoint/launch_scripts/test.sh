@@ -1,1 +1,1 @@
-cellxgene launch --host 0.0.0.0 /bucket/3tr/test/pbmc3k.h5ad_uploadedVersion_1.h5ad
+cellxgene launch --host 0.0.0.0 /bucket/3tr_vev3ev3/sc-normalisation/out/results/normalised.h5ad

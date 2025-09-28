@@ -27,8 +27,9 @@ const CellxgeneButton = ({
   let payload = {};
   if (fileOrAnalysis.isAnalysisResult) {
     payload["isAnalysisResult"] = true;
-    payload["analysis_id"] = window.location.href.split("/").pop();
+    payload["analysis_id"] = fileOrAnalysis.analysis_id;
     payload["file_name"] = "data_scored.h5ad";
+    payload["analysis"] = fileOrAnalysis.analysis;
   } else {
     payload = {
       dataset_owner: fileOrAnalysis.owner,

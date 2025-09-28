@@ -362,6 +362,7 @@ const AnalysisResultsView = (props) => {
           analysisJson={analysisJson}
         />
         <ShowAnalysesResults
+          analysisId={analysisId}
           analysisJson={analysisJson}
           htmls={dataHtml}
           value={value}

@@ -43,7 +43,7 @@ rule normalisation:
     shell:
         """
         venv/bin/python3 src/scRNA_normalisation.py \
-            --path in/data.h5ad \
+            --path in/data.h5ad | tee {log}
 
         mkdir -p out/results
         cp normalised.h5ad out/results/normalised.h5ad
