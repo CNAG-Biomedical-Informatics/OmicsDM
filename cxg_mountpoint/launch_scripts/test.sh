@@ -1,1 +1,1 @@
-cellxgene launch --host 0.0.0.0 /bucket/3tr_f2f34g3gwaf/z-scoring/out/results/z-scored.h5ad
+cellxgene launch --host 0.0.0.0 /bucket/3tr_rg3wg4wgg44/gsva/out/results/gsva-scored.h5ad

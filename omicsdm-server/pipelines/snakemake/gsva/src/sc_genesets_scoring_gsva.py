@@ -62,20 +62,24 @@ def compute_gsva(adata_filtered, gmt_path, tmp_dir='tmp'):
 
 def main():
     parser = argparse.ArgumentParser(description='score with gsva.')
-    parser.add_argument('--path', required=True, help='Input .h5ad file')
-    parser.add_argument('--gene_sets', required=True, help='GMT file of gene sets')
-    parser.add_argument('--out_dir', default='.')
+    parser.add_argument("--normalised_h5ad", required=True, help="Input normalised h5ad file")
+    parser.add_argument("--original_h5ad", required=True, help="Input original h5ad file")
+    parser.add_argument("--gene_sets", required=True, help="GMT file of gene sets")
+    parser.add_argument("--out_dir", default=".")
     args = parser.parse_args()
 
     os.makedirs(args.out_dir, exist_ok=True)
-    adata = sc.read_h5ad(args.path)
-    scores_df = compute_gsva(adata, args.gene_sets)
+    normalised_adata = sc.read_h5ad(args.normalised_h5ad)
+    scores_df = compute_gsva(normalised_adata, args.gene_sets)
+    scores_df.to_csv("gsva_scores.tsv", sep="\t")
 
-    adata.obs = adata.obs.join(scores_df)
+    original_adata = sc.read_h5ad(args.original_h5ad)
+    original_adata.obs = original_adata.obs.join(scores_df)
+
     # base = os.path.splitext(os.path.basename(args.path))[0]
     # out_file = os.path.join(args.out_dir, f"{base}_scored.h5ad")
     out_file = os.path.join(args.out_dir, "gsva-scored.h5ad")
-    adata.write(out_file)
+    original_adata.write(out_file)
     print('Saved scored AnnData to', out_file)
 
 

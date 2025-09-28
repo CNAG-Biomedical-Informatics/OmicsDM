@@ -60,8 +60,4 @@ tar -xzvf in/results.tar.gz \
     --wildcards '*.h5ad' \
     --strip-components=2
 
-# get the name of the downloaded file
-# downloaded_file=$(find in -name "*.h5ad" | head -n 1)
-# mv "$downloaded_file" "in/normalised.h5ad"
-
 rm in/results.tar.gz

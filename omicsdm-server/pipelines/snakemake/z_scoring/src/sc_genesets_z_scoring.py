@@ -62,7 +62,6 @@ def main():
     original_adata = sc.read_h5ad(args.original_h5ad)
     original_adata.obs = original_adata.obs.join(scores_df)
 
-    # adata.obs = adata.obs.join(scores_df)
     # base = os.path.splitext(os.path.basename(args.path))[0]
     # out_file = os.path.join(args.out_dir, f"{base}_scored.h5ad")
     out_file = os.path.join(args.out_dir, "z-scored.h5ad")

@@ -27,53 +27,30 @@ rule report:
         cp {input.rmd} out/.
         {runR} src/lib/build_report.R | tee {log}
         """
-
-
-# rule analysis:
-#     input:
-#         in1="in/data.h5ad",
-#         in2="in/modules.gmt",
-#         # config=f"config/{PROJ_NAME}.json",
-#         # config=f"config/getGO.json",
-#     output:
-#         out1="out/results/gsva-scored.h5ad",
-#         # out2="out/results/sessionInfo/sessionInfo.txt",
-#         # out3="out/results/sessionInfo/platform.rds",
-#         # out4="out/results/sessionInfo/packages.rds",
-#     log:
-#         "log/analysis.log",
-#     shell:
-#         """
-#         venv/bin/python3 src/scRNA_GeneSetScoring.py \
-#             --path in/data.h5ad \
-#             --gene_sets in/modules.gmt \
-#             --method GSVA | tee {log}
-
-#         mkdir -p out/results
-#         cp data_scored.h5ad out/results/data_scored.h5ad
-#         """
-
-
 rule gsva:
     input:
-        in1="in/data.h5ad",
-        in2="in/modules.gmt",
+        in1="in/original.h5ad",
+        in2="in/normalised.h5ad",
+        in3="in/modules.gmt",
         config="analysis_options.json",
     output:
-        out1="out/results/gsva-scored.h5ad",
+        out1="out/results/gsva_scores.tsv",
+        out2="out/results/gsva-scored.h5ad",
         # out2="out/results/sessionInfo/sessionInfo.txt",
         # out3="out/results/sessionInfo/platform.rds",
         # out4="out/results/sessionInfo/packages.rds",
     log:
-        "log/normalisation.log",
+        "log/gsva.log",
     shell:
         """
         venv/bin/python3 src/sc_genesets_scoring_gsva.py \
-            --path in/data.h5ad \
-            --gene_sets in/modules.gmt 
+            --original_h5ad {input.in1} \
+            --normalised_h5ad {input.in2} \
+            --gene_sets {input.in3} | tee {log}
 
         mkdir -p out/results
-        cp gsva-scored.h5ad out/results/gsva-scored.h5ad
+        cp gsva_scores.tsv {output.out1}
+        cp gsva-scored.h5ad {output.out2}
         """
 
 
@@ -81,8 +58,9 @@ rule get_data:
     input:
         config="analysis_options.json",
     output:
-        out1="in/data.h5ad",
-        out2="in/modules.gmt",
+        out1="in/original.h5ad",
+        out2="in/normalised.h5ad",
+        out3="in/modules.gmt",
     log:
         "log/get_data.log",
     shell:
