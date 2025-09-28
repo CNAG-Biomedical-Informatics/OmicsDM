@@ -669,36 +669,48 @@ def run_follow_up_analyses(request_data, group_name):
         return "all follow up analyses already started", 200
 
     started_jobs = {}
+    file_ids = analysis_db_obj.file_ids
     for analysis in analysis_json:
         # make sure that no follow up analysis is started twice
         if analysis in current_jobs:
             continue
 
-        file_names = analysis_json[analysis]["files"].values()
+        file_names = list(analysis_json[analysis]["files"].values())
+
+        if "label_transfer_on_h5ad" in analysis_json[analysis]["options"]:
+            bases_on = analysis_json[analysis]["options"]["bases_on"]
+            files_of_base_analysis = analysis_json[bases_on]["files"].values()
+            h5ad_file_of_base_analysis = list(
+                filter(lambda x: x.endswith(".h5ad"), files_of_base_analysis)
+            )
+            if h5ad_file_of_base_analysis:
+                file_names = file_names + h5ad_file_of_base_analysis
 
         # TODO
         # the file version is also missing
         # maybe better get the file id from the client
 
         # query the database to get the file ids
-        file_ids = []
+        file_ids_per_analysis = []
         for file_name in file_names:
-            file_id = (
+            potential_file_ids = (
                 db.session.query(File)
                 .filter(File.name == file_name)
-                .filter(File.version == 1)
                 .filter(File.upload_finished.is_(True))
                 .with_entities(File.id)
-                .one_or_none()
             )
+
+            # intersect potential_file_ids with file_ids
+            file_id = list(set([f[0] for f in potential_file_ids]) & set(file_ids))
+
 
             # TODO
             # thrown an error if file_id is None
 
-            file_ids.append(file_id[0])
+            file_ids_per_analysis.append(file_id[0])
 
         build_number = start_analysis(
-            analysis_json[analysis], file_ids, analysis_id, group_name
+            analysis_json[analysis], file_ids_per_analysis, analysis_id, group_name
         )
 
         started_jobs[analysis] = {
@@ -1102,31 +1114,31 @@ class AnalysisStart(Resource):
 
 # TODO
 # Endpoint below is probably not needed anymore
-@ns.route("/", methods=(["POST"]))
-class AnalysisRun(Resource):
-    """
-    API endpoint for run the following analyses
-        Resource = /api/analysis
-    """
+# @ns.route("/", methods=(["POST"]))
+# class AnalysisRun(Resource):
+#     """
+#     API endpoint for run the following analyses
+#         Resource = /api/analysis
+#     """
 
-    @login_required
-    def post(self, userid, groups):
-        """
-        create a new project in Opal via Jenkins
-        """
+#     @login_required
+#     def post(self, userid, groups):
+#         """
+#         create a new project in Opal via Jenkins
+#         """
 
-        # TODO
-        # add request data validation
+#         # TODO
+#         # add request data validation
 
-        group_name = groups[0]
-        group = db.session.query(Group).filter_by(kc_groupname=group_name).one_or_none()
+#         group_name = groups[0]
+#         group = db.session.query(Group).filter_by(kc_groupname=group_name).one_or_none()
 
-        if group is None:
-            return make_response(jsonify({"message": "group not found"}), 404)
+#         if group is None:
+#             return make_response(jsonify({"message": "group not found"}), 404)
 
-        request_data = request.get_json()
-        msg, status_code = run_follow_up_analyses(request_data, group.kc_groupname)
-        return make_response(jsonify({"message": msg}), status_code)
+#         request_data = request.get_json()
+#         msg, status_code = run_follow_up_analyses(request_data, group.kc_groupname)
+#         return make_response(jsonify({"message": msg}), status_code)
 
 
 @ns.route("/", methods=(["POST"]))
@@ -2209,7 +2221,7 @@ class AnalysisData2(Resource):
 ns.add_resource(AnalysisViewCols, "/viewcols", endpoint="analysis_view_cols")
 ns.add_resource(AnalysisStart, "/start", endpoint="start_analysis")
 ns.add_resource(AnalysesPrevious, "/previous", endpoint="get_previous_analyses"),
-ns.add_resource(AnalysisRun, "/run", endpoint="run_analysis"),
+# ns.add_resource(AnalysisRun, "/run", endpoint="run_analysis"),
 ns.add_resource(AnalysisAbort, "/abort", endpoint="abort_analysis")
 ns.add_resource(AnalysisStatus, "/status", endpoint="analysis_status")
 ns.add_resource(AnalysisResults, "/results", endpoint="analysis_results")

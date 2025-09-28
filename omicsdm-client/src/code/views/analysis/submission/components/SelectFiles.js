@@ -24,7 +24,6 @@ const VersionSelectDropdown = ({
   selectedVersionsAndIds,
   setSelectedVersionsAndIds,
 }) => {
-
   console.log("VersionSelectDropdown row", row);
   console.log("selectedVersionsAndIds", selectedVersionsAndIds);
   console.log("versionOptions", versionOptions);
@@ -39,7 +38,7 @@ const VersionSelectDropdown = ({
   const keys = [owner, project_id, dataset_id, name];
 
   // Retrieve the available version options
-  const fileIdsAndVersions = getNestedValue(versionOptions, keys)
+  const fileIdsAndVersions = getNestedValue(versionOptions, keys);
   const currentSelection = getNestedValue(selectedVersionsAndIds, keys);
   console.log("fileIdsAndVersions", fileIdsAndVersions);
   console.log("currentSelection", currentSelection);
@@ -49,11 +48,16 @@ const VersionSelectDropdown = ({
   const handleVersionChange = (e) => {
     const { fileId, fileVersion } = e.target.value;
     console.log("handleVersionChange", fileId, fileVersion);
-    setSelectedVersionsAndIds((prev) => setNestedValue(prev, keys, { fileId, fileVersion }));
+    setSelectedVersionsAndIds((prev) =>
+      setNestedValue(prev, keys, { fileId, fileVersion })
+    );
   };
 
   // Memoize options so that their reference is stable
-  const memoizedOptions = useMemo(() => fileIdsAndVersions, [fileIdsAndVersions]);
+  const memoizedOptions = useMemo(
+    () => fileIdsAndVersions,
+    [fileIdsAndVersions]
+  );
 
   // Ensure reference equality: find the option instance that matches currentSelection.
   const adjustedSelection = useMemo(() => {
@@ -82,7 +86,6 @@ const VersionSelectDropdown = ({
 };
 
 export default function SelectFiles(props) {
-
   console.log("SelectFiles props", props);
 
   const {
@@ -92,7 +95,7 @@ export default function SelectFiles(props) {
     setRowSelection,
     setFilesSelected,
     setSelectedVersionsAndIds,
-    setVersionOptions
+    setVersionOptions,
   } = props;
 
   // initial table render
@@ -100,52 +103,49 @@ export default function SelectFiles(props) {
   const [tableData, setTableData] = useState({});
 
   // to force a re-render of the table otherwise the version selection is not working
-  const [tableKey, setTableKey] = useState("analysis-submission-file-selection-table-render-1");
+  const [tableKey, setTableKey] = useState(
+    "analysis-submission-file-selection-table-render-1"
+  );
 
   const [columnFilters, setColumnFilters] = useState([]);
 
   //table cols including the version selection column
-  const tableCols = useMemo(
-    () => {
-      console.log("useMemo versionOptions", versionOptions);
-      return [
-        {
-          accessorKey: "id",
-          header: "File ID",
+  const tableCols = useMemo(() => {
+    console.log("useMemo versionOptions", versionOptions);
+    return [
+      {
+        accessorKey: "owner",
+        header: "Owner",
+      },
+      {
+        accessorKey: "project_id",
+        header: "Project ID",
+      },
+      {
+        accessorKey: "dataset_id",
+        header: "Dataset ID",
+      },
+      {
+        accessorKey: "name",
+        header: "File",
+      },
+      {
+        accessorKey: "version",
+        header: "Version",
+        enableColumnFilter: false,
+        Cell: ({ row }) => {
+          return (
+            <VersionSelectDropdown
+              row={row}
+              versionOptions={versionOptions}
+              selectedVersionsAndIds={selectedVersionsAndIds}
+              setSelectedVersionsAndIds={setSelectedVersionsAndIds}
+            />
+          );
         },
-        {
-          accessorKey: "owner",
-          header: "Owner",
-        },
-        {
-          accessorKey: "project_id",
-          header: "Project ID",
-        },
-        {
-          accessorKey: "dataset_id",
-          header: "Dataset ID",
-        },
-        {
-          accessorKey: "name",
-          header: "File",
-        },
-        {
-          accessorKey: "version",
-          header: "Version",
-          enableColumnFilter: false,
-          Cell: ({ row }) => {
-            return (
-              <VersionSelectDropdown
-                row={row}
-                versionOptions={versionOptions}
-                selectedVersionsAndIds={selectedVersionsAndIds}
-                setSelectedVersionsAndIds={setSelectedVersionsAndIds}
-              />
-            );
-          }
-        }
-      ];
-    }, [versionOptions, selectedVersionsAndIds]);
+      },
+    ];
+  }, [versionOptions, selectedVersionsAndIds]);
   //       Cell: ({ row }) => {
   //         const { owner, project_id, dataset_id, name } = row.original;
 
@@ -226,42 +226,70 @@ export default function SelectFiles(props) {
       if (!updatedVersions[file.owner][file.project_id][file.dataset_id]) {
         updatedVersions[file.owner][file.project_id][file.dataset_id] = {};
       }
-      if (!updatedVersions[file.owner][file.project_id][file.dataset_id][file.name]) {
-        updatedVersions[file.owner][file.project_id][file.dataset_id][file.name] = [];
+      if (
+        !updatedVersions[file.owner][file.project_id][file.dataset_id][
+          file.name
+        ]
+      ) {
+        updatedVersions[file.owner][file.project_id][file.dataset_id][
+          file.name
+        ] = [];
       }
 
       const fileVersionAndFileId = {};
       fileVersionAndFileId["fileId"] = file.id;
       fileVersionAndFileId["fileVersion"] = file.version;
 
-      updatedVersions[file.owner][file.project_id][file.dataset_id][file.name].push(fileVersionAndFileId);
+      updatedVersions[file.owner][file.project_id][file.dataset_id][
+        file.name
+      ].push(fileVersionAndFileId);
     });
 
     // deep copy updatedVersions into selectedVersionsAndIds
-    const newSelectedVersionsAndIds = JSON.parse(JSON.stringify(updatedVersions));
+    const newSelectedVersionsAndIds = JSON.parse(
+      JSON.stringify(updatedVersions)
+    );
 
     // and update the selectedVersionsAndIds state but only if the version is not already set
     // in that way that the highest version is selected by default
     Object.keys(newSelectedVersionsAndIds).forEach((owner) => {
       Object.keys(newSelectedVersionsAndIds[owner]).forEach((project_id) => {
-        Object.keys(newSelectedVersionsAndIds[owner][project_id]).forEach((dataset_id) => {
-          Object.keys(newSelectedVersionsAndIds[owner][project_id][dataset_id]).forEach((name) => {
-            const fileIdsAndVersions = newSelectedVersionsAndIds[owner][project_id][dataset_id][name];
-            console.log("HERE fileIdsAndVersions", fileIdsAndVersions);
-            if (fileIdsAndVersions.length > 0) {
-              const highestVersion = Math.max(...fileIdsAndVersions.map(f => f.fileVersion));
-              const fileId = fileIdsAndVersions.find(f => f.fileVersion === highestVersion).fileId;
-              if (!selectedVersionsAndIds[owner]?.[project_id]?.[dataset_id]?.[name]) {
-                newSelectedVersionsAndIds[owner][project_id][dataset_id][name] = {
-                  fileId,
-                  fileVersion: highestVersion
-                };
-              } else {
-                newSelectedVersionsAndIds[owner][project_id][dataset_id][name] = selectedVersionsAndIds[owner][project_id][dataset_id][name];
+        Object.keys(newSelectedVersionsAndIds[owner][project_id]).forEach(
+          (dataset_id) => {
+            Object.keys(
+              newSelectedVersionsAndIds[owner][project_id][dataset_id]
+            ).forEach((name) => {
+              const fileIdsAndVersions =
+                newSelectedVersionsAndIds[owner][project_id][dataset_id][name];
+              console.log("HERE fileIdsAndVersions", fileIdsAndVersions);
+              if (fileIdsAndVersions.length > 0) {
+                const highestVersion = Math.max(
+                  ...fileIdsAndVersions.map((f) => f.fileVersion)
+                );
+                const fileId = fileIdsAndVersions.find(
+                  (f) => f.fileVersion === highestVersion
+                ).fileId;
+                if (
+                  !selectedVersionsAndIds[owner]?.[project_id]?.[dataset_id]?.[
+                    name
+                  ]
+                ) {
+                  newSelectedVersionsAndIds[owner][project_id][dataset_id][
+                    name
+                  ] = {
+                    fileId,
+                    fileVersion: highestVersion,
+                  };
+                } else {
+                  newSelectedVersionsAndIds[owner][project_id][dataset_id][
+                    name
+                  ] =
+                    selectedVersionsAndIds[owner][project_id][dataset_id][name];
+                }
               }
-            }
-          });
-        });
+            });
+          }
+        );
       });
     });
 
@@ -298,12 +326,13 @@ export default function SelectFiles(props) {
 
       rowIdToSelectedVersionAndFileId[rowId] = {};
       // get the selected version for this row
-      const versionAndId = selectedVersionsAndIds?.[owner]?.[project_id]?.[dataset_id]?.[name];
+      const versionAndId =
+        selectedVersionsAndIds?.[owner]?.[project_id]?.[dataset_id]?.[name];
       rowIdToSelectedVersionAndFileId[rowId] = versionAndId;
     });
     console.info({ rowIdToSelectedVersionAndFileId }); //read your managed row selection state
     setFilesSelected(rowIdToSelectedVersionAndFileId);
-  }, [rowSelection, selectedVersionsAndIds])
+  }, [rowSelection, selectedVersionsAndIds]);
 
   return (
     <Box display="flex" justifyContent="center">

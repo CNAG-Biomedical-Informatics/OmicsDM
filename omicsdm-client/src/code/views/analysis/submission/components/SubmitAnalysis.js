@@ -1,17 +1,16 @@
-import React from 'react';
+import React from "react";
 import { Typography, TextField, Box } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
 import { MaterialReactTable } from "material-react-table";
 
-import { analysis_create } from '../../../../apis';
+import { analysis_create } from "../../../../apis";
 import auth from "../../../../Auth";
-import OMICSDM_BUTTON from '../../../components/buttonCollection/buttons';
+import OMICSDM_BUTTON from "../../../components/buttonCollection/buttons";
 
 import JSONEditorWrapper from "../../../components/jsonEditor";
 
-import  { getColsDef } from '../../helpers';
-
+import { getColsDef } from "../../helpers";
 
 const Form = (props) => {
   const { values, handleChange, startAnalysis, analysisJson } = props;
@@ -56,8 +55,7 @@ const Form = (props) => {
       </Grid>
     </form>
   );
-}
-
+};
 
 const SummaryFrame = (props) => {
   console.log("Summary props", props);
@@ -80,10 +78,7 @@ const SummaryFrame = (props) => {
           {" "}
           Used analysis configuration (JSON){" "}
         </Typography>
-        <JSONEditorWrapper
-          content={analysisJson}
-          readOnly={true}
-        />
+        <JSONEditorWrapper content={analysisJson} readOnly={true} />
       </Grid>
     </Grid>
   );
@@ -115,7 +110,6 @@ export default function SubmitAnalysis(props) {
   // accessible if all the other tabs are filled
 
   const startAnalysis = async () => {
-
     console.log("formValues", formValues);
 
     // TODO
@@ -188,14 +182,17 @@ export default function SubmitAnalysis(props) {
 
   console.log("filesSelected :>> ", filesSelected);
 
+  // TODO
+  // datasetId somehow contains the projectId
+  // fileId contains the datasetId
 
   // key/value loop over filesSelected
   // the key is the rowId
   // the value is the version
   const tableContents = [];
-  const accessorKeys = ["owner", "datasetId", "fileId", "name", "version"];
+  const accessorKeys = ["owner", "datasetId", "name", "version"];
   for (const [rowId, fileIdAndVersion] of Object.entries(filesSelected)) {
-    const row = {}
+    const row = {};
     rowId.split("?").forEach((value, index) => {
       row[accessorKeys[index]] = value;
     });
@@ -205,10 +202,22 @@ export default function SubmitAnalysis(props) {
   }
   console.log("tableContents :>> ", tableContents);
 
+  const rows = Object.entries(filesSelected).map(([key, val]) => {
+    const [owner, proj, datasetId, name] = key.split("?");
+    return {
+      owner,
+      datasetId,
+      name,
+      version: val.fileVersion,
+    };
+  });
+
+  console.log("rows :>> ", rows);
+
   const tableData = {
     cols: getColsDef(accessorKeys),
-    data: tableContents,
-  }
+    data: rows,
+  };
 
   console.log("tableData :>> ", tableData);
 
@@ -235,5 +244,5 @@ export default function SubmitAnalysis(props) {
         />
       </Grid>
     </Grid>
-  )
+  );
 }
