@@ -124,6 +124,7 @@ getEnv_fromObj <- function(cfg) {
 script_options <- fromJSON("analysis_options.json")
 project <- paste("out/results/", script_options$project, sep = "")
 control <- script_options$control
+# control <- "S_32150756"
 group <- script_options$group
 onlypca <- as.logical(script_options$onlypca)
 plot <- as.logical(script_options$plot)
@@ -215,6 +216,11 @@ dds <- DESeqDataSetFromMatrix(
   design = formula(eval(parse(text = mod)))
 )
 
+print("dds before filtering")
+print(dds)
+print("dim(dds)")
+print(dim(dds))
+
 dds <- estimateSizeFactors(dds)
 bc_per_group <- lapply(unique(coldata$group), function(x) {
   rownames(coldata)[coldata$group == x]
@@ -233,6 +239,9 @@ keep <- Reduce("|", lapply(bc_per_group, all_members))
 # keep <- rowSums(counts(dds,normalized=TRUE) >= 10) >= min(rle(as.vector(coldata$group))$lengths)
 dds <- dds[keep, ]
 
+print("dds after filtering")
+print(dds)
+print("before relevel control group")
 ## RELEVEL CONTROL GROUP ##
 dds[[group]] <- relevel(dds[["group"]], control)
 

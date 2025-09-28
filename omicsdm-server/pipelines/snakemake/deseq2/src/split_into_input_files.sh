@@ -27,14 +27,14 @@ Dependencies:
 IN="$1"
 BASENAME=$(basename "$IN" .csv)
 
-# 1. extract sample info
+
+# 1. extract sample info (space-separated, strip quotes, prefix sample IDs with S_)
 awk -F, 'BEGIN{OFS=" "}
-  NR==1 { $1="BARCODE" }        # fix empty header
-  { 
-    for (i=1; i<=4; i++) {
-      gsub(/"/, "", $i)        # remove quotes
-    }
-    print $1,$2,$3,$4 
+  NR==1 { $1="sample" }
+  {
+    for (i=1; i<=4; i++) gsub(/"/, "", $i)
+    if (NR>1) $1="S_" $1
+    print $1,$2,$3,$4
   }' "$IN" > "INFO_${BASENAME}.csv"
 
 # 2. extract wide counts (samples as rows, genes as columns)

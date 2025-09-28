@@ -48,17 +48,17 @@ s3 <- paws::s3(
 print("start get_object")
 
 counts_obj <- s3$get_object(Bucket = bucket, Key = counts_filepath)
-# counts_tbl <- read.csv(text = rawToChar(counts_obj$Body), sep=" ")
+counts_tbl <- read.csv(text = rawToChar(counts_obj$Body), sep=" ")
 
 # Anna Esteve 
-counts_tbl <- read.csv(text = rawToChar(counts_obj$Body))
+# counts_tbl <- read.csv(text = rawToChar(counts_obj$Body))
 print("got counts file")
 
 info_obj <- s3$get_object(Bucket = bucket, Key = info_filepath)
-# info_tbl <- read.csv(text = rawToChar(info_obj$Body), sep=" ")
+info_tbl <- read.csv(text = rawToChar(info_obj$Body), sep=" ")
 
 # Anna Esteve 
-info_tbl <- read.csv(text = rawToChar(info_obj$Body))
+# info_tbl <- read.csv(text = rawToChar(info_obj$Body))
 
 print("got info file")
 
@@ -79,12 +79,12 @@ counts_df <- tidyr::separate(
   remove = TRUE
 )
 # counts_df <- counts_tbl
-rownames(counts_df) <- counts_df$id_gene
-counts_df$id_gene <- NULL
+# rownames(counts_df) <- counts_df$id_gene
+# counts_df$id_gene <- NULL
 
-# counts_df <- counts_tbl
-# rownames(counts_df) <- counts_df$gene_id
-# counts_df$gene_id <- NULL
+counts_df <- counts_tbl
+rownames(counts_df) <- counts_df$gene_id
+counts_df$gene_id <- NULL
 
 new_colnames <- unlist(strsplit(colnames(info_tbl)[1], "[.]"))
 info_df <- tidyr::separate(
@@ -94,22 +94,22 @@ info_df <- tidyr::separate(
   into = new_colnames,
   remove = TRUE
 )
-# info_df <- info_tbl
-# colnames(info_df) <- toupper(colnames(info_df))
+info_df <- info_tbl
+colnames(info_df) <- toupper(colnames(info_df))
 # drop the columns AGE and GENDER if they exist
-# if ("AGE" %in% colnames(info_df)) {
-#   info_df$AGE <- NULL
-# }
-# if ("GENDER" %in% colnames(info_df)) {
-#   info_df$GENDER <- NULL
-# }
+if ("AGE" %in% colnames(info_df)) {
+  info_df$AGE <- NULL
+}
+if ("GENDER" %in% colnames(info_df)) {
+  info_df$GENDER <- NULL
+}
 
 # fix the typo in the example file from Anna Esteve
-rownames(info_df) <- info_df$BARCDODE
-info_df$BARCDODE <- NULL
+# rownames(info_df) <- info_df$BARCDODE
+# info_df$BARCDODE <- NULL
 
-# rownames(info_df) <- info_df$BARCODE
-# info_df$BARCODE <- NULL
+rownames(info_df) <- info_df$BARCODE
+info_df$BARCODE <- NULL
 
 print("resource1")
 head(counts_df)

@@ -493,6 +493,7 @@ def start_analysis(analysis_json, file_ids, analysis_id, group_name):
     analysis_options = dict(analysis_json["options"])
     analysis_options["file_paths"] = ceph_paths
     analysis_options["analysis_id"] = analysis_id
+    analysis_options["filetype_to_filename"] = all_files
 
     bases_on = analysis_json["options"]["bases_on"]
     previous_analysis_id = None
@@ -804,15 +805,16 @@ def create_analysis(request_data, groups, group, userid):
     for key in analysis_json:
         if not analysis_json[key]["options"]["bases_on"]:
             analysis_name = key
-            base_analysis = analysis_json[analysis_name]
+            base_analysis_json = analysis_json[analysis_name]
             break
-        else:
-            print("debuggig Line 725")
-            print("analysis_json")
-            print(analysis_json)
 
     # started_jobs = {}
-    build_number = start_analysis(base_analysis, file_ids, analysis_id, group_name)
+    build_number = start_analysis(
+        base_analysis_json, 
+        file_ids, 
+        analysis_id, 
+        group_name,
+    )
 
     started_job = {}
     started_job[analysis_name] = {

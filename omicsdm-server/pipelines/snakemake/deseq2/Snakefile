@@ -65,8 +65,8 @@ rule get_data_and_preprocess:
         "log/get_data_and_preprocess.log",
     shell:
         """
-                {runR} src/get_data_and_preprocess.R {input.config} | tee {log}
-                """
+        {runR} src/get_data_and_preprocess.R {input.config} | tee {log}
+         """
 
 
 # 2. Other rules
