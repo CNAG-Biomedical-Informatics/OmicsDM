@@ -1,1 +1,1 @@
-cellxgene launch --host 0.0.0.0 /bucket/3tr_vev3ev3/sc-normalisation/out/results/normalised.h5ad
+cellxgene launch --host 0.0.0.0 /bucket/3tr_f2f34g3gwaf/z-scoring/out/results/z-scored.h5ad

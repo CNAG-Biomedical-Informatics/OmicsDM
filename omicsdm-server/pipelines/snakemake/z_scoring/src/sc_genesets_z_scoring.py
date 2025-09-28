@@ -46,30 +46,27 @@ def compute_zscores(adata_filtered, gene_dict):
 
 def main():
     parser = argparse.ArgumentParser(description="Z-scoring")
-    parser.add_argument("--path", required=True, help="Input .h5ad file")
+    parser.add_argument("--normalised_h5ad", required=True, help="Input normalised h5ad file")
+    parser.add_argument("--original_h5ad", required=True, help="Input original h5ad file")
     parser.add_argument("--gene_sets", required=True, help="GMT file of gene sets")
     parser.add_argument("--out_dir", default=".")
     args = parser.parse_args()
 
     os.makedirs(args.out_dir, exist_ok=True)
-    adata = sc.read_h5ad(args.path)
-
-    # TODO
-    # two adata neeed to be loaded here
-    # the normalised one and the original one
-    # because the join is with the original one
-
+    normalised_adata = sc.read_h5ad(args.normalised_h5ad)
 
     gene_dict = load_gmt(args.gene_sets)
-    scores_df = compute_zscores(adata, gene_dict)
+    scores_df = compute_zscores(normalised_adata, gene_dict)
+    scores_df.to_csv("z_scores.tsv", sep="\t")
 
+    original_adata = sc.read_h5ad(args.original_h5ad)
     original_adata.obs = original_adata.obs.join(scores_df)
 
     # adata.obs = adata.obs.join(scores_df)
     # base = os.path.splitext(os.path.basename(args.path))[0]
     # out_file = os.path.join(args.out_dir, f"{base}_scored.h5ad")
     out_file = os.path.join(args.out_dir, "z-scored.h5ad")
-    adata.write(out_file)
+    original_adata.write(out_file)
     print("Saved scored AnnData to", out_file)
 
 

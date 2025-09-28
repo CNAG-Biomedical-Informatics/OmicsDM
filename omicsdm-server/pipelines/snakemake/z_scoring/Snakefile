@@ -30,12 +30,13 @@ rule report:
 
 rule z_scoring:
     input:
-        in1="in/data.h5ad",
-        in2="in/modules.gmt",
+        in1="in/original.h5ad",
+        in2="in/normalised.h5ad",
+        in3="in/modules.gmt",
         config="analysis_options.json",
     output:
-        out1="out/results/z-scored.h5ad",
-        out2="out/results/z_scores.tsv",
+        out1="out/results/z_scores.tsv",
+        out2="out/results/z-scored.h5ad",
         # out2="out/results/sessionInfo/sessionInfo.txt",
         # out3="out/results/sessionInfo/platform.rds",
         # out4="out/results/sessionInfo/packages.rds",
@@ -44,12 +45,13 @@ rule z_scoring:
     shell:
         """
         venv/bin/python3 src/sc_genesets_z_scoring.py \
-            --path in/data.h5ad \
-            --gene_sets in/modules.gmt | tee {log}
+            --original_h5ad {input.in1} \
+            --normalised_h5ad {input.in2} \
+            --gene_sets {input.in3} | tee {log}
 
         mkdir -p out/results
-        cp z_scores.tsv out/results/z_scores.tsv
-        cp z-scored.h5ad out/results/z-scored.h5ad
+        cp z_scores.tsv {output.out1}
+        cp z-scored.h5ad {output.out2}
         """
 
 
@@ -57,8 +59,9 @@ rule get_data:
     input:
         config="analysis_options.json",
     output:
-        out1="in/data.h5ad",
-        out2="in/modules.gmt",
+        out1="in/original.h5ad",
+        out2="in/normalised.h5ad",
+        out3="in/modules.gmt",
     log:
         "log/get_data.log",
     shell:

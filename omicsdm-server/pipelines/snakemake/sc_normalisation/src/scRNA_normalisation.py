@@ -29,10 +29,10 @@ def main():
     sc.pp.normalize_total(adata_filtered, target_sum=1e4) # target_sum should not be hardcoded
     sc.pp.log1p(adata_filtered)
 
-    if issparse(adata_filtered.X):
-        # materialize to dense; downcast to float32 to keep size reasonable
-        print("Converting to dense matrix")
-        adata_filtered.X = adata_filtered.X.toarray().astype(np.float32)
+    # if issparse(adata_filtered.X):
+    #     # materialize to dense; downcast to float32 to keep size reasonable
+    #     print("Converting to dense matrix")
+    #     adata_filtered.X = adata_filtered.X.toarray().astype(np.float32)
 
     # out_file = os.path.join(args.out_dir, f"{base}_normalised.h5ad")
     out_file = os.path.join(args.out_dir, "normalised.h5ad")
