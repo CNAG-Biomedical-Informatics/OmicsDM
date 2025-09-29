@@ -12,11 +12,10 @@ rule all:
 
 rule report:
     input:
-        rmd="src/report/index.Rmd",
-        in1="out/results/TEST_134_135_pc_contribution.txt",
-        in2="out/results/TEST_134_135_pca.pdf",
-        in3="out/results/TEST_134_135_rlogMat.txt",
-        in4="out/results/TEST_134_135_sampletosample_heatmap.pdf",
+        # in1="out/results/bulkRNAseq_base_analysis_pc_contribution.txt",
+        # in2="out/results/bulkRNAseq_base_analysis_pca.pdf",
+        in3="out/results/bulkRNAseq_base_analysis_rlogMat.txt",
+        # in4="out/results/bulkRNAseq_base_analysis_sampletosample_heatmap.pdf",
     output:
         html="out/_main.html",
         book=directory("out/_book"),
@@ -24,9 +23,9 @@ rule report:
         "log/report.log",
     shell:
         """
-                cp {input.rmd} out/.
-                {runR} src/lib/build_report.R | tee {log}
-                """
+        cp src/report/index.Rmd out/.
+        {runR} src/lib/build_report.R | tee {log}
+        """
 
 
 rule analysis:
@@ -37,19 +36,19 @@ rule analysis:
         rds_obj2=f"out/rds/{PROJ_NAME}_obj2.rds",
         config=f"config/{PROJ_NAME}.json",
     output:
-        out1="out/results/TEST_134_135_pc_contribution.txt",
-        out2="out/results/TEST_134_135_pca.pdf",
-        out3="out/results/TEST_134_135_rlogMat.txt",
-        out4="out/results/TEST_134_135_sampletosample_heatmap.pdf",
+        # out1="out/results/bulkRNAseq_base_analysis_pc_contribution.txt",
+        # out2="out/results/bulkRNAseq_base_analysis_pca.pdf",
+        out3="out/results/bulkRNAseq_base_analysis_rlogMat.txt",
+        # out4="out/results/bulkRNAseq_base_analysis_sampletosample_heatmap.pdf",
         out5="out/results/sessionInfo/sessionInfo.txt",
-        out6="out/results/sessionInfo/platform.rds",
-        out7="out/results/sessionInfo/packages.rds",
+        # out6="out/results/sessionInfo/platform.rds",
+        # out7="out/results/sessionInfo/packages.rds",
     log:
         "log/analysis.log",
     shell:
         """
-                {runR} src/deseq2.R | tee {log}
-                """
+        {runR} src/deseq2.R | tee {log}
+        """
 
 
 rule get_data_and_preprocess:

@@ -87,7 +87,7 @@ const navAndComponents = [
   },
   {
     segment: "files",
-    title: "Download Files",
+    title: "Download and Visualise Files",
     icon: <DownloadingIcon />,
     Component: TableViewFunctional,
   },

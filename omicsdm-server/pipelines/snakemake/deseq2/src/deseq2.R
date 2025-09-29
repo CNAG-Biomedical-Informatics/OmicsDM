@@ -122,14 +122,17 @@ getEnv_fromObj <- function(cfg) {
 
 # read in json passed from omicsdm_server
 script_options <- fromJSON("analysis_options.json")
+script_options$project <- "bulkRNAseq_base_analysis"
 project <- paste("out/results/", script_options$project, sep = "")
-control <- script_options$control
-# control <- "S_32150756"
+# control <- script_options$control
+control <- "CTRL"
 group <- script_options$group
+group <- "Group"
 onlypca <- as.logical(script_options$onlypca)
 plot <- as.logical(script_options$plot)
 covariants <- script_options$covariants
 mod <- script_options$mod
+mod <- "~ Age + Gender + Group"
 
 print("script_options")
 print(script_options)
@@ -138,6 +141,16 @@ cfg_obj <- list(
   contrast = script_options$contrast,
   plot_atr = script_options$plot_atr
 )
+
+cfg_obj$plot_atr <- lapply(cfg_obj$plot_atr, function(x) {
+  ifelse(x == "group", "Group", x)
+})
+
+# Write the following into contrast:
+cfg_obj$contrast <- list(
+  "SLE_vs_CTRL" = c("Group", "SLE", "CTRL")
+)
+
 print("cfg_obj")
 print(cfg_obj)
 
@@ -155,7 +168,7 @@ counts_raw[cols] <- lapply(counts_raw[cols], as.integer)
 coldata <- subset(info_raw, row.names(info_raw) %in% colnames(counts_raw))
 countdata <- counts_raw[, colnames(counts_raw) %in% rownames(coldata)]
 coldata <- subset(coldata, row.names(coldata) %in% colnames(countdata))
-names(coldata)[which(names(coldata) == group)] <- "group"
+# names(coldata)[which(names(coldata) == group)] <- "group"
 
 print("row.names(info_raw) %in% colnames(counts_raw)")
 print(row.names(info_raw) %in% colnames(counts_raw))
@@ -216,14 +229,19 @@ dds <- DESeqDataSetFromMatrix(
   design = formula(eval(parse(text = mod)))
 )
 
+print("design(dds)")
+print(design(dds))
+
 print("dds before filtering")
 print(dds)
 print("dim(dds)")
 print(dim(dds))
+print("unique(coldata[[group]]")
+print(unique(coldata[[group]]))
 
 dds <- estimateSizeFactors(dds)
-bc_per_group <- lapply(unique(coldata$group), function(x) {
-  rownames(coldata)[coldata$group == x]
+bc_per_group <- lapply(unique(coldata[[group]]), function(x) {
+  rownames(coldata)[coldata[[group]] == x]
 })
 all_members <- function(x) {
   if (length(x) > 1) {
@@ -242,17 +260,23 @@ dds <- dds[keep, ]
 print("dds after filtering")
 print(dds)
 print("before relevel control group")
+colnames(colData(dds))
+
 ## RELEVEL CONTROL GROUP ##
-dds[[group]] <- relevel(dds[["group"]], control)
+dds[[group]] <- relevel(dds[[group]], control)
+print("after relevel control group")
 
 ## DIFFERENTIAL ANALYSIS ##
 
-print("sessionInfo")
-print(sessionInfo())
+# print("sessionInfo")
+# print(sessionInfo())
 # onlypca <- FALSE
+# onlypca <- TRUE
 if (!onlypca) {
   # if (!args$onlypca){
+  print("run DESeq")
   dds <- DESeq(dds, parallel = TRUE)
+  print("DESeq done")
   # dds <- DESeq(dds, parallel = FALSE)
 }
 
@@ -260,13 +284,16 @@ if (!onlypca) {
 ## rlog transformation and variance stabilization ##
 # other normalization methods for plotting#
 
+print("rlog transformation")
 rld <- rlog(dds)
 # vsd <-varianceStabilizingTransformation(dds)
+print("rlog done")
 rlogMat <- assay(rld)
 # print (rlogMat)
 
 write.table(rlogMat, file = paste(project, "_rlogMat.txt", sep = ""), quote = F)
 
+# plot <- FALSE
 # heatmap samples"
 if ((plot)) {
   # if ((args$plot)){
@@ -277,10 +304,14 @@ if ((plot)) {
   pdf(paste(project, "_sampletosample_heatmap.pdf", sep = ""), onefile = FALSE)
   # pdf(paste(args$project,"_sampletosample_heatmap.pdf",sep=""),onefile=FALSE)
   # annotation_heatmap = as.data.frame(sapply(plot_atr$heatmap_ann,function(x) eval(parse(text=x))), row.names = colnames(coldata))
+
+  print("before annotation_heatmap as.data.frame")
   annotation_heatmap <- as.data.frame(
     colData(dds)[, plot_atr$heatmap_ann],
     row.names = row.names(colData(dds))
   )
+  print("after annotation_heatmap as.data.frame")
+
   names(annotation_heatmap) <- plot_atr$heatmap_ann
   ## SAVED: annotation_col = as.data.frame(coldata[,plot_atr$heatmap_ann]
   pheatmap(
@@ -323,7 +354,7 @@ if (plot) {
         x = pca$x[, dims[1, 1]],
         y = pca$x[, dims[2, 1]],
         color = color_factor,
-        label = as.factor(dds[["group"]])
+        label = as.factor(dds[[group]])
       )) +
       xlab(paste(
         colnames(pca$x)[1],
@@ -508,6 +539,15 @@ process_contrast <- function(title, contrastos) {
   # write.table(df_all,paste(args$project,"_", title,"_results.txt",sep=""),quote=FALSE)
   print("DE analysis finished")
 
+  print("rownames(resOrdered)")
+  print(rownames(resOrdered))
+  print("length(rownames(resOrdered))")
+  print(length(rownames(resOrdered)))
+
+  print("plot_atr$de_genes_n")
+  print(plot_atr$de_genes_n)
+
+  ## PLOT HEATMAP TOP DE GENES ##
   if ((plot) & (length(rownames(resOrdered)) >= plot_atr$de_genes_n)) {
     # if ((args$plot) & (length(rownames(resOrdered))>=plot_atr$de_genes_n)){
     select <- rlogMat[rownames(resOrdered), ][1:plot_atr$de_genes_n, ]
@@ -553,6 +593,7 @@ process_contrast <- function(title, contrastos) {
   }
 }
 
+# deactivated process contrasts for now
 if (!onlypca) {
   # if (!args$onlypca){
   print("process contrasts")
