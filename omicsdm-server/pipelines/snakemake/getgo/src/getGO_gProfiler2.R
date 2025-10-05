@@ -87,7 +87,7 @@ for (i in files) {
   if (as.numeric(unlist(strsplit(system(paste("wc -l ", i, sep = ""), intern = TRUE), " "))[1]) > 0) {
     name_f <- basename(i)
     gene <- read.table(i, header = F)
-    result <- gost(
+    result <- gprofiler2::gost(
       gene$V1,
       organism = "hsapiens",
       evcodes = TRUE

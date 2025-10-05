@@ -10,10 +10,7 @@ print("start loading libs")
 
 # The aws.s3 needs to be installed using renv
 
-# TODO
-# Do not use aws.s3 but use paws instead
-
-libs <- c("aws.s3", "httr", "jsonlite")
+libs <- c("httr", "jsonlite", "paws")
 for (lib in libs) {
   print(lib)
   suppressPackageStartupMessages(library(lib, character.only = TRUE))
@@ -26,6 +23,7 @@ set_config(config(ssl_verifypeer = 0L, ssl_verifyhost = 0L, verbose = F))
 
 readRenviron(".Renviron")
 bucket <- Sys.getenv("BUCKET_NAME")
+print(paste("bucket:", bucket))
 
 script_options <- fromJSON("analysis_options.json")
 print(script_options)
@@ -39,16 +37,34 @@ print(bases_on)
 file_path <- paste0(analysis_id, "/", bases_on, "/results.tar.gz")
 print(file_path)
 
+s3 <- paws::s3(
+  config = list(
+    credentials = list(
+      creds = list(
+        access_key_id = "admin",
+        secret_access_key = "12345678"
+      )
+    ),
+    endpoint = "https://minio.omicsdm.cnag.dev",
+    s3_force_path_style = TRUE,
+    region = "us-east-1"
+  )
+)
+
+res <- s3$get_object(Bucket = bucket, Key = file_path)
+dir.create("in", showWarnings = FALSE, recursive = TRUE)
+writeBin(res$Body, "in/results.tar.gz")
+
 # get the analysis id from the analysis_options.json
 
-object_exists(file_path, bucket, region = "", use_https = FALSE)
-save_object(
-  object = file_path,
-  bucket = bucket,
-  file = "in/results.tar.gz",
-  region = "",
-  use_https = FALSE
-)
+# object_exists(file_path, bucket, region = "", use_https = FALSE)
+# save_object(
+#   object = file_path,
+#   bucket = bucket,
+#   file = "in/results.tar.gz",
+#   region = "",
+#   use_https = FALSE
+# )
 
 # TODO
 # below should not be hardcoded

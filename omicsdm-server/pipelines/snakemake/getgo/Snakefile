@@ -29,18 +29,19 @@ rule report:
 rule analysis:
         input:
                 config = f"config/{PROJ_NAME}.json",
-                in1="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt_genes.txt",
-                in2="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt_genes.txt",
-                in3="out/tmp/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt_genes.txt"
+                in1="out/tmp/get_genes_finished.txt",
+                # in1="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt_genes.txt",
+                # in2="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt_genes.txt",
+                # in3="out/tmp/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt_genes.txt"
 
         output:
-                out1="out/results/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt_genes.txt.table",
-                out2="out/results/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt_genes.txt.table",
-                out3="out/results/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt_genes.txt.table",
+                out1="out/results/sessionInfo/sessionInfo.txt",
+                out2="out/results/sessionInfo/platform.rds",
+                out3="out/results/sessionInfo/packages.rds"
+                # out1="out/results/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt_genes.txt.table",
+                # out2="out/results/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt_genes.txt.table",
+                # out3="out/results/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt_genes.txt.table",
 
-                out4="out/results/sessionInfo/sessionInfo.txt",
-                out5="out/results/sessionInfo/platform.rds",
-                out6="out/results/sessionInfo/packages.rds"
 
         log:
                 "log/analysis.log"
@@ -53,14 +54,16 @@ rule analysis:
 rule preprocess:
         input:
                 config=f"config/{PROJ_NAME}.json",
-		in1="in/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt",
-                in2="in/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt",
-                in3="in/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt"
+                in1="in/results.tar.gz"
+		# in1="in/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt",
+                # in2="in/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt",
+                # in3="in/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt"
 
         output:
-                out1="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt_genes.txt",
-                out2="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt_genes.txt",
-                out3="out/tmp/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt_genes.txt"
+                out1="out/tmp/get_genes_finished.txt"
+                # out1="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt_genes.txt",
+                # out2="out/tmp/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt_genes.txt",
+                # out3="out/tmp/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt_genes.txt"
         log:
                 "log/preprocess.log"
         shell:
@@ -73,9 +76,7 @@ rule get_data:
                 config = f"config/{PROJ_NAME}.json"
 
         output:
-                out1="in/TEST_134_135_TEST_135_100_vs_TEST_134_500_results.txt",
-                out2="in/TEST_134_135_TEST_135_100_vs_TEST_135_500_results.txt",
-		out3="in/TEST_134_135_TEST_135_500_vs_TEST_134_500_results.txt"
+                out1="in/results.tar.gz ",
 
         log:
                 "log/get_data.log"
