@@ -241,6 +241,9 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
     cmd = ["/home/venv/bin/snakemake", "-c1", "--nolock", "--nocolor"]
 
+    if name == "getgo":
+        cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
+
     # if name in ["gsva", "z-scoring"]:
     #     image_version = "1.0.7"
     #     image_name = f"{docker_registry}/sc-gene-sets-scoring:{image_version}"
