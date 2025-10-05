@@ -76,7 +76,7 @@ rule get_data:
                 config = f"config/{PROJ_NAME}.json"
 
         output:
-                out1="in/results.tar.gz ",
+                out1="in/results.tar.gz",
 
         log:
                 "log/get_data.log"

@@ -226,6 +226,9 @@ def run_analysis(self, analysis_id, name, options, group_name):
     if name == "deseq2":
         image_version = "1.0.3"
 
+    if name == "getgo":
+        image_version = "1.0.17"
+
     # docker_registry = "docker.vm2.dev"
     docker_registry = "docker.omicsdm.cnag.dev"
     image_name = f"{docker_registry}/r-{name}:{image_version}"
