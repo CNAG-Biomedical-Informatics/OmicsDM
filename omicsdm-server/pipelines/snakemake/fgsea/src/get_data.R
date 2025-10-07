@@ -10,7 +10,9 @@ print("start loading libs")
 
 # The aws.s3 needs to be installed using renv
 
-libs <- c("aws.s3", "httr", "jsonlite")
+# libs <- c("aws.s3", "httr", "jsonlite")
+libs <- c("httr", "jsonlite", "paws")
+
 for (lib in libs) {
   print(lib)
   suppressPackageStartupMessages(library(lib, character.only = TRUE))
@@ -36,14 +38,33 @@ print(bases_on)
 file_path <- paste0(analysis_id, "/", bases_on, "/results.tar.gz")
 print(file_path)
 
-object_exists(file_path, bucket, region = "", use_https = FALSE)
-save_object(
-  object = file_path,
-  bucket = bucket,
-  file = "in/results.tar.gz",
-  region = "",
-  use_https = FALSE
+s3 <- paws::s3(
+  config = list(
+    credentials = list(
+      creds = list(
+        access_key_id = "admin",
+        secret_access_key = "12345678"
+      )
+    ),
+    endpoint = "https://minio.omicsdm.cnag.dev",
+    s3_force_path_style = TRUE,
+    region = "us-east-1"
+  )
 )
+
+res <- s3$get_object(Bucket = bucket, Key = file_path)
+dir.create("in", showWarnings = FALSE, recursive = TRUE)
+writeBin(res$Body, "in/results.tar.gz")
+
+
+# object_exists(file_path, bucket, region = "", use_https = FALSE)
+# save_object(
+#   object = file_path,
+#   bucket = bucket,
+#   file = "in/results.tar.gz",
+#   region = "",
+#   use_https = FALSE
+# )
 
 # TODO
 # below should not be hardcoded
@@ -68,16 +89,26 @@ if (is.null(reactome_identifier_mapping_file)) {
 
   splitted <- strsplit(gmt_file, "/")[[1]]
   target_string <- splitted[length(splitted)]
+
+  # TODO
+  # version should not be hardcoded
   gmt_filename <- sub("_uploadedVersion_1.gmt", "", target_string)
+  print("gmt_filename")
+  print(gmt_filename)
 
   # hardcode the gmt file
   # gmt_file <- "3tr/test/c2.cp.kegg_medicus.v2023.2.Hs.symbols.gmt_uploadedVersion_1.gmt"
 
-  object_exists(gmt_file, bucket, region = "", use_https = FALSE)
-  obj <- get_object(gmt_file, bucket, region = "", use_https = FALSE)
+  # object_exists(gmt_file, bucket, region = "", use_https = FALSE)
+  # obj <- get_object(gmt_file, bucket, region = "", use_https = FALSE)
 
   out_path <- paste0("out/tmp/", gmt_filename)
-  writeLines(rawToChar(obj), out_path)
+  # writeLines(rawToChar(obj), out_path)
+
+  res <- s3$get_object(Bucket = bucket, Key = gmt_file)
+  print("res")
+  print(res)
+  writeBin(res$Body, out_path)
 
   # save_object(
   #   object = gmt_filename,
@@ -88,7 +119,6 @@ if (is.null(reactome_identifier_mapping_file)) {
   # )
 } else {
   print("reactome_identifier_mapping_file is not null")
-
 
   base <- "https://reactome.org/download/current/"
   # target <- "Ensembl2Reactome_All_Levels.txt"

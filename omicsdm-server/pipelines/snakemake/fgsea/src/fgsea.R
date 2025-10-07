@@ -3,8 +3,13 @@ print("---R-logs---")
 print("start fgsea.R")
 print("start loading libs")
 libs <- c(
-  "fgsea", "data.table", "glue",
-  "dplyr", "tibble", "BiocParallel", "jsonlite"
+  "fgsea",
+  "data.table",
+  "glue",
+  "dplyr",
+  "tibble",
+  "BiocParallel",
+  "jsonlite"
 )
 for (lib in libs) {
   print(lib)
@@ -41,14 +46,11 @@ print("libs loaded")
 #   usage()
 # }
 
-
 ## Parse arguments (we expect the form --arg=value)
 # parseArgs <- function(x) strsplit(sub("^--", "", x), "=")
 # argsDF <- as.data.frame(do.call("rbind", parseArgs(args)))
 # opt <- as.list(as.character(argsDF$V2))
 # names(opt) <- argsDF$V1
-
-
 
 # if(is.null(opt$input)){
 #   cat("ERROR: --input is a mandatory fields")
@@ -110,11 +112,16 @@ run_fgsea <- function(fx, sepName, rankINT, allLevels) {
   topPathwaysUp <- fgseaRes[ES > 0][head(order(padj), n = 20), pathway]
   topPathwaysDown <- fgseaRes[ES < 0][head(order(padj), n = 20), pathway]
   topPathways <- c(topPathwaysUp, rev(topPathwaysDown))
-  plotGseaTable(allLevels[topPathways], ranks, fgseaRes,
-    gseaParam = 0.5, colwidths = c(5, 3, 0.8, 1.2, 1.2)
+  plotGseaTable(
+    allLevels[topPathways],
+    ranks,
+    fgseaRes,
+    gseaParam = 0.5,
+    colwidths = c(5, 3, 0.8, 1.2, 1.2)
   )
   dev.off()
-  fwrite(fgseaRes[padj < 0.05][order(padj, NES)],
+  fwrite(
+    fgseaRes[padj < 0.05][order(padj, NES)],
     # file = paste(bname,"_fgsea.tsv", sep = ""),
     file = glue("out/results/{bname}_fgsea.tsv"),
     sep = "\t",
@@ -153,7 +160,7 @@ if (is.null(reactome_identifier_mapping_file)) {
   print(gmt_filepath)
   allLevels <- gmtPathways(gmt_filepath)
   print("allLevels")
-  print(allLevels)
+  # print(allLevels)
   print("all levels loaded")
 } else {
   allLevels <- gmtPathways("out/tmp/reactome_gmt.tsv")
@@ -161,7 +168,7 @@ if (is.null(reactome_identifier_mapping_file)) {
 
 print("HERE")
 print("files")
-print(files)
+# print(files)
 
 for (i in files) {
   print(paste("Analysing :", i), sep = "")

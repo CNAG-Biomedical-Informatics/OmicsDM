@@ -229,6 +229,9 @@ def run_analysis(self, analysis_id, name, options, group_name):
     if name == "getgo":
         image_version = "1.0.17"
 
+    if name == "fgsea":
+        image_version = "1.0.17"
+
     # docker_registry = "docker.vm2.dev"
     docker_registry = "docker.omicsdm.cnag.dev"
     image_name = f"{docker_registry}/r-{name}:{image_version}"
@@ -241,7 +244,7 @@ def run_analysis(self, analysis_id, name, options, group_name):
     # cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
     cmd = ["/home/venv/bin/snakemake", "-c1", "--nolock", "--nocolor"]
 
-    if name == "getgo":
+    if name in ["getgo", "fgsea"]:
         cmd = ["snakemake", "-c1", "--nolock", "--nocolor"]
 
     # if name in ["gsva", "z-scoring"]:
@@ -297,9 +300,7 @@ def run_analysis(self, analysis_id, name, options, group_name):
         )
 
     if name == "z-scoring":
-        pipeline_path = (
-            Path(app.root_path).parent / "pipelines/snakemake" / "z_scoring"
-        )
+        pipeline_path = Path(app.root_path).parent / "pipelines/snakemake" / "z_scoring"
 
     print("pipeline_path", pipeline_path)
     snakefile_path = str(pipeline_path / "Snakefile")
@@ -371,6 +372,9 @@ def run_analysis(self, analysis_id, name, options, group_name):
         # you can check the to redis pushed logs with:
         # redis-commander -p 8081
 
+        # assert that the output is a generator
+        assert hasattr(output, "__iter__") and not isinstance(output, (str, bytes))
+
         print("snakemake logs")
         for line in output:
             decoded_line = line.decode("utf-8")
@@ -437,6 +441,7 @@ def run_analysis(self, analysis_id, name, options, group_name):
 
         container.remove(force=True)
 
+        print("before run_follow_up_analyses")
         run_follow_up_analyses(
             {"analysis_id": analysis_id, "analysis": name}, group_name
         )
@@ -649,6 +654,12 @@ def run_follow_up_analyses(request_data, group_name):
     analysis_id = request_data.get("analysis_id")
     finished_analysis = request_data.get("analysis")
 
+    print("in run_follow_up_analyses")
+    print("analysis_id")
+    print(analysis_id)
+    print("finished_analysis")
+    print(finished_analysis)
+
     # TODO
     # filter the analyses by the group
 
@@ -664,9 +675,23 @@ def run_follow_up_analyses(request_data, group_name):
         return f"Analysis {analysis_id} not found", 404
 
     analysis_json = analysis_db_obj.analysis_settings
-    for key, value in analysis_json.items():
-        if value["analysis"] == finished_analysis:
-            analysis_key = key
+
+    try:
+        for key, value in analysis_json.items():
+            if value["analysis"] == finished_analysis:
+                analysis_key = key
+    except IndexError:
+        print("IndexError analysis_json", analysis_json)
+        return f"Analysis {analysis_id} not found", 404
+    except KeyError:
+        print("KeyError analysis_json", analysis_json)
+        return f"Analysis {analysis_id} not found", 404
+    except Exception as e:
+        print(e)
+        print("General Exception analysis_json", analysis_json)
+        return f"Analysis {analysis_id} not found", 404
+
+    print("before update the analysis status in the db")
 
     # update the analysis status in the db
     current_jobs = dict(analysis_db_obj.jenkins_jobs)
@@ -677,13 +702,19 @@ def run_follow_up_analyses(request_data, group_name):
 
     started_jobs = {}
     file_ids = analysis_db_obj.file_ids
+
+    print("Start looping over follow up analyses")
+    print("analysis_json", analysis_json)
     for analysis in analysis_json:
         # make sure that no follow up analysis is started twice
         if analysis in current_jobs:
             continue
 
+        print("before file_names")
         file_names = list(analysis_json[analysis]["files"].values())
+        print("file_names", file_names)
 
+        print("before check for label_transfer_on_h5ad")
         if "label_transfer_on_h5ad" in analysis_json[analysis]["options"]:
             bases_on = analysis_json[analysis]["options"]["bases_on"]
             files_of_base_analysis = analysis_json[bases_on]["files"].values()
@@ -692,12 +723,14 @@ def run_follow_up_analyses(request_data, group_name):
             )
             if h5ad_file_of_base_analysis:
                 file_names = file_names + h5ad_file_of_base_analysis
+        print("after check for label_transfer_on_h5ad")
 
         # TODO
         # the file version is also missing
         # maybe better get the file id from the client
 
         # query the database to get the file ids
+        print("before query the database to get the file ids")
         file_ids_per_analysis = []
         for file_name in file_names:
             potential_file_ids = (
@@ -707,15 +740,27 @@ def run_follow_up_analyses(request_data, group_name):
                 .with_entities(File.id)
             )
 
+            if potential_file_ids is None:
+                # TODO
+                # thrown an error if file is not found
+                # note fgsea expects the following GMT file:
+                # c6.all.v2023.2.Hs.symbols.gmt
+                print(f"File {file_name} not found")
+                continue
+
             # intersect potential_file_ids with file_ids
             file_id = list(set([f[0] for f in potential_file_ids]) & set(file_ids))
 
-
             # TODO
             # thrown an error if file_id is None
+            if not file_id:
+                print(f"File {file_name} not found in the analysis")
+                continue
 
             file_ids_per_analysis.append(file_id[0])
 
+        print("file_ids_per_analysis", file_ids_per_analysis)
+        print("before start_analysis")
         build_number = start_analysis(
             analysis_json[analysis], file_ids_per_analysis, analysis_id, group_name
         )
@@ -816,9 +861,9 @@ def create_analysis(request_data, groups, group, userid):
 
     # started_jobs = {}
     build_number = start_analysis(
-        base_analysis_json, 
-        file_ids, 
-        analysis_id, 
+        base_analysis_json,
+        file_ids,
+        analysis_id,
         group_name,
     )
 
