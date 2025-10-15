@@ -852,14 +852,7 @@ def create_analysis(request_data, groups, group, userid):
                 # user has no access to this dataset
 
             dataset_ids.add(dataset[0])
-    
-    # for key in analysis_json:
-    #     if not analysis_json[key]["options"]["bases_on"]:
-    #         analysis_name = key
-    #         base_analysis_json = analysis_json[analysis_name]
-    #         break
 
-    # Collect only values where bases_on is None
     base_analyses_jsons = [
         val for val in analysis_json.values()
         if val.get("options", {}).get("bases_on") is None
