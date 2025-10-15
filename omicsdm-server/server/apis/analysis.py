@@ -852,26 +852,32 @@ def create_analysis(request_data, groups, group, userid):
                 # user has no access to this dataset
 
             dataset_ids.add(dataset[0])
+    
+    # for key in analysis_json:
+    #     if not analysis_json[key]["options"]["bases_on"]:
+    #         analysis_name = key
+    #         base_analysis_json = analysis_json[analysis_name]
+    #         break
 
-    for key in analysis_json:
-        if not analysis_json[key]["options"]["bases_on"]:
-            analysis_name = key
-            base_analysis_json = analysis_json[analysis_name]
-            break
+    # Collect only values where bases_on is None
+    base_analyses_jsons = [
+        val for val in analysis_json.values()
+        if val.get("options", {}).get("bases_on") is None
+    ]
 
-    # started_jobs = {}
-    build_number = start_analysis(
-        base_analysis_json,
-        file_ids,
-        analysis_id,
-        group_name,
-    )
+    for base_analysis_json in base_analyses_jsons:
+        build_number = start_analysis(
+            base_analysis_json,
+            file_ids,
+            analysis_id,
+            group_name,
+        )
 
-    started_job = {}
-    started_job[analysis_name] = {
-        "build_number": build_number,
-        "status": "starting",
-    }
+        started_job = {}
+        started_job[analysis_name] = {
+            "build_number": build_number,
+            "status": "starting",
+        }
 
     analysis_obj = Analyses(
         analysis_id=analysis_id,
@@ -2000,6 +2006,13 @@ class AnalysisTemplateQuery(Resource):
                 selected_files = {}
             # end fgsea specific
 
+            # sc-normalisation quick temporary hack until the client side is fixed
+            if analysis_name == "sc-normalisation":
+                selected_files["h5ad"] = "PerezRK_subset_pruned.h5ad"
+                # and drop  the other selected files
+                selected_files = {"h5ad": selected_files["h5ad"]}
+            # end sc-normalisation quick temporary hack until the client side is fixed
+
             if selected_files and set(selected_files.keys()) != set(
                 template[analysis_name]["files"].keys()
             ):
@@ -2011,7 +2024,7 @@ class AnalysisTemplateQuery(Resource):
                             "selectedFiles": selected_files,
                         }
                     ),
-                    501,
+                    409,
                 )
 
             # expected selected files is a dictionary
