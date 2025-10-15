@@ -1707,21 +1707,26 @@ class AnalysisTemplatesSubmission(Resource):
         # check if the analysis is base on another analysis
         bases_on_template_ids = []
         bases_on = analysis_json[analysis_name]["options"]["bases_on"]
-        if bases_on:
-            query = (
-                db.session.query(AnalysisTemplates)
-                # .filter(AnalysisTemplates.analysis_type == analysis_type)
-                .filter(AnalysisTemplates.name == bases_on)
-                .with_entities(AnalysisTemplates.id)
-                .one_or_none()
-            )
+        
+        # ensure bases_on is a list
+        if bases_on and not isinstance(bases_on, list):
+            bases_on = [bases_on]
 
-            if query is None:
-                return make_response(
-                    jsonify({"message": "Based on analysis not found"}), 404
+        if bases_on:
+            for analysis in bases_on:
+                query = (
+                    db.session.query(AnalysisTemplates)
+                    .filter(AnalysisTemplates.name == analysis)
+                    .with_entities(AnalysisTemplates.id)
+                    .one_or_none()
                 )
 
-            bases_on_template_ids.append(query[0])
+                if query is None:
+                    return make_response(
+                        jsonify({"message": "Based on analysis not found"}), 404
+                    )
+
+                bases_on_template_ids.append(query[0])
 
         # add the analysis to the database
         analysis = AnalysisTemplates(
