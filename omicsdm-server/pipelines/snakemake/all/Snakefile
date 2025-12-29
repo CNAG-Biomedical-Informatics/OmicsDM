@@ -15,7 +15,7 @@ rule report:
     input:
         # Outputs from all pipelines
         deseq2_results="out/results/deseq2/bulkRNAseq_base_analysis_rlogMat.txt",
-        fgsea_results=directory("out/results/fgsea"),
+        fgsea_results="out/results/fgsea/significant_genesets.gmt",
         sc_norm_results="out/results/sc_normalisation/normalised.h5ad",
         z_scoring_results="out/results/z_scoring/z-scored.h5ad",
         gsva_results="out/results/gsva/gsva-scored.h5ad",
