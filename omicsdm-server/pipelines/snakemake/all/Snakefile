@@ -1,0 +1,220 @@
+PROJ_NAME = "all"
+
+# --- Variable Declarations ---- #
+runR = "Rscript --no-save --no-restore --verbose"
+runPython = "venv/bin/python3"
+logAll = "2>&1"
+
+
+rule all:
+    input:
+        report_html=f"out/_main.html",
+
+
+rule report:
+    input:
+        # Outputs from all pipelines
+        deseq2_results="out/results/deseq2/bulkRNAseq_base_analysis_rlogMat.txt",
+        fgsea_results=directory("out/results/fgsea"),
+        sc_norm_results="out/results/sc_normalisation/normalised.h5ad",
+        z_scoring_results="out/results/z_scoring/z-scored.h5ad",
+        gsva_results="out/results/gsva/gsva-scored.h5ad",
+        rmd="src/report/index.Rmd",
+    output:
+        html="out/_main.html",
+        book=directory("out/_book"),
+    log:
+        "log/report.log",
+    shell:
+        """
+        cp {input.rmd} out/.
+        {runR} src/lib/build_report.R | tee {log}
+        """
+
+
+# --- Bulk RNA-seq Pipeline --- #
+
+# 1. DESeq2 Analysis
+rule deseq2_analysis:
+    input:
+        rds_obj1="out/rds/deseq2_obj1.rds",
+        rds_obj2="out/rds/deseq2_obj2.rds",
+        config="config/deseq2.json",
+    output:
+        out3="out/results/deseq2/bulkRNAseq_base_analysis_rlogMat.txt",
+        out5="out/results/deseq2/sessionInfo/sessionInfo.txt",
+    log:
+        "log/deseq2_analysis.log",
+    shell:
+        """
+        mkdir -p out/results/deseq2/sessionInfo
+        {runR} src/deseq2/deseq2.R | tee {log}
+        """
+
+
+rule deseq2_get_data:
+    input:
+        config="config/deseq2.json",
+    output:
+        rds_obj1="out/rds/deseq2_obj1.rds",
+        rds_obj2="out/rds/deseq2_obj2.rds",
+    log:
+        "log/deseq2_get_data.log",
+    shell:
+        """
+        mkdir -p out/rds
+        {runR} src/deseq2/get_data_and_preprocess.R {input.config} | tee {log}
+        """
+
+
+# 2. FGSEA Analysis (depends on DESeq2 output)
+rule fgsea_analysis:
+    input:
+        in1="in/fgsea/results.tar.gz",
+        in2="out/tmp/c6.all.v2023.2.Hs.symbols.gmt",
+        config="config/fgsea.json",
+        # Ensure DESeq2 completes first
+        deseq2_done="out/results/deseq2/bulkRNAseq_base_analysis_rlogMat.txt",
+    output:
+        out7="out/results/fgsea/sessionInfo/sessionInfo.txt",
+        out8="out/results/fgsea/sessionInfo/platform.rds",
+        out9="out/results/fgsea/sessionInfo/packages.rds",
+        significant_genesets="out/results/fgsea/significant_genesets.gmt",
+    log:
+        "log/fgsea_analysis.log",
+    shell:
+        """
+        mkdir -p out/results/fgsea/sessionInfo
+        {runR} src/fgsea_wrapper.R | tee {log}
+        """
+
+
+rule fgsea_get_data:
+    input:
+        config="config/fgsea.json",
+    output:
+        out1="in/fgsea/results.tar.gz",
+        out4="out/tmp/c6.all.v2023.2.Hs.symbols.gmt",
+    log:
+        "log/fgsea_get_data.log",
+    shell:
+        """
+        mkdir -p in/fgsea out/tmp
+        {runR} src/fgsea/get_data.R {input.config} | tee {log}
+        """
+
+
+# --- Single-cell RNA-seq Pipeline --- #
+
+# 3. Single-cell Normalisation
+rule sc_normalisation:
+    input:
+        in1="in/sc_normalisation/data.h5ad",
+        config="config/sc_normalisation.json",
+    output:
+        out1="out/results/sc_normalisation/normalised.h5ad",
+    log:
+        "log/sc_normalisation.log",
+    shell:
+        """
+        mkdir -p out/results/sc_normalisation
+        {runPython} src/sc_normalisation/scRNA_normalisation.py \
+            --path {input.in1} | tee {log}
+        cp normalised.h5ad {output.out1}
+        """
+
+
+rule sc_normalisation_get_data:
+    input:
+        config="config/sc_normalisation.json",
+    output:
+        out1="in/sc_normalisation/data.h5ad",
+    log:
+        "log/sc_normalisation_get_data.log",
+    shell:
+        """
+        mkdir -p in/sc_normalisation
+        bash src/sc_normalisation/get_data.sh | tee {log}
+        """
+
+
+# --- Gene Set Scoring Pipelines (depend on FGSEA significant gene sets) --- #
+
+# 4.a Z-scoring
+rule z_scoring:
+    input:
+        original_h5ad="in/z_scoring/original.h5ad",
+        normalised_h5ad="out/results/sc_normalisation/normalised.h5ad",
+        gene_sets="out/results/fgsea/significant_genesets.gmt",
+        config="config/z_scoring.json",
+    output:
+        out1="out/results/z_scoring/z_scores.tsv",
+        out2="out/results/z_scoring/z-scored.h5ad",
+    log:
+        "log/z_scoring.log",
+    shell:
+        """
+        mkdir -p out/results/z_scoring
+        {runPython} src/z_scoring/sc_genesets_z_scoring.py \
+            --original_h5ad {input.original_h5ad} \
+            --normalised_h5ad {input.normalised_h5ad} \
+            --gene_sets {input.gene_sets} | tee {log}
+        cp z_scores.tsv {output.out1}
+        cp z-scored.h5ad {output.out2}
+        """
+
+
+rule z_scoring_get_data:
+    input:
+        config="config/z_scoring.json",
+    output:
+        out1="in/z_scoring/original.h5ad",
+    log:
+        "log/z_scoring_get_data.log",
+    shell:
+        """
+        mkdir -p in/z_scoring
+        bash src/z_scoring/get_data.sh | tee {log}
+        """
+
+
+# 4.b GSVA
+rule gsva:
+    input:
+        original_h5ad="in/gsva/original.h5ad",
+        normalised_h5ad="out/results/sc_normalisation/normalised.h5ad",
+        gene_sets="out/results/fgsea/significant_genesets.gmt",
+        config="config/gsva.json",
+    output:
+        out1="out/results/gsva/gsva_scores.tsv",
+        out2="out/results/gsva/gsva-scored.h5ad",
+    log:
+        "log/gsva.log",
+    shell:
+        """
+        mkdir -p out/results/gsva
+        {runPython} src/gsva/sc_genesets_scoring_gsva.py \
+            --original_h5ad {input.original_h5ad} \
+            --normalised_h5ad {input.normalised_h5ad} \
+            --gene_sets {input.gene_sets} | tee {log}
+        cp gsva_scores.tsv {output.out1}
+        cp gsva-scored.h5ad {output.out2}
+        """
+
+
+rule gsva_get_data:
+    input:
+        config="config/gsva.json",
+    output:
+        out1="in/gsva/original.h5ad",
+    log:
+        "log/gsva_get_data.log",
+    shell:
+        """
+        mkdir -p in/gsva
+        bash src/gsva/get_data.sh | tee {log}
+        """
+
+
+# 2. Other rules
+include: "rules/renv.smk"

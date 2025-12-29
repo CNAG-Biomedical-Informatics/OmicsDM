@@ -1,0 +1,1 @@
+../../../z_scoring/src/get_data.sh
