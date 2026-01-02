@@ -1,14 +1,20 @@
 {
+  "bases_on": null,
+  "control": "CTRL",
+  "contrast": {
+    "SLE_vs_CTRL": "Group,SLE,CTRL"
+  },
   "files": [
-    "3tr/test/COUNTS_genes_TEST_134_135_summed.csv_uploadedVersion_1.csv",
-    "3tr/test/info_TEST_134_135.csv_uploadedVersion_1.csv"
+    "in/INFO_Bcells_bulkRNAseq.csv",
+    "in/COUNTS_Bcells_bulkRNAseq.csv"
   ],
-  "options": {
-    "profiling": "TRUE",
-    "onlypca": "FALSE",
-    "plot": "TRUE",
-    "project": "TEST_134_135",
-    "control": "TEST_134_500",
-    "bases_on": null
-  }
+  "filetype_to_filename": {
+    "info": "INFO_Bcells_bulkRNAseq.csv",
+    "counts": "COUNTS_Bcells_bulkRNAseq.csv"
+  },
+  "onlypca": "FALSE",
+  "profiling": "TRUE",
+  "plot": "TRUE",
+  "plot_atr": { "de_genes_n": 50, "heatmap_ann": "Group", "pca": "Group" },
+  "project": "bulkRNAseq_base_analysis"
 }

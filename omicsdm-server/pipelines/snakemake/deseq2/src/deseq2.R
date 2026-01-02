@@ -14,44 +14,44 @@ print("---R-logs---")
 print("start deseq2.R")
 print("start loading libs")
 
-library("jsonlite", character.only = TRUE)
-library("stringr", character.only = TRUE)
-library("glue", character.only = TRUE)
-library("DESeq2", character.only = TRUE)
-library("BiocParallel", character.only = TRUE)
-library("pheatmap", character.only = TRUE)
-library("RColorBrewer", character.only = TRUE)
-library("ggplot2", character.only = TRUE)
-library("genefilter", character.only = TRUE)
-library("gridExtra", character.only = TRUE)
-library("grid", character.only = TRUE)
-library("methods", character.only = TRUE)
-library("tibble", character.only = TRUE)
-library("dplyr", character.only = TRUE)
-library("openxlsx", character.only = TRUE)
+library("jsonlite")
+library("stringr")
+library("glue")
+library("DESeq2")
+library("BiocParallel")
+library("pheatmap")
+library("RColorBrewer")
+library("ggplot2")
+library("genefilter")
+library("gridExtra")
+library("grid")
+library("methods")
+library("tibble")
+library("dplyr")
+library("openxlsx")
 
-libs <- c(
-  "jsonlite",
-  "stringr",
-  "glue",
-  "DESeq2",
-  "BiocParallel",
-  "pheatmap",
-  "RColorBrewer",
-  "ggplot2",
-  "genefilter",
-  "gridExtra",
-  "grid",
-  "methods",
-  "tibble",
-  "dplyr",
-  "openxlsx"
-)
-for (lib in libs) {
-  print(lib)
-  suppressPackageStartupMessages(library(lib, character.only = TRUE))
-}
-print("libs loaded")
+# libs <- c(
+#   "jsonlite",
+#   "stringr",
+#   "glue",
+#   "DESeq2",
+#   "BiocParallel",
+#   "pheatmap",
+#   "RColorBrewer",
+#   "ggplot2",
+#   "genefilter",
+#   "gridExtra",
+#   "grid",
+#   "methods",
+#   "tibble",
+#   "dplyr",
+#   "openxlsx"
+# )
+# for (lib in libs) {
+#   print(lib)
+#   suppressPackageStartupMessages(library(lib, character.only = TRUE))
+# }
+# print("libs loaded")
 
 getEnv_fromJSON <- function(json) {
   cat("getEnv_fromJSON", json)
@@ -121,9 +121,11 @@ getEnv_fromObj <- function(cfg) {
 
 
 # read in json passed from omicsdm_server
-script_options <- fromJSON("analysis_options.json")
+script_options <- fromJSON("config/deseq2.json")
+print("got script_options from deseq2.json")
+print(script_options)
 script_options$project <- "bulkRNAseq_base_analysis"
-project <- paste("out/results/", script_options$project, sep = "")
+project <- paste("out/results/deseq2/", script_options$project, sep = "")
 # control <- script_options$control
 control <- "CTRL"
 group <- script_options$group
@@ -160,6 +162,16 @@ getEnv_fromObj(cfg_obj)
 ## READ FILES ##
 counts_raw <- readRDS("out/rds/deseq2_obj1.rds")
 info_raw <- readRDS("out/rds/deseq2_obj2.rds")
+
+print("counts_raw")
+print(head(counts_raw))
+print("colnames(counts_raw)")
+print(colnames(counts_raw))
+
+print("info_raw")
+print(head(info_raw))
+print("row.names(info_raw)")
+print(row.names(info_raw))
 
 # make sure that the counts are integer
 cols <- names(counts_raw)[2:dim(counts_raw)[2]]
@@ -266,6 +278,9 @@ colnames(colData(dds))
 dds[[group]] <- relevel(dds[[group]], control)
 print("after relevel control group")
 
+print ("onlypca")
+print (onlypca)
+
 ## DIFFERENTIAL ANALYSIS ##
 
 # print("sessionInfo")
@@ -311,6 +326,8 @@ if ((plot)) {
     row.names = row.names(colData(dds))
   )
   print("after annotation_heatmap as.data.frame")
+  print("annotation_heatmap")
+  print(head(annotation_heatmap))
 
   names(annotation_heatmap) <- plot_atr$heatmap_ann
   ## SAVED: annotation_col = as.data.frame(coldata[,plot_atr$heatmap_ann]
@@ -472,14 +489,21 @@ process_contrast <- function(title, contrastos) {
     contrast = contrastos,
     parallel = FALSE
   )
+
   res2 <- lfcShrink(dds, contrast = contrastos, res = resAll, type = "normal")
+  print("head res2")
+  print(head(res2))
+
   res <- subset(res2, abs(log2FoldChange) > log2(1.5))
+
+
   resOrdered <- res[order(res$padj), ]
   resAllOrdered <- resAll[order(resAll$padj), ]
 
   ## EXTRACT COUNTS NORMALIZED ##
   c <- counts(dds, normalized = TRUE)
   c_ordered <- c[rownames(resAllOrdered), ]
+
   colnames(c_ordered) <- paste(
     dds[[contrastos[1]]],
     ",",
@@ -487,6 +511,7 @@ process_contrast <- function(title, contrastos) {
     sep = ""
   )
   counts_dds <- (c_ordered[, order(colnames(c_ordered))])
+
   cc <- round(counts_dds, digits = 2)
 
   ## EXTRACT DESCRIPTION AND SUMMARY ##
@@ -512,8 +537,18 @@ process_contrast <- function(title, contrastos) {
   )
 
   df_all <- as.data.frame(resAllOrdered)
+
+  print("df_all before adding columns")
+  print(head(df_all))
+  # print("rownames(df_all)")
+  # print(rownames(df_all))
+
   df_all["filter"] <- pass_filter
   df_all["shrunkenlfc"] <- res2[rownames(df_all), "log2FoldChange"]
+  
+  print("df_all after adding columns")
+  print(head(df_all))
+
   df_all <- df_all[, c(
     "baseMean",
     "log2FoldChange",
@@ -603,7 +638,7 @@ if (!onlypca) {
 
 sink(format(
   Sys.time(),
-  glue("out/results/sessionInfo/sessionInfo.txt")
+  glue("out/results/deseq2/sessionInfo/sessionInfo.txt")
 ))
 print(devtools::session_info())
 sink()
@@ -619,5 +654,5 @@ packages_df <- devtools::session_info()$packages %>%
   dplyr::select(loadedversion, date, source) %>%
   rownames_to_column()
 
-saveRDS(platform_df, "out/results/sessionInfo/platform.rds")
-saveRDS(packages_df, "out/results/sessionInfo/packages.rds")
+saveRDS(platform_df, "out/results/deseq2/sessionInfo/platform.rds")
+saveRDS(packages_df, "out/results/deseq2/sessionInfo/packages.rds")

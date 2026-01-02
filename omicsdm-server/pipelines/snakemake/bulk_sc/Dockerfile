@@ -1,17 +1,18 @@
-FROM rocker/r-ver:4.4.0
+FROM rocker/r-ver:4.5.2
 
 # Install system dependencies for both R and Python packages
 RUN apt-get update && apt-get install -y \
   curl \
   jq \
   python3 \
-  python3.10-venv \
+  python3.12-venv \
   python3-pip \
   libxml2 \
   pandoc \
   git \
   libfontconfig1-dev \
   libfreetype6-dev \
+  libgit2-dev \
   libicu-dev \ 
   libglpk-dev \
   libpng-dev \ 
@@ -33,8 +34,8 @@ RUN apt-get update && apt-get install -y \
 
 # Set BLAS and LAPACK to libblas
 RUN ARCH=$(uname -m) && \
-    update-alternatives --set "libblas.so.3-${ARCH}-linux-gnu" "/usr/lib/${ARCH}-linux-gnu/blas/libblas.so.3" && \
-    update-alternatives --set "liblapack.so.3-${ARCH}-linux-gnu" "/usr/lib/${ARCH}-linux-gnu/lapack/liblapack.so.3"
+  update-alternatives --set "libblas.so.3-${ARCH}-linux-gnu" "/usr/lib/${ARCH}-linux-gnu/blas/libblas.so.3" && \
+  update-alternatives --set "liblapack.so.3-${ARCH}-linux-gnu" "/usr/lib/${ARCH}-linux-gnu/lapack/liblapack.so.3"
 
 # Install Snakemake and Python packages
 RUN python3 -m venv /home/venv

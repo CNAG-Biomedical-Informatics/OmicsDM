@@ -2,19 +2,28 @@
 print("---R-logs---")
 print("start fgsea.R")
 print("start loading libs")
-libs <- c(
-  "fgsea",
-  "data.table",
-  "glue",
-  "dplyr",
-  "tibble",
-  "BiocParallel",
-  "jsonlite"
-)
-for (lib in libs) {
-  print(lib)
-  suppressPackageStartupMessages(library(lib, character.only = TRUE))
-}
+
+library("fgsea")
+library("data.table")
+library("glue")
+library("dplyr")
+library("tibble")
+library("BiocParallel")
+library("jsonlite")
+
+# libs <- c(
+#   "fgsea",
+#   "data.table",
+#   "glue",
+#   "dplyr",
+#   "tibble",
+#   "BiocParallel",
+#   "jsonlite"
+# )
+# for (lib in libs) {
+#   print(lib)
+#   suppressPackageStartupMessages(library(lib, character.only = TRUE))
+# }
 print("libs loaded")
 ### Parse args
 

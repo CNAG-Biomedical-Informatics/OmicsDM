@@ -20,11 +20,7 @@ Uses significant gene sets from FGSEA as input for:
 
 ## Pipeline Dependencies
 
-```
-DESeq2 → FGSEA → z_scoring
-              ↘
-sc_normalisation → gsva
-```
+<!-- insert a mermaid diagramm here -->
 
 - FGSEA depends on DESeq2 output
 - z_scoring and gsva both depend on:
