@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  all-pipeline:
+    build:
+      context: .
+    environment:
+      - CURL_CA_BUNDLE=/home/certs/vm2rootCA.pem
+    volumes:
+      - ./certs:/home/certs
+      - ./docker-out:/home/out
+      - ./docker-out/log:/home/log
+    tty: true
+    command: bash
+    extra_hosts:
+      - "panoptes.vm2.dev:host-ip"

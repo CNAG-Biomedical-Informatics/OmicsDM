@@ -1,0 +1,6 @@
+{
+  "original_h5ad": "in/z_scoring/original.h5ad",
+  "normalised_h5ad": "out/results/sc_normalisation/normalised.h5ad",
+  "gene_sets": "out/results/fgsea/significant_genesets.gmt",
+  "output_path": "out/results/z_scoring"
+}

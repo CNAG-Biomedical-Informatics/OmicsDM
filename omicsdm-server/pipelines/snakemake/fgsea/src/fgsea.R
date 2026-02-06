@@ -2,19 +2,28 @@
 print("---R-logs---")
 print("start fgsea.R")
 print("start loading libs")
-libs <- c(
-  "fgsea",
-  "data.table",
-  "glue",
-  "dplyr",
-  "tibble",
-  "BiocParallel",
-  "jsonlite"
-)
-for (lib in libs) {
-  print(lib)
-  suppressPackageStartupMessages(library(lib, character.only = TRUE))
-}
+
+library("fgsea")
+library("data.table")
+library("glue")
+library("dplyr")
+library("tibble")
+library("BiocParallel")
+library("jsonlite")
+
+# libs <- c(
+#   "fgsea",
+#   "data.table",
+#   "glue",
+#   "dplyr",
+#   "tibble",
+#   "BiocParallel",
+#   "jsonlite"
+# )
+# for (lib in libs) {
+#   print(lib)
+#   suppressPackageStartupMessages(library(lib, character.only = TRUE))
+# }
 print("libs loaded")
 ### Parse args
 
@@ -137,7 +146,7 @@ out_dir <- "out/results"
 files <- Sys.glob(file.path(in_dir, "*results.txt"))
 
 # read in json passed from omicsdm_server
-script_options <- fromJSON("analysis_options.json")
+script_options <- fromJSON("config/fgsea.json")
 print(script_options)
 
 reactome_identifier_mapping_file <- script_options$use_reactome_identifier_mapping_file

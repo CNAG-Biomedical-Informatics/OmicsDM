@@ -1,0 +1,8 @@
+.snakemake
+log
+out
+renv
+venv
+*.Rproj
+.Rproj.user
+.Rhistory

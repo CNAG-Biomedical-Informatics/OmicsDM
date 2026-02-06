@@ -1,0 +1,4 @@
+{
+  "data_path": "in/sc_normalisation/data.h5ad",
+  "output_path": "out/results/sc_normalisation/normalised.h5ad"
+}
