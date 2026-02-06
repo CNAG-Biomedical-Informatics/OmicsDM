@@ -124,7 +124,7 @@ getEnv_fromObj <- function(cfg) {
 script_options <- fromJSON("config/deseq2.json")
 print("got script_options from deseq2.json")
 print(script_options)
-script_options$project <- "bulkRNAseq_base_analysis"
+# script_options$project <- "bulkRNAseq_base_analysis"
 project <- paste("out/results/deseq2/", script_options$project, sep = "")
 # control <- script_options$control
 control <- "CTRL"

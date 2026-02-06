@@ -14,8 +14,8 @@ rule all:
 rule report:
     input:
         # Outputs from all pipelines
-        deseq2_results="out/results/deseq2/bulkRNAseq_base_analysis_rlogMat.txt",
-        # fgsea_results="out/results/fgsea/significant_genesets.gmt",
+        deseq2_results="out/results/deseq2/bulkRNAseq_deseq2_SLE_vs_CTRL_results.txt",
+        fgsea_results="out/results/fgsea/_fgsea.pdf",
         # sc_norm_results="out/results/sc_normalisation/normalised.h5ad",
         # z_scoring_results="out/results/z_scoring/z-scored.h5ad",
         # gsva_results="out/results/gsva/gsva-scored.h5ad",
@@ -55,8 +55,8 @@ rule deseq2_analysis:
         rds_obj2="out/rds/deseq2_obj2.rds",
         config="config/deseq2.json",
     output:
-        out3="out/results/deseq2/bulkRNAseq_base_analysis_rlogMat.txt",
-        out5="out/results/deseq2/sessionInfo/sessionInfo.txt",
+        out="out/results/deseq2/bulkRNAseq_deseq2_SLE_vs_CTRL_results.txt",
+        R_session_info="out/results/deseq2/sessionInfo/sessionInfo.txt",
     log:
         "log/deseq2_analysis.log",
     shell:
@@ -66,40 +66,21 @@ rule deseq2_analysis:
         """
 
 # 2. FGSEA Analysis (depends on DESeq2 output)
-# rule fgsea_analysis:
-#     input:
-#         in1="in/fgsea/results.tar.gz",
-#         in2="out/tmp/c6.all.v2023.2.Hs.symbols.gmt",
-#         config="config/fgsea.json",
-#         # Ensure DESeq2 completes first
-#         deseq2_done="out/results/deseq2/bulkRNAseq_base_analysis_rlogMat.txt",
-#     output:
-#         out7="out/results/fgsea/sessionInfo/sessionInfo.txt",
-#         out8="out/results/fgsea/sessionInfo/platform.rds",
-#         out9="out/results/fgsea/sessionInfo/packages.rds",
-#         significant_genesets="out/results/fgsea/significant_genesets.gmt",
-#     log:
-#         "log/fgsea_analysis.log",
-#     shell:
-#         """
-#         mkdir -p out/results/fgsea/sessionInfo
-#         {runR} src/fgsea_wrapper.R | tee {log}
-#         """
-
-
-# rule fgsea_get_data:
-#     input:
-#         config="config/fgsea.json",
-#     output:
-#         out1="in/fgsea/results.tar.gz",
-#         out4="out/tmp/c6.all.v2023.2.Hs.symbols.gmt",
-#     log:
-#         "log/fgsea_get_data.log",
-#     shell:
-#         """
-#         mkdir -p in/fgsea out/tmp
-#         {runR} src/fgsea/get_data.R {input.config} | tee {log}
-#         """
+rule fgsea_analysis:
+    input:
+        config="config/fgsea.json",
+        deseq2_out="out/results/deseq2/bulkRNAseq_deseq2_SLE_vs_CTRL_results.txt",
+        gmt="in/c6.all.v2023.2.Hs.symbols.gmt",
+    output:
+        out="out/results/fgsea/_fgsea.pdf",
+        R_session_info="out/results/fgsea/sessionInfo/sessionInfo.txt",
+    log:
+        "log/fgsea_analysis.log",
+    shell:
+        """
+        mkdir -p out/results/fgsea/sessionInfo
+        {runR} src/fgsea_wrapper.R | tee {log}
+        """
 
 
 # # --- Single-cell RNA-seq Pipeline --- #

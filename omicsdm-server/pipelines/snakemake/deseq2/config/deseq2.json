@@ -16,5 +16,5 @@
   "profiling": "TRUE",
   "plot": "TRUE",
   "plot_atr": { "de_genes_n": 50, "heatmap_ann": "Group", "pca": "Group" },
-  "project": "bulkRNAseq_base_analysis"
+  "project": "bulkRNAseq_deseq2"
 }
