@@ -54,3 +54,7 @@ s3fs_mountpoint/
 s3fs.log
 
 minio_secret
+
+*.log
+
+.snakemake
